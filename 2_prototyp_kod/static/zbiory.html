@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zbiory danych – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Lista zbiorów danych opublikowanych przez dostawców, z filtrem po instytucji i wykazach zbiorczych.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+      <noscript><p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Ta strona wymaga JavaScript</strong>Dane są wczytywane z API prototypu przez JavaScript. Włącz JavaScript albo skorzystaj bezpośrednio z API: <a href="/api/1.4/aed-aggregated">/api/1.4/aed-aggregated</a>.</p></noscript>
+<div class="kontener">
+<nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="zbiory-okruszek">Zbiory danych</span></li></ol></nav>
+  <h1>Zbiory danych</h1>
+  <p class="lead">Zbiory opublikowane przez dostawców w portalu. Zbiór z oznaczeniem „Wykaz zbiorczy AED” jest tworzony automatycznie przez portal z zasobów wszystkich dostawców.</p>
+  <form id="formularz-zbiory" class="karta formularz" role="search" aria-label="Filtr zbiorów">
+    <div class="pole-wiersz">
+      <div class="pole"><label for="f-q">Szukaj w tytule</label><input type="search" id="f-q" name="q" autocomplete="off"></div>
+      <div class="pole"><label for="f-instytucja">Dostawca (instytucja)</label><select id="f-instytucja" name="instytucja"><option value="">Wszystkie instytucje</option></select></div>
+    </div>
+    <div class="opcja"><input type="checkbox" id="f-wykaz" name="wykaz" value="AED"><div><label for="f-wykaz">Tylko zbiory z wykazem zbiorczym AED</label></div></div>
+    <div><button type="submit" class="przycisk">Szukaj</button></div>
+  </form>
+  <h2 id="h-wyniki">Wyniki</h2>
+  <p id="zbiory-licznik" role="status" aria-live="polite"></p>
+  <div id="zbiory-wynik"></div>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/zbiory.js"></script>
+</body>
+</html>

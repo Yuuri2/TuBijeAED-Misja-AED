@@ -143,3 +143,34 @@ def znajdz_duplikaty(rekordy: list[dict], promien_m: float = PROMIEN_M) -> dict[
         return j
 
     return {rekordy[j]["uid"]: rekordy[korzen(j)]["uid"] for j in rodzic}
+
+
+def bliskie_pary_miedzy_grupami(rekordy: list[dict], klucz_grupy: str, promien_m: float = PROMIEN_M) -> list[tuple[int, int, float]]:
+    """Pary rekordów z RÓŻNYCH grup (np. dostawców wykazu) położone bliżej niż `promien_m`.
+
+    Używane w raporcie jakości wykazu zbiorczego: to tylko informacja (dostawca odpowiada za swoje dane),
+    nic nie jest usuwane ani scalane. Zwraca [(i, j, odległość_m)] z i < j, posortowane po odległości.
+    Rekordy na różnych kondygnacjach nie są zgłaszane (jak w `znajdz_duplikaty`).
+    """
+    siatka: dict[tuple[int, int], list[int]] = defaultdict(list)
+    for i, rek in enumerate(rekordy):
+        lat, lon = rek.get("szerokosc_geo"), rek.get("dlugosc_geo")
+        if lat is None or lon is None:
+            continue
+        siatka[(math.floor(lat / _KOMORKA_STOPNIE), math.floor(lon / _KOMORKA_STOPNIE))].append(i)
+    wynik: list[tuple[int, int, float]] = []
+    for (cy, cx), idxs in siatka.items():
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                for i in idxs:
+                    for j in siatka.get((cy + dy, cx + dx), ()):
+                        if j <= i:
+                            continue
+                        a, b = rekordy[i], rekordy[j]
+                        if a.get(klucz_grupy) == b.get(klucz_grupy) or _inna_kondygnacja(a, b):
+                            continue
+                        d = odleglosc_m(a["szerokosc_geo"], a["dlugosc_geo"], b["szerokosc_geo"], b["dlugosc_geo"])
+                        if d < promien_m:
+                            wynik.append((i, j, d))
+    wynik.sort(key=lambda p: (p[2], p[0], p[1]))
+    return wynik

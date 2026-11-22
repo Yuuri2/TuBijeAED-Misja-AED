@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asystent dostawcy – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Asystent dostawcy danych AED: wzorzec danych, sprawdzanie pliku, konwersja pliku gminy do wzorca i pakiet do publikacji.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+<div class="kontener">
+<nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="asystent-okruszek">Asystent dostawcy</span></li></ol></nav>
+  <h1>Asystent dostawcy</h1>
+  <p class="lead">Narzędzia, które pomagają przygotować dane do publikacji. Asystent <strong>niczego nie publikuje</strong> za Ciebie: gotowy plik dodajesz sam, na własnym koncie w <a href="/admin/index.html">panelu dostawcy</a>.</p>
+
+  <section aria-labelledby="h-wzorzec">
+    <h2 id="h-wzorzec">1. Pobierz wzorzec danych</h2>
+    <p>Wzorzec określa kolumny, słowniki i reguły dla zasobu AED. Wypełnij go i opublikuj jako zasób wykazu.</p>
+    <div class="rzad" role="group" aria-label="Pliki wzorca">
+      <a class="przycisk" href="/api/asystent/wzorzec.xlsx" download>Wzorzec XLSX (z instrukcją)</a>
+      <a class="przycisk przycisk--drugi" href="/api/asystent/wzorzec.csv" download>Wzorzec CSV</a>
+      <a class="przycisk przycisk--drugi" href="/api/asystent/schemat.json" download>Schemat JSON</a>
+    </div>
+    <details style="margin-top:var(--odstep-4)">
+      <summary>Opis wszystkich pól wzorca</summary>
+      <div id="schemat-tabela"></div>
+    </details>
+  </section>
+
+  <section aria-labelledby="h-sprawdz">
+    <h2 id="h-sprawdz">2. Sprawdź plik</h2>
+    <p>Sprawdź plik CSV lub XLSX wzorcem – bez zapisywania. Zobaczysz błędy z numerem wiersza i polem. Do wypróbowania: <a href="/przyklady/aed_poprawny.csv" download>poprawny plik</a>, <a href="/przyklady/aed_z_bledami.csv" download>plik z błędami</a>.</p>
+    <form id="form-sprawdz" class="karta formularz" novalidate>
+      <div class="pole"><label for="s-plik">Plik (CSV lub XLSX)</label><input type="file" id="s-plik" accept=".csv,.xlsx" aria-describedby="s-plik-blad"><p class="pole-blad" id="s-plik-blad"></p></div>
+      <div><button type="submit" class="przycisk">Sprawdź plik</button></div>
+    </form>
+    <div id="sprawdz-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
+  </section>
+
+  <section aria-labelledby="h-konwertuj">
+    <h2 id="h-konwertuj">3. Przekonwertuj plik gminy do wzorca</h2>
+    <p>Jeśli Twoja instytucja już publikuje AED w starym układzie kolumn (np. gminy Krosno, Przemyśl, Marki, Legionowo, Warszawa), asystent przekształci plik do wzorca i wskaże pola do uzupełnienia. Do wypróbowania: <a href="/przyklady/gmina_stary_uklad_krosno.csv" download>plik gminy w starym układzie</a>.</p>
+    <form id="form-konwertuj" class="karta formularz" novalidate>
+      <div class="pole"><label for="k-plik">Plik gminy (CSV, XLSX, JSON, GeoJSON)</label><input type="file" id="k-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="k-plik-blad"><p class="pole-blad" id="k-plik-blad"></p></div>
+      <div class="pole"><label for="k-profil">Układ pliku (profil)</label>
+        <select id="k-profil"><option value="auto">Rozpoznaj automatycznie</option><option value="krosno">Krosno</option><option value="przemysl">Przemyśl</option><option value="marki">Marki</option><option value="legionowo">Legionowo</option><option value="warszawa">Warszawa</option></select></div>
+      <details><summary>Dane dysponenta do uzupełnienia w pliku (opcjonalnie)</summary>
+        <div class="formularz">
+          <div class="pole"><label for="k-nazwa">Nazwa dysponenta</label><input type="text" id="k-nazwa"></div>
+          <div class="pole-wiersz">
+            <div class="pole"><label for="k-id">NIP lub REGON dysponenta</label><input type="text" id="k-id" inputmode="numeric"></div>
+            <div class="pole"><label for="k-typ">Typ podmiotu</label><select id="k-typ"><option value="">(nie uzupełniaj)</option><option value="JST">JST</option><option value="Administracja_rzadowa">Administracja rządowa</option><option value="Podmiot_leczniczy">Podmiot leczniczy</option><option value="Sluzby_mundurowe">Służby mundurowe</option><option value="Przedsiebiorstwo">Przedsiębiorstwo</option><option value="NGO_Inne">NGO / inne</option></select></div>
+          </div>
+          <div class="pole"><label for="k-kontakt">Kontakt funkcyjny (telefon lub e-mail)</label><input type="text" id="k-kontakt"></div>
+        </div></details>
+      <div><button type="submit" class="przycisk">Przekonwertuj</button></div>
+    </form>
+    <div id="konwertuj-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
+  </section>
+
+  <section aria-labelledby="h-pakiet">
+    <h2 id="h-pakiet">4. Pobierz pakiet do publikacji</h2>
+    <p>Pakiet ZIP zawiera plik <code>dane_aed.csv</code>, plik harvestera <code>harvester_1_14.xml</code> (z <code>aggregatedListType=AED</code>) i krótką instrukcję publikacji.</p>
+    <form id="form-pakiet" class="karta formularz" novalidate>
+      <div class="pole"><label for="p-plik">Plik (CSV lub XLSX) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="p-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="p-plik-blad"><p class="pole-blad" id="p-plik-blad"></p></div>
+      <div class="pole"><label for="p-nazwa">Nazwa dostawcy (Twoja instytucja) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="text" id="p-nazwa" aria-describedby="p-nazwa-blad"><p class="pole-blad" id="p-nazwa-blad"></p></div>
+      <div class="pole"><label for="p-url">Adres, pod którym opublikujesz plik (opcjonalnie)</label><input type="url" id="p-url" placeholder="https://" aria-describedby="p-url-p p-url-blad"><p class="podpowiedz" id="p-url-p">Musi zaczynać się od https://.</p><p class="pole-blad" id="p-url-blad"></p></div>
+      <div class="pole-wiersz">
+        <div class="pole"><label for="p-licencja">Licencja</label><select id="p-licencja"><option>CC BY 4.0</option><option>CC0 1.0</option></select></div>
+        <div class="pole"><label for="p-profil">Układ pliku</label><select id="p-profil"><option value="">Plik jest już we wzorcu</option><option value="auto">Stary układ – rozpoznaj automatycznie</option><option value="krosno">Krosno</option><option value="przemysl">Przemyśl</option><option value="marki">Marki</option><option value="legionowo">Legionowo</option><option value="warszawa">Warszawa</option></select></div>
+      </div>
+      <div><button type="submit" class="przycisk">Przygotuj pakiet ZIP</button></div>
+    </form>
+    <div id="pakiet-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
+  </section>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/asystent.js"></script>
+</body>
+</html>

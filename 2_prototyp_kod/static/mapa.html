@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa #TuBijeAED – znajdź najbliższy AED – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Znajdź najbliższy defibrylator AED: geolokalizacja, najbliższe urządzenia z dostępnością i dojściem, mapa i lista tekstowa. W nagłym wypadku dzwoń 112.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+      <noscript><p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Ta strona wymaga JavaScript</strong>Dane są wczytywane z API prototypu przez JavaScript. Włącz JavaScript albo skorzystaj bezpośrednio z API: <a href="/api/1.4/aed-aggregated">/api/1.4/aed-aggregated</a>.</p></noscript>
+<div class="kontener">
+  <h1>Mapa #TuBijeAED: znajdź najbliższy defibrylator</h1>
+  <div class="sos" role="region" aria-label="Pilna pomoc">
+    <p>W nagłym wypadku najpierw zadzwoń pod 112 – dyspozytor poprowadzi resuscytację i wskaże najbliższy AED.</p>
+    <a class="przycisk przycisk--alarm przycisk--duzy" href="tel:112">Zadzwoń 112</a>
+  </div>
+  <p class="maly tekst-drugorzedny">Dane w prototypie są przykładowe i nie służą do ratowania życia.</p>
+
+  <section class="karta karta--akcent" aria-labelledby="h-szukaj">
+    <h2 id="h-szukaj">Gdzie jesteś?</h2>
+    <p><button type="button" id="znajdz" class="przycisk przycisk--duzy">Znajdź najbliższy AED</button></p>
+    <p class="tekst-drugorzedny maly">Przycisk użyje lokalizacji z urządzenia (przeglądarka zapyta o zgodę). Lokalizacja nie jest zapisywana.</p>
+    <details id="fallback">
+      <summary>Nie możesz użyć lokalizacji? Wpisz miasto lub wskaż miejsce na mapie</summary>
+      <form id="formularz-miasto" class="formularz" novalidate>
+        <div class="pole">
+          <label for="miasto">Miasto (dane demo: Krosno, Przemyśl, Marki, Legionowo, Warszawa)</label>
+          <input type="text" id="miasto" list="miasta-lista" autocomplete="off" aria-describedby="miasto-blad">
+          <datalist id="miasta-lista"></datalist>
+          <p class="pole-blad" id="miasto-blad"></p>
+        </div>
+        <div><button type="submit" class="przycisk">Szukaj w pobliżu miasta</button></div>
+      </form>
+      <p style="margin-top:var(--odstep-4)"><button type="button" id="wskaz" class="przycisk przycisk--drugi" aria-pressed="false">Wskaż swoją pozycję na mapie</button></p>
+    </details>
+    <p id="pozycja-opis" class="maly" aria-live="polite"></p>
+    <p id="mapa-status" role="status" class="tylko-czytniki"></p>
+  </section>
+
+  <div id="najblizsze-wynik" aria-live="polite" style="margin-top:var(--odstep-5)"></div>
+
+  <h2>Mapa</h2>
+  <p><a href="#lista-h">Pomiń mapę i przejdź do listy tekstowej</a></p>
+  <div class="mapa-uklad">
+    <div id="mapa" role="region" aria-label="Mapa defibrylatorów AED. Alternatywa tekstowa jest w liście pod mapą."></div>
+    <div>
+      <div class="karta">
+        <h3 style="margin-top:0">Legenda</h3>
+        <ul class="legenda" id="legenda"></ul>
+        <p id="legenda-liczba" class="maly tekst-drugorzedny"></p>
+      </div>
+      <div class="karta" style="margin-top:var(--odstep-4)">
+        <h3 style="margin-top:0">Warstwa OpenStreetMap</h3>
+        <div class="opcja"><input type="checkbox" id="warstwa-osm"><div><label for="warstwa-osm">Pokaż punkty z OpenStreetMap</label><p class="podpowiedz">Wyłączona domyślnie. To dane „do weryfikacji”: nie wchodzą do wykazu i nikt za nie nie odpowiada. © współtwórcy OpenStreetMap, licencja ODbL.</p></div></div>
+        <p id="osm-status" role="status" class="maly"></p>
+        <details>
+          <summary>Brak punktów OSM? Pobierz dla miasta</summary>
+          <form id="formularz-osm" class="formularz">
+            <div class="pole"><label for="osm-miasto">Miasto</label><select id="osm-miasto"></select></div>
+            <div><button type="submit" class="przycisk przycisk--drugi">Pobierz dane OSM (wymaga internetu)</button></div>
+          </form>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <section aria-labelledby="lista-h">
+    <h2 id="lista-h">Lista tekstowa punktów AED</h2>
+    <p id="lista-opis" class="tekst-drugorzedny"></p>
+    <div id="lista-wynik" aria-live="polite"></div>
+  </section>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/mapa.js"></script>
+</body>
+</html>

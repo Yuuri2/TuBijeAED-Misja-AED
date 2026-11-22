@@ -1,319 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AED.gov Hub – Dane na ratunek | Integrator dla dane.gov.pl</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        .high-contrast { background-color: #000 !important; color: #FFFF00 !important; }
-        .high-contrast .bg-white, .high-contrast .bg-slate-50, .high-contrast .bg-blue-900 {
-            background-color: #000 !important; color: #FFFF00 !important; border: 2px solid #FFFF00 !important;
-        }
-        .high-contrast button, .high-contrast a { background-color: #FFFF00 !important; color: #000 !important; font-weight: bold; }
-        .large-text { font-size: 118%; }
-        *:focus-visible { outline: 3px solid #D90429 !important; outline-offset: 2px; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wykaz defibrylatorów AED – start – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Prototyp portalu dane.gov.pl z Wykazem zbiorczym AED: dostawcy publikują zasoby, portal waliduje i scala je w jedną listę, mapa pomaga znaleźć najbliższy defibrylator.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased">
-
-    <div role="region" aria-label="Narzędzia dostępności WCAG" class="bg-slate-900 text-white text-sm py-2 px-4 flex flex-wrap justify-between items-center gap-2">
-        <span><strong>Misja AED – Dane na ratunek</strong> | Zgodność z dane.gov.pl i WCAG 2.1 AA</span>
-        <div class="flex gap-2">
-            <button onclick="document.body.classList.toggle('large-text')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded focus:ring-2" aria-label="Powiększ lub zmniejsz tekst">A+ / A-</button>
-            <button onclick="document.body.classList.toggle('high-contrast')" class="px-3 py-1 bg-yellow-400 text-black font-semibold rounded focus:ring-2" aria-label="Przełącz wysoki kontrast">Wysoki kontrast</button>
-        </div>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
     </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
 
-    <header class="bg-blue-950 text-white py-6 px-6 shadow-md">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <div class="inline-block bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider mb-2">
-                    Ekosystem Otwartych Danych • dane.gov.pl
-                </div>
-                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">AED.gov Hub – Krajowy Integrator Defibrylatorów</h1>
-                <p class="text-blue-200 mt-1 text-sm md:text-base">Standaryzacja, weryfikacja dysponentów i automatyczna publikacja w formacie maszynowym.</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="/api/v1/export/csv" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2.5 rounded-lg text-sm shadow">
-                    ⬇ Pobierz CSV (dane.gov.pl)
-                </a>
-                <a href="/api/v1/export/geojson" target="_blank" class="bg-blue-700 hover:bg-blue-600 text-white font-semibold px-4 py-2.5 rounded-lg text-sm shadow">
-                    🌐 API GeoJSON
-                </a>
-                <a href="/api/v1/export/harvester-xml" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-4 py-2.5 rounded-lg text-sm shadow">
-                    ⚙ Harvester XML (XSD 1.13)
-                </a>
-            </div>
-        </div>
-    </header>
+<section class="hero" aria-labelledby="h-hero">
+  <div class="hero__wnetrze">
+    <div>
+      <h1 id="h-hero">#TuBijeAED: jeden wykaz defibrylatorów, za dane odpowiada konkretny dostawca</h1>
+      <p class="lead">Dane o defibrylatorach AED są rozproszone i nikt za nie nie odpowiada. Ten prototyp pokazuje, jak portal dane.gov.pl może scalać zasoby publikowane przez instytucje i firmy w jeden <strong>Wykaz defibrylatorów AED – wykaz zbiorczy</strong>, z którego korzystają mapa, aplikacje i służby.</p>
+      <p class="rzad">
+        <a class="przycisk przycisk--duzy" href="/wykaz-aed.html">Zobacz wykaz AED</a>
+        <a class="przycisk przycisk--duzy przycisk--drugi" href="/mapa.html">Znajdź najbliższy AED</a>
+      </p>
+    </div>
+    <section class="karta" aria-labelledby="h-stat">
+      <h2 id="h-stat">Wykaz w liczbach</h2>
+      <div id="statystyki-start" aria-live="polite"><p class="tekst-drugorzedny">Liczby wykazu wczytują się z API (wymagany JavaScript).</p></div>
+      <p class="maly tekst-drugorzedny">Dane w prototypie są przykładowe.</p>
+    </section>
+  </div>
+</section>
 
-    <main class="max-w-7xl mx-auto p-6 space-y-8">
-        <div id="statusBox" role="status" aria-live="polite" class="hidden p-4 rounded-lg border font-medium"></div>
+<div class="kontener">
+  <section aria-labelledby="h-jak">
+    <h2 id="h-jak" style="margin-top:0">Jak to działa</h2>
+    <ol class="kroki">
+      <li><h3>Dostawca publikuje zasób na własnym koncie</h3><p>Urząd, spółka lub inna instytucja z kontem w portalu dodaje plik z lokalizacjami AED i zaznacza „Zasób wchodzi do Wykazu zbiorczego AED”. Może też użyć importu XML (harvester 1.14).</p></li>
+      <li><h3>Portal waliduje plik wg wzorca</h3><p>Każdy wiersz jest sprawdzany: wymagane pola, słowniki, współrzędne, sumy kontrolne NIP/REGON. Błędy są pokazane z numerem wiersza i polem. Zasób z błędami nie wchodzi do wykazu.</p></li>
+      <li><h3>Portal scala zasoby w wykaz zbiorczy</h3><p>Poprawne, opublikowane zasoby wszystkich dostawców są łączone w jedną tabelę z kolumnami „nazwa dostawcy” i „zasób źródłowy”. Tak działa istniejący w portalu Wykaz chronionych danych (DGA); tu jest uogólniony na AED.</p></li>
+      <li><h3>Wykaz jest otwarty dla wszystkich</h3><p>Do pobrania jako XLSX, CSV i GeoJSON, dostępny w API i na mapie #TuBijeAED dla osób szukających najbliższego defibrylatora.</p></li>
+    </ol>
+  </section>
 
-        <section aria-label="Podsumowanie zbioru danych" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <p class="text-sm text-slate-600 font-medium">Wszystkie punkty AED w bazie</p>
-                <p id="statTotal" class="text-3xl font-extrabold text-blue-950 mt-1">0</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200">
-                <p class="text-sm text-emerald-800 font-medium">Zweryfikowane – zbiory opublikowane w dane.gov.pl</p>
-                <p id="statVerified" class="text-3xl font-extrabold text-emerald-700 mt-1">0</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-sky-200">
-                <p class="text-sm text-sky-800 font-medium">Zgłoszone przez dysponentów (jeszcze nieopublikowane)</p>
-                <p id="statReported" class="text-3xl font-extrabold text-sky-700 mt-1">0</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-amber-200">
-                <p class="text-sm text-amber-800 font-medium">Do weryfikacji (źródła społecznościowe – OSM)</p>
-                <p id="statUnverified" class="text-3xl font-extrabold text-amber-600 mt-1">0</p>
-            </div>
-        </section>
+  <section aria-labelledby="h-kafle">
+    <h2 id="h-kafle">Zacznij tutaj</h2>
+    <div class="siatka siatka--3">
+      <article class="karta kafel"><h3>Wykaz AED</h3><p>Tabela wszystkich defibrylatorów z wykazu zbiorczego, lista dostawców, pominięte zasoby z powodem, pobieranie plików i link do API.</p><a class="przycisk" href="/wykaz-aed.html">Otwórz wykaz</a></article>
+      <article class="karta kafel"><h3>Mapa #TuBijeAED</h3><p>Dla każdego: znajdź najbliższy defibrylator, zobacz jak do niego dojść i kto odpowiada za dane. Zawsze z przyciskiem „Zadzwoń 112”.</p><a class="przycisk" href="/mapa.html">Otwórz mapę</a></article>
+      <article class="karta kafel"><h3>Panel dostawcy</h3><p>Dla instytucji i firm: zaloguj się (konto demo), dodaj zasób AED, zobacz raport walidacji i zaglądaj, czy zasób wszedł do wykazu.</p><a class="przycisk" href="/admin/index.html">Otwórz panel</a></article>
+    </div>
+    <p style="margin-top:var(--odstep-4)">Także: <a href="/zbiory.html">zbiory danych</a>, <a href="/asystent.html">asystent dostawcy</a> (wzorzec, sprawdzanie i konwersja plików), <a href="/instytucja.html">dostawcy i Partnerzy #TuBijeAED</a>, <a href="/api/1.4/aed-aggregated">API wykazu</a>.</p>
+    <aside class="karta karta--akcent" aria-labelledby="h-jury">
+      <h3 id="h-jury">Oceniasz ten prototyp?</h3>
+      <p>Przejdź ponumerowaną ścieżkę – od wykazu, przez dodanie zasobu z błędem i poprawnego, po mapę i odznakę Partnera. Bez instalacji i konfiguracji.</p>
+      <a class="przycisk przycisk--drugi" href="/jury.html">Ścieżka dla jury</a>
+    </aside>
+  </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <section aria-labelledby="heading-upload" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-                <h2 id="heading-upload" class="text-xl font-bold text-blue-950">1. Panel Dysponenta (Publikacja do dane.gov.pl)</h2>
-                <p class="text-sm text-slate-600">
-                    Zgodnie z zasadami <strong>dane.gov.pl</strong> za dane odpowiada konkretny podmiot. Wgraj plik <code>.xlsx</code> (np. <code>wzorzec_danych_aed.xlsx</code>) lub <code>.csv</code>, aby zwalidować schemat, sprawdzić dostępność (klucz/kod) i opublikować zbiór.
-                </p>
+  <section aria-labelledby="h-pojecia">
+    <h2 id="h-pojecia">Dwa pojęcia, które warto rozróżnić</h2>
+    <div class="siatka siatka--2">
+      <div class="karta"><h3>Dostawca</h3><p>Instytucja lub firma z kontem w portalu. <strong>Publikuje zasób i odpowiada za dane.</strong> Na przykład Urząd Miasta Krosna.</p></div>
+      <div class="karta"><h3>Dysponent</h3><p>Właściciel urządzenia AED (kolumny „nazwa dysponenta” i „identyfikator dysponenta” we wzorcu). Może być inny niż dostawca – gmina może publikować AED szkół czy aptek.</p></div>
+    </div>
+  </section>
 
-                <form id="uploadForm" class="space-y-3">
-                    <div>
-                        <label for="nazwa_dysponenta" class="block text-sm font-semibold text-slate-800">Nazwa instytucji / firmy (Dysponent)*</label>
-                        <input type="text" id="nazwa_dysponenta" name="nazwa_dysponenta" required value="Urząd Miejski w Sosnowcu"
-                               class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label for="nip_regon" class="block text-sm font-semibold text-slate-800">NIP lub REGON*</label>
-                            <input type="text" id="nip_regon" name="identyfikator_dysponenta" required value="6443453672"
-                                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                        </div>
-                        <div>
-                            <label for="typ_dysponenta" class="block text-sm font-semibold text-slate-800">Typ podmiotu*</label>
-                            <select id="typ_dysponenta" name="typ_dysponenta" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                                <option value="JST">Jednostka Samorządu Terytorialnego (JST)</option>
-                                <option value="Administracja_rzadowa">Administracja rządowa</option>
-                                <option value="Podmiot_leczniczy">Podmiot leczniczy</option>
-                                <option value="Sluzby_mundurowe">Służby mundurowe</option>
-                                <option value="Przedsiebiorstwo">Przedsiębiorstwo</option>
-                                <option value="NGO_Inne">NGO / Inne</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="fileInput" class="block text-sm font-semibold text-slate-800">Plik z danymi AED (.xlsx lub .csv)*</label>
-                        <input type="file" id="fileInput" name="file" accept=".xlsx,.csv" required
-                               class="mt-1 w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-900 hover:file:bg-blue-100">
-                    </div>
-                    <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition">
-                        Waliduj i zgłoś zbiór dysponenta
-                    </button>
-                </form>
-            </section>
+  <section aria-labelledby="h-partner">
+    <h2 id="h-partner">Partner #TuBijeAED</h2>
+    <p class="waski">Dostawca, którego dane przeszły weryfikację (poprawny zasób w wykazie, brak błędów, aktualność, kompletność), dostaje odznakę „Partner #TuBijeAED – zweryfikowane w dane.gov.pl” do stopki swojej strony. Odznaka prowadzi do publicznej weryfikacji, więc nie da się jej użyć bez pokrycia. <a href="/instytucja.html">Zobacz dostawców i ich status</a>.</p>
+  </section>
 
-            <section aria-labelledby="heading-harvest" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4 flex flex-col justify-between">
-                <div class="space-y-3">
-                    <h2 id="heading-harvest" class="text-xl font-bold text-blue-950">2. Integrator Źródeł Rozproszonych (ETL + Deduplikacja)</h2>
-                    <p class="text-sm text-slate-600">
-                        Pobierz na żywo dane społecznościowe z <strong>OpenStreetMap (Overpass API)</strong> dla wybranego miasta. System automatycznie odrzuci duplikaty (promień 20m) i oznaczy punkty jako <em>niezweryfikowane przez dysponenta</em>.
-                    </p>
-                    <div>
-                        <label for="cityInput" class="block text-sm font-semibold text-slate-800">Miasto do pobrania z OpenStreetMap</label>
-                        <div class="mt-1 flex gap-2">
-                            <input type="text" id="cityInput" value="Sosnowiec" placeholder="np. Warszawa, Sosnowiec, Kraków"
-                                   class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
-                            <button type="button" onclick="harvestOSM()" id="harvestBtn"
-                                    class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-lg text-sm">
-                                Pobierz z OSM
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-100 p-4 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-1">
-                    <p class="font-bold text-slate-900">Mechanizm zgodności z kodem źródłowym dane.gov.pl:</p>
-                    <p>• Eksport <strong>Harvester XML</strong> generuje strukturę zgodną ze schematem <code>xml_import_otwarte_dane_1_13.xsd</code>.</p>
-                    <p>• Dane udostępniane są w formacie odczytywalnym maszynowo (CSV UTF-8 oraz GeoJSON RFC 7946).</p>
-                </div>
-            </section>
-        </div>
-
-        <section aria-labelledby="heading-map" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-            <div class="flex flex-wrap justify-between items-center gap-2">
-                <h2 id="heading-map" class="text-xl font-bold text-blue-950">3. Zintegrowany Rejestr AED (Mapa i Tabela)</h2>
-                <div class="flex gap-4 text-xs font-semibold">
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> Zweryfikowany (dane.gov.pl)</span>
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-600 inline-block"></span> Zgłoszony przez dysponenta</span>
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Do weryfikacji (OSM)</span>
-                </div>
-            </div>
-
-            <div id="map" class="h-96 w-full rounded-lg border border-slate-300 z-0" aria-label="Interaktywna mapa lokalizacji defibrylatorów AED"></div>
-
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-left text-sm border-collapse">
-                    <thead class="bg-slate-100 border-b border-slate-300 text-slate-800">
-                        <tr>
-                            <th class="p-3">Status weryfikacji</th>
-                            <th class="p-3">Dysponent (Odpowiedzialność)</th>
-                            <th class="p-3">Miejscowość i adres</th>
-                            <th class="p-3">Dokładne miejsce</th>
-                            <th class="p-3">Dostępność / Klucz</th>
-                        </tr>
-                    </thead>
-                    <tbody id="aedTableBody" class="divide-y divide-slate-200"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        const map = L.map('map').setView([51.5, 19.5], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        let markersLayer = L.layerGroup().addTo(map);
-
-        // Escapowanie WSZYSTKICH danych wstawianych do innerHTML / popupów (dane z OSM, plików dysponentów i API)
-        function esc(v) {
-            return String(v ?? '').replace(/[&<>"']/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch]));
-        }
-
-        const STATUSY = {
-            ZWERYFIKOWANY_DANE_GOV_PL: {color: '#059669', popup: '✅ Zweryfikowany – zbiór w dane.gov.pl', badge: 'bg-emerald-100 text-emerald-900', label: '✅ Zweryfikowany (dane.gov.pl)'},
-            ZGLOSZONY_PRZEZ_DYSPONENTA: {color: '#0284c7', popup: '📝 Zgłoszony przez dysponenta (nieopublikowany)', badge: 'bg-sky-100 text-sky-900', label: '📝 Zgłoszony przez dysponenta'},
-            DO_WERYFIKACJI: {color: '#d97706', popup: '⚠️ Do weryfikacji (źródło społecznościowe)', badge: 'bg-amber-100 text-amber-900', label: '⚠️ Do weryfikacji (OSM)'}
-        };
-        const statusInfo = st => STATUSY[st] || {color: '#64748b', popup: 'Status nieznany', badge: 'bg-slate-100 text-slate-800', label: st || 'brak statusu'};
-
-        function adres(item) {
-            const ulicaNr = [item.ulica, item.nr_budynku].filter(Boolean).join(' ');
-            return [ulicaNr, [item.kod_pocztowy, item.miejscowosc].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-        }
-
-        function showStatus(msg, isError = false, warnings = []) {
-            const box = document.getElementById('statusBox');
-            box.className = `p-4 rounded-lg border font-medium ${isError ? 'bg-red-50 border-red-300 text-red-900' : 'bg-emerald-50 border-emerald-300 text-emerald-950'}`;
-            let html = `<p>${esc(msg)}</p>`;
-            if (warnings && warnings.length > 0) {
-                html += `<ul class="mt-2 list-disc list-inside text-xs text-amber-900">${warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
-            }
-            box.innerHTML = html;
-            box.classList.remove('hidden');
-        }
-
-        // Raport walidacji (docs/API.md): błędy i ostrzeżenia per wiersz arkusza
-        function showReport(data) {
-            const box = document.getElementById('statusBox');
-            const bledy = data.bledy || [], ostrz = data.ostrzezenia || [];
-            const ok = bledy.length === 0;
-            box.className = `p-4 rounded-lg border font-medium ${ok ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-red-50 border-red-300 text-red-900'}`;
-            const poz = e => `<li>${e.wiersz ? 'Wiersz ' + esc(e.wiersz) + (e.pole ? ', pole „' + esc(e.pole) + '”' : '') + ': ' : ''}${esc(e.komunikat)}</li>`;
-            let html = `<p>Poprawne wiersze: <strong>${esc(data.poprawne_wiersze)}</strong>, wiersze z błędami: <strong>${esc(data.bledne_wiersze)}</strong>` +
-                (data.zapisano !== undefined ? `, zapisano w bazie: <strong>${esc(data.zapisano)}</strong>` : '') + '.</p>';
-            if (bledy.length) html += `<p class="mt-2 text-sm font-bold">Błędy do poprawienia:</p><ul class="list-disc list-inside text-xs max-h-60 overflow-y-auto">${bledy.map(poz).join('')}</ul>`;
-            if (ostrz.length) html += `<p class="mt-2 text-sm font-bold text-amber-900">Ostrzeżenia:</p><ul class="list-disc list-inside text-xs text-amber-900 max-h-40 overflow-y-auto">${ostrz.map(poz).join('')}</ul>`;
-            if (data.ucieto) html += '<p class="mt-2 text-xs">Lista została skrócona – popraw widoczne błędy i sprawdź plik ponownie.</p>';
-            box.innerHTML = html;
-            box.classList.remove('hidden');
-        }
-
-        async function loadData() {
-            const res = await fetch('/api/v1/aed');
-            const data = await res.json();
-            const items = data.items;
-            const ile = st => items.filter(i => i.status_weryfikacji === st).length;
-
-            document.getElementById('statTotal').innerText = items.length;
-            document.getElementById('statVerified').innerText = ile('ZWERYFIKOWANY_DANE_GOV_PL');
-            document.getElementById('statReported').innerText = ile('ZGLOSZONY_PRZEZ_DYSPONENTA');
-            document.getElementById('statUnverified').innerText = ile('DO_WERYFIKACJI');
-
-            markersLayer.clearLayers();
-            const tbody = document.getElementById('aedTableBody');
-            tbody.innerHTML = '';
-
-            items.forEach(item => {
-                const info = statusInfo(item.status_weryfikacji);
-
-                const marker = L.circleMarker([item.szerokosc_geo, item.dlugosc_geo], {
-                    radius: 8, fillColor: info.color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9
-                }).addTo(markersLayer);
-
-                marker.bindPopup(`
-                    <strong>${esc(item.nazwa_dysponenta || 'Brak oficjalnego dysponenta')}</strong><br>
-                    <em>${esc(info.popup)}</em><br>
-                    📍 ${esc(adres(item))}<br>
-                    🏢 ${esc(item.lokalizacja_szczegolowa || 'brak opisu miejsca')}<br>
-                    🔑 Zamknięte: <strong>${esc(item.czy_zamkniete)}</strong> (${esc(item.dostepnosc_typ)})<br>
-                    <span style="font-size:11px">Źródło: ${esc(item.zrodlo_nazwa)}</span>
-                `);
-
-                const badge = `<span class="inline-block ${info.badge} text-xs font-bold px-2 py-1 rounded">${esc(info.label)}</span>`;
-
-                const lockBadge = item.czy_zamkniete === 'NIE'
-                    ? `<span class="text-emerald-700 font-semibold">Otwarte (${esc(item.dostepnosc_typ)})</span>`
-                    : `<span class="text-red-700 font-semibold">${esc(item.czy_zamkniete)} (${esc(item.instrukcja_dostepu || 'brak instrukcji')})</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3">${badge}</td>
-                        <td class="p-3 font-medium">${esc(item.nazwa_dysponenta || 'Brak oficjalnego dysponenta')}<br><span class="text-xs text-slate-500">ID: ${esc(item.identyfikator_dysponenta || '—')}</span></td>
-                        <td class="p-3">${esc(item.miejscowosc)}<br><span class="text-xs text-slate-600">${esc(adres(item))}</span></td>
-                        <td class="p-3 text-slate-700">${esc(item.lokalizacja_szczegolowa)}</td>
-                        <td class="p-3 text-xs">${lockBadge}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        async function harvestOSM() {
-            const city = document.getElementById('cityInput').value.trim();
-            if (!city) return;
-            const btn = document.getElementById('harvestBtn');
-            btn.disabled = true;
-            btn.innerText = 'Pobieranie...';
-            try {
-                const formData = new FormData();
-                formData.append('city', city);
-                const res = await fetch('/api/v1/harvest-osm', { method: 'POST', body: formData });
-                const data = await res.json();
-                if (!res.ok) {
-                    showStatus(data.error || data.detail || 'Błąd pobierania z OSM', true);
-                } else {
-                    showStatus(`${data.message || 'Zakończono pobieranie z OpenStreetMap.'} (Pobrano: ${data.fetched ?? '?'}, Dodano nowych: ${data.added ?? '?'}, Duplikaty: ${data.duplicates_skipped ?? data.duplikaty ?? 0})`);
-                    await loadData();
-                }
-            } catch (e) {
-                showStatus('Błąd sieci podczas łączenia z API.', true);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Pobierz z OSM';
-            }
-        }
-
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            try {
-                const res = await fetch('/api/v1/dysponent/zgloszenie', { method: 'POST', body: formData });
-                const data = await res.json();
-                if (!res.ok) {
-                    const bf = (data.bledy_formularza || []).map(b => b.komunikat);
-                    showStatus(data.error || data.detail || 'Nie udało się przetworzyć zgłoszenia.', true, bf);
-                } else {
-                    showReport(data);
-                    await loadData();
-                }
-            } catch (err) {
-                showStatus('Błąd sieci podczas łączenia z API.', true);
-            }
-        });
-
-        loadData();
-    </script>
+  <section aria-labelledby="h-proto">
+    <h2 id="h-proto">O prototypie</h2>
+    <p class="waski">To bardzo okrojona, klikalna modyfikacja portalu dane.gov.pl, pokazująca wyłącznie mechanikę wykazów zbiorczych: dostawcy → walidacja → wykaz → API i mapa. Nie zawiera wyszukiwarki pełnotekstowej, CMS ani kont użytkowników; logowanie w panelu to wybór konta demo. Prototyp nie jest oficjalnym serwisem Ministerstwa Cyfryzacji, a dane są przykładowe i nie służą do ratowania życia.</p>
+  </section>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/index.js"></script>
 </body>
 </html>

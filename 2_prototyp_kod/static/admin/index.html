@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel dostawcy – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Panel dostawcy danych: zaloguj się jako konto demo, dodaj zasób AED, zobacz raport walidacji i status wykazu zbiorczego. Dla administratora: przebudowa wykazu.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+      <noscript><p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Ta strona wymaga JavaScript</strong>Dane są wczytywane z API prototypu przez JavaScript. Włącz JavaScript albo skorzystaj bezpośrednio z API: <a href="/api/1.4/aed-aggregated">/api/1.4/aed-aggregated</a>.</p></noscript>
+<div class="kontener">
+<nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="admin-okruszek">Panel dostawcy</span></li></ol></nav>
+  <h1>Panel dostawcy danych</h1>
+  <p id="status-logowania" role="status" class="tylko-czytniki"></p>
+
+  <section id="sekcja-logowanie" aria-labelledby="h-logowanie">
+    <h2 id="h-logowanie" tabindex="-1" style="margin-top:0">Zaloguj jako…</h2>
+    <p class="waski">To demo: bez haseł. Wybierz konto instytucji, którą chcesz „być”. Dodatkowo konto administratora portalu może przebudować wykaz. Wybór jest pamiętany tylko w tej karcie przeglądarki.</p>
+    <div id="konta-lista" aria-live="polite"></div>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="karta karta--akcent" aria-labelledby="h-panel">
+      <h2 id="h-panel" tabindex="-1" style="margin-top:0">Zalogowano</h2>
+      <div class="zalogowany">
+        <div>
+          <p class="odpowiedzialnosc" style="margin:0">Konto: <span id="zalogowany-nazwa"></span></p>
+          <p id="zalogowany-rola" class="maly tekst-drugorzedny" style="margin:0"></p>
+        </div>
+        <button type="button" id="wyloguj" class="przycisk przycisk--drugi">Wyloguj / zmień konto</button>
+      </div>
+    </section>
+
+    <nav aria-label="Sekcje panelu" style="margin-top:var(--odstep-4)">
+      <ul class="spis-sekcji" id="spis-dostawca">
+        <li><a href="#sekcja-zbiory">Moje zbiory</a></li><li><a href="#sekcja-nowy-zbior">Dodaj zbiór</a></li><li><a href="#sekcja-zasob">Dodaj / zaktualizuj zasób</a></li><li><a href="#sekcja-harvester">Import XML</a></li>
+      </ul>
+      <ul class="spis-sekcji" id="spis-admin" hidden><li><a href="#sekcja-admin">Wykaz zbiorczy AED – administracja</a></li></ul>
+    </nav>
+
+    <section id="sekcja-zbiory" aria-labelledby="h-zbiory">
+      <h2 id="h-zbiory">Moje zbiory i zasoby</h2>
+      <div id="moje-zbiory" aria-live="polite"></div>
+    </section>
+
+    <section id="sekcja-nowy-zbior" aria-labelledby="h-nowy-zbior">
+      <h2 id="h-nowy-zbior">Dodaj zbiór</h2>
+      <p class="waski">Zbiór to „pojemnik” na zasoby (pliki). Najpierw utwórz zbiór, potem dodaj do niego zasób.</p>
+      <form id="form-zbior" class="karta formularz" novalidate>
+        <div class="pole"><label for="zb-tytul">Tytuł zbioru <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
+          <input type="text" id="zb-tytul" required aria-describedby="zb-tytul-blad"><p class="pole-blad" id="zb-tytul-blad"></p></div>
+        <div class="pole"><label for="zb-opis">Opis</label><textarea id="zb-opis"></textarea></div>
+        <div class="pole-wiersz">
+          <div class="pole"><label for="zb-licencja">Licencja</label><select id="zb-licencja"><option>CC BY 4.0</option><option>CC0 1.0</option></select></div>
+          <div class="pole"><label for="zb-czest">Częstotliwość aktualizacji</label><select id="zb-czest"><option value="irregular">nieregularnie</option><option value="daily">codziennie</option><option value="weekly">co tydzień</option><option value="monthly">co miesiąc</option><option value="quarterly">co kwartał</option><option value="yearly">co rok</option></select></div>
+        </div>
+        <div class="pole"><label for="zb-slowa">Słowa kluczowe</label><input type="text" id="zb-slowa" value="AED, defibrylator" aria-describedby="zb-slowa-p"><p class="podpowiedz" id="zb-slowa-p">Oddziel przecinkami.</p></div>
+        <div><button type="submit" class="przycisk">Utwórz zbiór</button></div>
+      </form>
+      <div id="zbior-wynik" aria-live="polite"></div>
+    </section>
+
+    <section id="sekcja-zasob" aria-labelledby="h-zasob">
+      <h2 id="h-zasob" tabindex="-1">Dodaj lub zaktualizuj zasób</h2>
+      <p class="odpowiedzialnosc">Za dane w tym zasobie odpowiada: <span class="js-konto-nazwa"></span></p>
+      <div id="tryb-info" class="komunikat komunikat--uwaga" hidden>
+        <strong class="komunikat__tytul">ℹ Aktualizujesz zasób „<span id="tryb-nazwa"></span>”</strong>
+        <p>Wybierz nowy plik albo zmień ustawienia. <button type="button" id="anuluj-edycje" class="przycisk-tekst">Anuluj aktualizację</button></p>
+      </div>
+      <form id="form-zasob" class="karta formularz" novalidate>
+        <div class="pole"><label for="z-zbior">Zbiór <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
+          <select id="z-zbior" required aria-describedby="z-zbior-blad"><option value="">Najpierw utwórz zbiór</option></select><p class="pole-blad" id="z-zbior-blad"></p></div>
+        <div class="pole"><label for="z-tytul">Tytuł zasobu <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
+          <input type="text" id="z-tytul" required aria-describedby="z-tytul-blad"><p class="pole-blad" id="z-tytul-blad"></p></div>
+        <div class="pole"><label for="z-opis">Opis zasobu</label><textarea id="z-opis"></textarea></div>
+        <fieldset>
+          <legend>Źródło danych <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane: plik albo adres URL)</span></legend>
+          <div class="pole"><label for="z-plik">Plik (CSV lub XLSX)</label><input type="file" id="z-plik" accept=".csv,.xlsx" aria-describedby="z-plik-p z-plik-blad"><p class="podpowiedz" id="z-plik-p">Do wykazu AED plik musi mieć kolumny wzorca. Wypróbuj <a href="/przyklady/aed_poprawny.csv" download>poprawny plik przykładowy</a> albo <a href="/przyklady/aed_z_bledami.csv" download>plik z celowymi błędami</a>.</p><p class="pole-blad" id="z-plik-blad"></p></div>
+          <div class="pole" style="margin-top:var(--odstep-3)"><label for="z-url">albo adres URL pliku</label><input type="url" id="z-url" placeholder="https://"></div>
+        </fieldset>
+        <div class="pole"><label for="z-status">Status publikacji</label><select id="z-status"><option value="opublikowany">opublikowany</option><option value="szkic">szkic (nie wchodzi do wykazu)</option></select></div>
+        <div class="karta karta--akcent">
+          <div class="opcja"><input type="checkbox" id="z-wykaz" aria-describedby="z-wykaz-p"><div><label for="z-wykaz">Zasób wchodzi do Wykazu zbiorczego AED</label>
+            <p class="podpowiedz" id="z-wykaz-p">Plik zostanie sprawdzony wg wzorca. Jeśli jest poprawny i opublikowany, wykaz przebuduje się automatycznie. Jeden dostawca może mieć jeden zasób AED. Pobierz <a href="/api/asystent/wzorzec.xlsx">wzorzec XLSX</a> lub <a href="/api/asystent/wzorzec.csv">CSV</a>, albo użyj <a href="/asystent.html">asystenta dostawcy</a>.</p></div></div>
+        </div>
+        <div><button type="submit" class="przycisk przycisk--duzy" id="z-submit">Wyślij zasób</button></div>
+      </form>
+      <div id="zasob-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
+    </section>
+
+    <section id="sekcja-harvester" aria-labelledby="h-xml">
+      <h2 id="h-xml">Import XML (harvester 1.14)</h2>
+      <p class="waski">Zamiast wypełniać formularz, możesz zaimportować plik XML harvestera (wersja 1.13 lub 1.14). W wersji 1.14 element <code>aggregatedListType</code> o wartości <code>AED</code> oznacza zasób wykazu AED. <a href="/przyklady/harvester_1_14_przyklad.xml" download>Pobierz przykładowy plik XML</a>.</p>
+      <form id="form-xml" class="karta formularz" novalidate>
+        <div class="pole"><label for="x-plik">Plik XML <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="x-plik" accept=".xml,application/xml,text/xml" aria-describedby="x-plik-blad"><p class="pole-blad" id="x-plik-blad"></p></div>
+        <div><button type="submit" class="przycisk">Importuj XML</button></div>
+      </form>
+      <div id="xml-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
+    </section>
+
+    <section id="sekcja-admin" aria-labelledby="h-admin" hidden>
+      <h2 id="h-admin">Wykaz zbiorczy AED – administracja</h2>
+      <p class="waski">Wykaz przebudowuje się automatycznie po każdej zmianie zasobu AED. Możesz też uruchomić scalenie ręcznie (odpowiednik zadania Celery w portalu).</p>
+      <p><button type="button" id="przebuduj" class="przycisk przycisk--duzy">Przebuduj wykaz</button></p>
+      <div id="przebudowa-wynik" aria-live="polite"></div>
+      <h3>Historia uruchomień</h3>
+      <div id="historia" aria-live="polite"></div>
+    </section>
+  </div>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/admin.js"></script>
+</body>
+</html>

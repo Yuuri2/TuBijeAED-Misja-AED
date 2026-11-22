@@ -12,10 +12,11 @@ Tekst jest od razu zamieniany na krzywe (fontTools) – SVG wyglądają identycz
 w każdej przeglądarce i nie wymagają zainstalowanej czcionki.
 Czcionka: Poppins (SIL OFL 1.1), pliki w ./fonts.
 
-Uruchomienie (fontTools nie jest w .venv projektu – wystarczy go doinstalować
-albo wskazać przez PYTHONPATH):
-  pip install fonttools
+Uruchomienie (fontTools jest w .venv projektu):
   .venv/bin/python 3_branding/koncepcje/generuj_koncepcje.py
+
+Sprint 2: wybrano koncepcję C. Zasoby finalne (static/brand/, warianty ISO, podglądy) generuje
+3_branding/final/generuj_final.py, który korzysta z klasy Font z tego modułu.
 """
 from __future__ import annotations
 

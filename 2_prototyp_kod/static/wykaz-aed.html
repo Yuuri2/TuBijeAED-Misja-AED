@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wykaz defibrylatorów AED – wykaz zbiorczy – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Wykaz zbiorczy AED scalony z zasobów dostawców: pliki do pobrania, API, tabela z filtrem, lista dostawców i pominiętych zasobów.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+      <noscript><p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Ta strona wymaga JavaScript</strong>Dane są wczytywane z API prototypu przez JavaScript. Włącz JavaScript albo skorzystaj bezpośrednio z API: <a href="/api/1.4/aed-aggregated">/api/1.4/aed-aggregated</a>.</p></noscript>
+<div class="kontener">
+<nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="wykaz-okruszek">Wykaz AED</span></li></ol></nav>
+  <h1>Wykaz defibrylatorów AED – wykaz zbiorczy</h1>
+  <p class="lead">Jedna standardowa lista defibrylatorów, scalona z zasobów, które instytucje i firmy opublikowały na swoich kontach w portalu. Portal niczego nie dopisuje „od siebie”: każdy rekord ma dostawcę, który odpowiada za jego dane.</p>
+
+  <section aria-labelledby="h-stan">
+    <h2 id="h-stan">Stan wykazu i pobieranie</h2>
+    <div id="wykaz-stan" aria-live="polite"></div>
+    <p class="maly tekst-drugorzedny">Pliki zawierają komplet kolumn: dostawca, zasób źródłowy, data aktualizacji zasobu oraz wszystkie pola wzorca danych AED. Duplikaty między dostawcami nie są usuwane – za swoje dane odpowiada każdy dostawca.</p>
+  </section>
+
+  <section id="sekcja-dostawcy" aria-labelledby="h-skad" class="karta karta--akcent" style="margin-top:var(--odstep-5)">
+    <h2 id="h-skad">Skąd pochodzą dane?</h2>
+    <p class="waski">Wykaz powstaje z zasobów oznaczonych jako „wchodzi do Wykazu zbiorczego AED”, które dostawcy opublikowali na własnych kontach i które przeszły walidację wg wzorca. Każdy dostawca ma swój zbiór – kliknij jego nazwę lub link do zbioru. <em>Dostawca</em> odpowiada za dane; <em>dysponent</em> to właściciel urządzenia i może być kimś innym.</p>
+    <div id="dostawcy-lista"></div>
+  </section>
+
+  <section id="sekcja-rekordy" aria-labelledby="h-rekordy">
+    <h2 id="h-rekordy">Rekordy wykazu</h2>
+    <form id="formularz-filtr" class="karta formularz" role="search" aria-label="Filtr rekordów wykazu">
+      <div class="pole-wiersz">
+        <div class="pole"><label for="filtr-tekst">Szukaj (miejscowość, adres, dysponent)</label><input type="search" id="filtr-tekst" autocomplete="off"></div>
+        <div class="pole"><label for="filtr-woj">Województwo</label><select id="filtr-woj"><option value="">Wszystkie województwa</option></select></div>
+        <div class="pole"><label for="filtr-dost">Dostawca danych</label><select id="filtr-dost"><option value="">Wszyscy dostawcy</option></select></div>
+      </div>
+      <div class="rzad"><button type="submit" class="przycisk">Filtruj</button><button type="button" id="filtr-wyczysc" class="przycisk przycisk--drugi">Wyczyść filtry</button></div>
+    </form>
+    <p id="tabela-licznik" role="status" aria-live="polite" style="margin-top:var(--odstep-4)"></p>
+    <div id="tabela-wynik"></div>
+  </section>
+
+  <section id="sekcja-pominiete" aria-labelledby="h-pominiete">
+    <h2 id="h-pominiete">Pominięte zasoby</h2>
+    <div id="pominiete-lista"></div>
+  </section>
+
+  <section aria-labelledby="h-api">
+    <h2 id="h-api">Dla deweloperów: API</h2>
+    <p>Wykaz jest dostępny maszynowo w formacie podobnym do api.dane.gov.pl (JSON:API).</p>
+    <ul>
+      <li><a href="/api/1.4/aed-aggregated">/api/1.4/aed-aggregated</a> – metadane wykazu, linki do plików, dostawcy uwzględnieni i pominięci,</li>
+      <li><a href="/api/1.4/aed-aggregated/rekordy">/api/1.4/aed-aggregated/rekordy</a> – rekordy wykazu jako JSON (filtry: <code>wojewodztwo</code>, <code>dostawca</code>, <code>bbox</code>),</li>
+      <li><a href="/api/mapa/aed">/api/mapa/aed</a> – GeoJSON dla map,</li>
+      <li><a href="/docs">Dokumentacja OpenAPI</a>.</li>
+    </ul>
+  </section>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+<script type="module" src="/js/wykaz.js"></script>
+</body>
+</html>

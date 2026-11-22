@@ -1,6 +1,8 @@
 """Warstwa SQLite (stdlib, bez ORM). Właściciel: Backend.
 
-Agent API NIE importuje tego modułu – korzysta wyłącznie z app/repo.py.
+Agent API NIE importuje tego modułu – korzysta wyłącznie z app/repo.py i app/portal/repo_portal.py.
+Tabele prototypu portalu (instytucje, zbiory, zasoby, wykazy_info) definiuje app/portal/baza.py
+(ta sama baza; init_db tworzy je razem z tabelami Sprintu 1).
 Połączenie jest otwierane na żądanie (bezpieczne dla wątków FastAPI), a schemat
 tworzony przy pierwszym użyciu danego pliku bazy.
 """
@@ -62,6 +64,8 @@ def init_db(sciezka: Path | str | None = None) -> None:
         con = sqlite3.connect(sciezka)
         try:
             con.executescript(SCHEMAT_SQL)
+            from .portal.baza import SCHEMAT_PORTAL_SQL     # import lokalny – baza importuje db
+            con.executescript(SCHEMAT_PORTAL_SQL)
             con.commit()
         finally:
             con.close()

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ścieżka dla jury – #TuBijeAED (prototyp)</title>
+<meta name="description" content="Ponumerowana ścieżka przejścia całego prototypu: wykaz, panel dostawcy, zasób z błędem i poprawny, mapa, Partner, asystent, API.">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="stylesheet" href="/brand/tokens.css">
+<link rel="stylesheet" href="/css/portal.css">
+</head>
+<body>
+<a class="skip-link" href="#tresc">Przejdź do treści</a>
+<header class="naglowek-strony">
+  <div class="pasek-prototypu"><strong>Prototyp</strong> – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis.</div>
+  <div class="naglowek">
+    <div id="naglowek-wnetrze">
+      <div class="naglowek__wnetrze">
+        <a class="logo" href="/index.html"><img src="/brand/logo-kompakt.svg" alt="#TuBijeAED – strona główna prototypu" width="196" height="40"></a>
+        <noscript><nav class="nawigacja" aria-label="Główna"><ul>
+          <li><a href="/index.html">Start</a></li>
+          <li><a href="/zbiory.html">Zbiory</a></li>
+          <li><a href="/wykaz-aed.html">Wykaz AED</a></li>
+          <li><a href="/mapa.html">Mapa</a></li>
+          <li><a href="/asystent.html">Asystent</a></li>
+          <li><a href="/instytucja.html">Dostawcy</a></li>
+          <li><a href="/admin/index.html">Panel dostawcy</a></li>
+          <li><a href="/jury.html">Dla jury</a></li>
+        </ul></nav></noscript>
+      </div>
+    </div>
+  </div>
+</header>
+<main id="tresc" tabindex="-1">
+<div class="kontener">
+<nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="jury-okruszek">Ścieżka dla jury</span></li></ol></nav>
+  <h1>Ścieżka dla jury</h1>
+  <p class="lead">Cały proces da się przejść klikając – bez instalacji i konfiguracji. Szacowany czas: 10–15 minut. To szkic ścieżki; wersja finalna powstanie w kolejnym sprincie.</p>
+  <p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Dane demo</strong>Wszystko poniżej dzieje się na przykładowych danych. Logowanie to wybór konta demo (bez haseł).</p>
+
+  <ol class="kroki">
+    <li><h2>Zobacz gotowy wykaz zbiorczy</h2>
+      <p>Otwórz <a href="/wykaz-aed.html">Wykaz AED</a>. Przeczytaj, skąd pochodzą dane, zobacz listę dostawców (każdy z linkiem do swojego zbioru), tabelę z filtrem, sekcję „Pominięte zasoby” i przyciski pobierania XLSX / CSV / GeoJSON. <em>Pokazuje: jedna standardowa lista z wielu zasobów, z wskazaniem dostawcy.</em></p></li>
+    <li><h2>Zajrzyj do zbioru dostawcy</h2>
+      <p>Kliknij „Otwórz zbiór dostawcy” przy dowolnym dostawcy, albo wybierz z <a href="/zbiory.html">listy zbiorów</a>. Zobaczysz, że zasób jest oznaczony „Zasób wykazu AED”, ma status walidacji, a nad danymi stoi nazwa instytucji, która za nie odpowiada.</p></li>
+    <li><h2>Zaloguj się jako dostawca, który jeszcze nie dołączył</h2>
+      <p>Otwórz <a href="/admin/index.html">Panel dostawcy</a> i wybierz „Zaloguj jako…” <strong>Urząd m.st. Warszawy</strong> (nie ma jeszcze zasobu AED). Zwróć uwagę na komunikat „Za dane w tym zasobie odpowiada: …”.
+      <br><small>Uwaga: Urząd Miasta Krosna ma już zasób AED. Dodanie drugiego da czytelny błąd 409 z podpowiedzią „zaktualizuj istniejący zasób” – to też można pokazać.</small></p></li>
+    <li><h2>Utwórz zbiór</h2>
+      <p>W sekcji „Dodaj zbiór” wpisz tytuł, np. „Defibrylatory AED – Warszawa”, i kliknij „Utwórz zbiór”.</p></li>
+    <li><h2>Dodaj zasób z błędami</h2>
+      <p>Pobierz <a href="/przyklady/aed_z_bledami.csv" download>plik z celowymi błędami</a>. W sekcji „Dodaj lub zaktualizuj zasób” wybierz zbiór, wpisz tytuł, wskaż pobrany plik i zaznacz <strong>„Zasób wchodzi do Wykazu zbiorczego AED”</strong>. Kliknij „Wyślij zasób”. Zobaczysz status „odrzucony z wykazu – popraw plik i wyślij ponownie” i tabelę błędów: wiersz, pole, komunikat. <em>Pokazuje: walidacja wg wzorca, czytelne błędy.</em></p></li>
+    <li><h2>Popraw i wyślij poprawny zasób</h2>
+      <p>Pobierz <a href="/przyklady/aed_poprawny.csv" download>poprawny plik</a>. Przy zasobie z błędami kliknij „Zaktualizuj”, wskaż poprawny plik i zapisz (albo dodaj nowy zasób, jeśli poprzedni usuniesz). Zobaczysz „Zasób włączony do Wykazu zbiorczego AED” i informację o przebudowie wykazu.</p></li>
+    <li><h2>Sprawdź, że wykaz się przebudował</h2>
+      <p>Wróć do <a href="/wykaz-aed.html">Wykazu AED</a>: nowy dostawca jest na liście, a jego rekordy w tabeli (filtr „Dostawca danych”). Te same dane są w <a href="/api/1.4/aed-aggregated">API</a>.</p></li>
+    <li><h2>Znajdź AED na mapie #TuBijeAED</h2>
+      <p>Otwórz <a href="/mapa.html">Mapę</a>. Kliknij „Znajdź najbliższy AED” (albo rozwiń „Nie możesz użyć lokalizacji?” i wpisz <em>Warszawa</em>). Zobaczysz trzy najbliższe urządzenia: odległość, „dostępny teraz / zamknięty / nieznane”, jak dojść, kto odpowiada za dane i link „Prowadź”. Zawsze widoczny jest przycisk „Zadzwoń 112”. Poniżej mapy jest pełna lista tekstowa; włącz warstwę OSM „do weryfikacji”, aby zobaczyć różnicę.</p></li>
+    <li><h2>Sprawdź status Partnera i odznakę</h2>
+      <p>Wejdź w <a href="/instytucja.html">Dostawcy i Partnerzy</a>, wybierz dostawcę ze statusem „Aktywny Partner”. Zobaczysz kryteria, podgląd odznaki i pole „Skopiuj kod do stopki”. Odznaka prowadzi do publicznej weryfikacji.</p></li>
+    <li><h2>Wypróbuj asystenta dostawcy</h2>
+      <p>W <a href="/asystent.html">Asystencie dostawcy</a>: pobierz wzorzec, sprawdź plik z błędami, przekonwertuj <a href="/przyklady/gmina_stary_uklad_krosno.csv" download>plik gminy w starym układzie</a> i pobierz pakiet ZIP.</p></li>
+    <li><h2>Alternatywa: zaimportuj plik XML harvestera 1.14</h2>
+      <p>Zamiast ręcznego dodawania (kroki 4–6) dostawca może zaimportować plik XML. Zaloguj się jako <strong>Urząd m.st. Warszawy</strong> (jeśli dodałeś już zasób w krokach 5–6, najpierw usuń go przyciskiem „Usuń” w sekcji „Moje zbiory”), pobierz <a href="/przyklady/harvester_1_14_przyklad.xml" download>przykładowy plik XML</a> i użyj sekcji „Import XML”. Wynik (utworzone zbiory i zasoby, ewentualne błędy) jest pokazany pod formularzem. Import na koncie, które ma już zasób AED, kończy się czytelnym komunikatem o konflikcie – też można to pokazać.</p></li>
+    <li><h2>Zobacz stronę administratora wykazu</h2>
+      <p>W panelu wybierz „Administrator portalu (MC)”. Kliknij „Przebuduj wykaz” i obejrzyj historię uruchomień: które zasoby weszły, a które pominięto i dlaczego.</p></li>
+  </ol>
+
+  <section aria-labelledby="h-dost">
+    <h2 id="h-dost">Dostępność i responsywność</h2>
+    <p class="waski">Strony można obsługiwać samą klawiaturą (Tab, Enter, Esc; link „Przejdź do treści” na początku każdej strony), mapa ma pełną alternatywę w postaci listy tekstowej, a układ działa od 320 px szerokości do pulpitu. Prototyp celuje w WCAG 2.1 AA.</p>
+  </section>
+</div>
+</main>
+<footer id="stopka" class="stopka">
+  <div class="stopka__wnetrze"><div>
+    <p>Prototyp – modyfikacja portalu dane.gov.pl (HackNation 2026). Nie jest to oficjalny serwis. Dane demo. W nagłym wypadku dzwoń <a href="tel:112">112</a>.</p>
+  </div></div>
+</footer>
+<script type="module" src="/js/shell.js"></script>
+</body>
+</html>

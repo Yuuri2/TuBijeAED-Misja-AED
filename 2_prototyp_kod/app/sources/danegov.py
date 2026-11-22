@@ -249,11 +249,14 @@ def _dysponent(instytucja: dict, ostrzezenia: list[str]) -> dict:
 
 def normalizuj(
     wiersze: list[dict], *, zbior: dict, instytucja: dict, zasob: dict | None, konfig: dict | None,
-    data_pobrania: str | None = None,
+    data_pobrania: str | None = None, dysponent: dict | None = None,
 ) -> tuple[list[dict], list[str]]:
     """Surowe wiersze jednego zasobu -> rekordy zgodne z aed_schema.json (pola fields + systemowe).
 
     Brakujące pola = None. Nie zgadujemy wartości, których źródło nie podaje (np. czy_zamkniete).
+    `dysponent` (asystent dostawcy) – pola dysponenta podane jawnie przez dostawcę zamiast danych
+    instytucji z API dane.gov.pl ({nazwa_dysponenta, identyfikator_dysponenta, typ_dysponenta,
+    kontakt_dysponenta}; brakujące = None).
     """
     from .. import schema   # lista pól wprost z aed_schema.json (jedno źródło prawdy)
 
@@ -264,7 +267,11 @@ def normalizuj(
     licencja = OTWARTE_LICENCJE.get(tekst(za.get("license_name")) or "")
     if licencja is None:
         raise BladZrodla(f"licencja zbioru „{za.get('license_name')}” spoza CC0 1.0 / CC BY 4.0 – pominięto zbiór")
-    dysponent = _dysponent(instytucja, ostrzezenia)
+    if dysponent is None:
+        dysponent = _dysponent(instytucja, ostrzezenia)
+    else:
+        dysponent = {k: tekst(dysponent.get(k)) for k in
+                     ("nazwa_dysponenta", "identyfikator_dysponenta", "typ_dysponenta", "kontakt_dysponenta")}
     obszar = (konfig or {}).get("obszar", {})
     stale = (konfig or {}).get("stale", {})
     prefiks = (konfig or {}).get("prefiks_id") or f"DGP{zbior_id}"

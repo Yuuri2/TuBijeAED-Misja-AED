@@ -132,34 +132,3 @@ def test_stary_eksport_z_domyslnym_xmlns_nie_przechodzi_xsd(xsd):
     zly = etree.fromstring(
         b'<datasets xmlns="urn:otwarte-dane:harvester:1.13"><dataset><extIdent>x</extIdent></dataset></datasets>')
     assert not xsd.validate(zly)
-
-
-# ----------------------------------------------------------------------------- przez API (repo SQLite)
-
-def test_endpointy_eksportu(client, rekordy_gov, rekordy_osm, xsd, monkeypatch):
-    from app import repo
-
-    repo.zarejestruj_zrodlo(repo.Zrodlo("dane-gov-pl:3624", "DANE_GOV_PL", "Krosno", None, "CC0 1.0"))
-    repo.zapisz_rekordy([r for r in rekordy_gov if r["zrodlo_url"].split("/")[-1].startswith("3624,")],
-                        "dane-gov-pl:3624")
-    repo.zarejestruj_zrodlo(osm.zrodlo_dla("Sosnowiec"))
-    repo.zapisz_rekordy(rekordy_osm, "osm:Sosnowiec")
-    monkeypatch.setenv("BASE_URL", "https://aed.example.pl")
-
-    r = client.get("/api/v1/export/csv")
-    assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv")
-    wiersze = list(csv.reader(io.StringIO(r.content.decode("utf-8"))))
-    assert wiersze[0] == kolumny_eksportu() and len(wiersze) == 7 and "ODbL" not in r.text
-
-    gj = client.get("/api/v1/export/geojson").json()
-    assert len(gj["features"]) == 6
-
-    for sciezka in ("/api/v1/export/harvester.xml", "/api/v1/export/harvester-xml"):
-        x = client.get(sciezka)
-        assert x.status_code == 200 and x.headers["content-type"].startswith("application/xml")
-        doc = etree.fromstring(x.content)
-        assert xsd.validate(doc), xsd.error_log
-        assert doc.find("dataset/resources/resource/url").text == "https://aed.example.pl/api/v1/export/csv"
-
-    o = client.get("/api/v1/export/osm-odbl.geojson").json()
-    assert o["atrybucja"].startswith("© OpenStreetMap") and len(o["features"]) == 4

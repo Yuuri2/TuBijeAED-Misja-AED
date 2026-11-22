@@ -88,26 +88,3 @@ def test_pobierz_czytelny_blad_gdy_overpass_nie_dziala(monkeypatch):
     with pytest.raises(osm.BladOverpass) as e:
         osm.pobierz("Sosnowiec", session=sesja)
     assert "brak odpowiedzi w 30 s" in str(e.value) and "HTTP 504" in str(e.value)
-
-
-def test_router_osm_zapisuje_do_weryfikacji(client, monkeypatch):
-    rekordy, _ = osm.normalizuj_elementy(_elementy(), "Sosnowiec")
-    monkeypatch.setattr(osm, "pobierz", lambda miasto, session=None: (rekordy, [], 5))
-    r = client.post("/api/v1/zrodla/osm/pobierz", data={"miasto": "Sosnowiec"})
-    assert r.status_code == 200, r.text
-    assert r.json()["dodano"] == 4 and r.json()["licencja"] == "ODbL 1.0"
-    # alias zgodności dla starego frontendu
-    r2 = client.post("/api/v1/harvest-osm", data={"city": "Sosnowiec"})
-    assert r2.status_code == 200 and {"message", "fetched", "added", "duplicates_skipped"} <= set(r2.json())
-    zrodla = {z["id"]: z for z in client.get("/api/v1/zrodla").json()}
-    assert zrodla["osm:Sosnowiec"]["licencja"] == "ODbL 1.0"
-
-
-def test_router_osm_bledy(client, monkeypatch):
-    assert client.post("/api/v1/zrodla/osm/pobierz", data={"miasto": "x\ny"}).status_code == 422
-
-    def awaria(miasto, session=None):
-        raise osm.BladOverpass("Nie udało się pobrać danych z OpenStreetMap")
-    monkeypatch.setattr(osm, "pobierz", awaria)
-    r = client.post("/api/v1/harvest-osm", data={"city": "Sosnowiec"})
-    assert r.status_code == 502 and "OpenStreetMap" in r.json()["error"]

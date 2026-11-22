@@ -31,3 +31,30 @@ def get_db_path() -> Path:
     """Ścieżka bazy liczona przy każdym wywołaniu (env DB_PATH ma pierwszeństwo – testy)."""
     env = os.environ.get("DB_PATH")
     return Path(env) if env else DB_PATH
+
+# ----------------------------------------------------------------------------- prototyp portalu (Sprint 2)
+DEFAULT_MEDIA_DIR = PROJECT_DIR / "data" / "media"
+# Pliki demo (seed portalu): przycięte, prawdziwe zasoby gmin z dane.gov.pl – działają bez sieci.
+DANEGOV_FIXTURES_DIR = PROJECT_DIR / "tests" / "fixtures" / "danegov"
+BRAND_DIR = STATIC_DIR / "brand"
+KONCEPCJE_DIR = REPO_DIR / "3_branding" / "koncepcje"
+# Limit pliku XML harvestera (panel dostawcy).
+MAX_XML_BYTES = int(os.environ.get("MAX_XML_BYTES", 5 * 1024 * 1024))
+
+
+def get_media_dir() -> Path:
+    """Katalog plików portalu (wgrane zasoby, wygenerowane wykazy) – odpowiednik MEDIA_ROOT w mcod.
+
+    Kolejność: env MEDIA_DIR; gdy ustawiono DB_PATH (testy, uruchomienie demo w katalogu tymczasowym) –
+    obok bazy (`<katalog bazy>/media`), żeby baza i pliki zawsze były spójne; domyślnie data/media/.
+    """
+    env = os.environ.get("MEDIA_DIR")
+    if env:
+        return Path(env)
+    db = os.environ.get("DB_PATH")
+    return Path(db).parent / "media" if db else DEFAULT_MEDIA_DIR
+
+
+def seed_wlaczony() -> bool:
+    """Seed portalu przy starcie (env SEED_PORTAL=0 wyłącza – np. w testach innych modułów)."""
+    return os.environ.get("SEED_PORTAL", "1").strip().lower() not in ("0", "false", "nie", "no")

@@ -1,0 +1,86 @@
+/* #TuBijeAED – tokeny (koncepcja C „Puls – tu jestem”).
+   Właściciel: UI/UX. NAZWY zmiennych z wersji Managera są kontraktem z Frontendem – nie zmieniać.
+   Nowe zmienne (poniżej „dodane w Sprincie 2”) są opcjonalne. Kontrasty: static/brand/README.md. */
+
+/* Poppins (SIL OFL 1.1, fonts/OFL.txt) – podzbiór: łacina + polskie znaki + typografia (–, „”, …, €). Poppins nie ma znaku ✓ – ikony rób w SVG. */
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("fonts/Poppins-Regular.woff") format("woff"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("fonts/Poppins-Medium.woff") format("woff"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 600; font-display: swap;
+  src: url("fonts/Poppins-SemiBold.woff") format("woff"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("fonts/Poppins-Bold.woff") format("woff"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 800; font-display: swap;
+  src: url("fonts/Poppins-ExtraBold.woff") format("woff"); }
+
+:root {
+  /* --- kontrakt (nazwy stałe) --- */
+  --kolor-glowny: #00843D;            /* zieleń AED (~Pantone 348 C / RAL 6032); 4,81:1 z bielą. Na mięcie tylko tekst duży/grafika */
+  --kolor-glowny-ciemny: #006A31;     /* hover przycisków, linki i tekst zielony na mięcie (6,03:1) */
+  --kolor-tekst: #0B2545;             /* granat nocny, 15,39:1 z bielą */
+  --kolor-tekst-drugorzedny: #4A5568; /* 7,53:1 z bielą, 6,71:1 z miętą */
+  --kolor-tlo: #FFFFFF;
+  --kolor-tlo-jasne: #E8F5EE;         /* mięta */
+  --kolor-akcent-na-ciemnym: #5FD38D; /* TYLKO na granacie (8,20:1); na bieli 1,88:1 – zakaz */
+  --kolor-alarm: #D90429;             /* 112, błędy – nie w znaku; 5,25:1 z bielą; nigdy na zieleni/granacie */
+  --kolor-ostrzezenie: #8A5A00;       /* 5,93:1 z bielą */
+  --kolor-obramowanie: #CBD5E0;       /* dekoracyjne (karty, separatory) – NIE dla pól formularza, patrz niżej */
+  --kolor-fokus: #0B2545;             /* obrys fokusu na jasnym tle */
+  --czcionka: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --promien: 10px;
+  --cien: 0 1px 3px rgba(11, 37, 69, .12);
+
+  /* --- dodane w Sprincie 2 (opcjonalne) --- */
+  --kolor-tlo-ciemne: #0B2545;              /* tło nagłówka/stopki w negatywie (logo-negatyw.svg) */
+  --kolor-tekst-na-ciemnym: #FFFFFF;
+  --kolor-tekst-drugorzedny-na-ciemnym: #C5D3E0; /* 10,09:1 z granatem */
+  --kolor-tekst-na-glownym: #FFFFFF;        /* tekst na przyciskach zielonych (4,81:1; hover 6,76:1) */
+  --kolor-obramowanie-pola: #7A8794;        /* krawędź input/select/checkbox – 3,67:1 z bielą (WCAG 1.4.11) */
+  --kolor-fokus-na-ciemnym: #5FD38D;        /* obrys fokusu na granacie (8,20:1) */
+  --kolor-sukces: #006A31;                  /* „OK”, walidacja poprawna – zawsze z ikoną/tekstem */
+  --kolor-tlo-alarm: #FDECEE;               /* tło komunikatu błędu; #D90429 na nim 4,60:1 */
+  --kolor-tlo-ostrzezenie: #FFF6E0;         /* tło ostrzeżenia; #8A5A00 na nim 5,51:1 */
+  --kolor-osm: #4A5568;                     /* warstwa OSM „do weryfikacji” (marker-osm.svg) */
+  --kolor-partner: #0B2545;                 /* znacznik Partnera (marker-partner.svg) */
+
+  --szerokosc-fokusu: 3px;
+  --odstep-fokusu: 2px;
+
+  /* skala odstępów (4 px) */
+  --odstep-1: 4px;
+  --odstep-2: 8px;
+  --odstep-3: 12px;
+  --odstep-4: 16px;
+  --odstep-5: 24px;
+  --odstep-6: 32px;
+  --odstep-7: 48px;
+  --odstep-8: 64px;
+
+  /* typografia – rozmiary w rem (16 px bazowo, użytkownik może powiększyć) */
+  --rozmiar-xs: 0.8125rem;  /* 13 px – tylko etykiety pomocnicze, nigdy główna treść */
+  --rozmiar-s: 0.875rem;    /* 14 px */
+  --rozmiar-m: 1rem;        /* 16 px – tekst podstawowy */
+  --rozmiar-l: 1.25rem;     /* 20 px */
+  --rozmiar-xl: 1.5rem;     /* 24 px – „tekst duży” WCAG */
+  --rozmiar-2xl: 2rem;      /* 32 px – H1 */
+  --rozmiar-3xl: 2.5rem;    /* 40 px – hero */
+  --interlinia: 1.55;
+  --interlinia-naglowki: 1.2;
+  --waga-normalna: 400;
+  --waga-srednia: 500;
+  --waga-polgruba: 600;
+  --waga-gruba: 700;
+  --waga-ekstra: 800;
+
+  --promien-maly: 6px;
+  --promien-pelny: 999px;
+  --cien-duzy: 0 6px 20px rgba(11, 37, 69, .16);
+  --szerokosc-tresci: 72rem;
+  --cel-dotyku: 44px;       /* min. rozmiar przycisków (WCAG 2.5.5 AAA / dobre praktyki) */
+  --czas-animacji: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --czas-animacji: 0ms; }
+}

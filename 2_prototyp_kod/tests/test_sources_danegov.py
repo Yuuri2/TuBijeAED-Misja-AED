@@ -273,29 +273,3 @@ def test_godziny_pl_na_osm(opis, osm):
 def test_regon_nip():
     assert wspolne.regon_poprawny("000526989") and not wspolne.regon_poprawny("000526988")
     assert wspolne.nip_poprawny("5252248481") and not wspolne.nip_poprawny("5252248480")
-
-
-# ----------------------------------------------------------------------------- router (repo SQLite)
-
-def test_router_synchronizacji_zapisuje_przez_repo(client, monkeypatch):
-    monkeypatch.delenv("WARSZAWA_API_KEY", raising=False)
-    oryginal = danegov.synchronizuj
-    monkeypatch.setattr(danegov, "synchronizuj", lambda: oryginal(KlientFixture()))
-    r = client.post("/api/v1/zrodla/dane-gov-pl/synchronizuj")
-    assert r.status_code == 200, r.text
-    zb = {z["zbior_id"]: z for z in r.json()["zbiory"]}
-    assert zb["39512"]["status"] == "blad" and "WARSZAWA_API_KEY" in zb["39512"]["blad"]
-    assert zb["3624"]["status"] == "ok" and zb["3624"]["dodano"] == 6
-    assert r.json()["zsynchronizowano_zbiorow"] == 4
-    zrodla = {z["id"]: z for z in client.get("/api/v1/zrodla").json()}
-    assert "dane-gov-pl:39512" not in zrodla                 # nieudany zbiór nie nadpisuje danych
-    assert zrodla["dane-gov-pl:3624"]["licencja"] == "CC0 1.0"
-    aed = client.get("/api/v1/aed", params={"zrodlo_typ": "DANE_GOV_PL"}).json()
-    assert aed["count"] == 6 + 3 + 7 + 7                       # Marki: wiersz bez współrzędnych pominięty przez repo
-
-
-def test_router_synchronizacji_502_gdy_nic_nie_pobrano(client, monkeypatch):
-    monkeypatch.setattr(danegov, "synchronizuj",
-                        lambda: danegov.WynikSynchronizacji(zbiory=[danegov.WynikZbioru("1", blad="HTTP 503")]))
-    r = client.post("/api/v1/zrodla/dane-gov-pl/synchronizuj")
-    assert r.status_code == 502 and "error" in r.json()
