@@ -1,0 +1,80 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62 (fixture testowy – struktura zgodna z odpowiedzią Overpass, wartości przykładowe)",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-21T23:59:00Z",
+    "timestamp_areas_base": "2026-11-21T12:00:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {
+      "type": "node",
+      "id": 4400000001,
+      "lat": 50.2785200,
+      "lon": 19.1268400,
+      "tags": {
+        "emergency": "defibrillator",
+        "defibrillator:location": "Hala główna dworca, przy kasach biletowych",
+        "opening_hours": "24/7",
+        "indoor": "yes",
+        "level": "0",
+        "access": "yes",
+        "locked": "no",
+        "operator": "PKP S.A.",
+        "phone": "+48 22 474 00 00",
+        "addr:street": "3 Maja",
+        "addr:housenumber": "16",
+        "addr:postcode": "41-200",
+        "addr:city": "Sosnowiec"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4400000002,
+      "lat": 50.2862100,
+      "lon": 19.1040500,
+      "tags": {
+        "emergency": "defibrillator",
+        "description": "Recepcja – AED wydaje ochrona",
+        "opening_hours": "Mo-Fr 07:00-20:00; Sa 08:00-14:00",
+        "indoor": "yes",
+        "level": "1",
+        "access": "permissive",
+        "locked": "yes",
+        "operator": "Centrum Handlowe Przykładowe",
+        "addr:street": "Modrzejowska",
+        "addr:housenumber": "32"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4400000003,
+      "lat": 50.2700000,
+      "lon": 19.1500000,
+      "tags": {
+        "emergency": "defibrillator",
+        "indoor": "no",
+        "access": "private"
+      }
+    },
+    {
+      "type": "way",
+      "id": 4400000004,
+      "center": {"lat": 50.2901000, "lon": 19.1302000},
+      "tags": {
+        "emergency": "defibrillator",
+        "defibrillator:location": "Kapsuła na elewacji, obok wejścia",
+        "opening_hours": "24/7",
+        "indoor": "no"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4400000005,
+      "tags": {
+        "emergency": "defibrillator",
+        "note": "element bez współrzędnych – ma zostać pominięty"
+      }
+    }
+  ]
+}

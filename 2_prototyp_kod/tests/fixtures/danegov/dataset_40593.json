@@ -1,0 +1,57 @@
+{
+ "data": {
+  "id": "40593",
+  "type": "dataset",
+  "attributes": {
+   "title": "Zdrowie",
+   "slug": "zdowie",
+   "notes": "<p>Zbiór zawiera dane dotyczące realizacji zadań w zakresie zdrowia oraz spraw społecznych w Legionowie</p>",
+   "license_name": "CC0 1.0",
+   "license_chosen": null,
+   "modified": "2026-09-21T08:31:31Z",
+   "created": "2026-09-14T12:59:31Z",
+   "update_frequency": "Nieregularnie",
+   "keywords": [
+    "apteki",
+    "zdrowie publiczne",
+    "przychodnia",
+    "aed"
+   ],
+   "categories": [
+    {
+     "code": "SOCI",
+     "title": "Ludność i społeczeństwo",
+     "id": "146"
+    },
+    {
+     "code": "HEAL",
+     "title": "Zdrowie",
+     "id": "147"
+    },
+    {
+     "code": "REGI",
+     "title": "Regiony i miasta",
+     "id": "149"
+    }
+   ],
+   "regions": [
+    {
+     "name": "Polska",
+     "region_id": "85633723",
+     "hierarchy_label": "Polska",
+     "is_additional": false
+    }
+   ],
+   "source": null,
+   "url": ""
+  },
+  "relationships": {
+   "institution": {
+    "data": {
+     "type": "institution",
+     "id": "297"
+    }
+   }
+  }
+ }
+}

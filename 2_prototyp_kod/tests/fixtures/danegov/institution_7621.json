@@ -1,0 +1,20 @@
+{
+ "data": {
+  "id": "7621",
+  "type": "institution",
+  "attributes": {
+   "title": "Urząd m.st. Warszawy",
+   "slug": "urzad-m-st-warszawy",
+   "regon": "015259640",
+   "institution_type": "local",
+   "email": "kontakt@um.warszawa.pl",
+   "tel": "00482219115",
+   "city": "Warszawa",
+   "street": "Bankowy",
+   "street_type": "pl.",
+   "street_number": "3/5",
+   "postal_code": "00-950",
+   "website": "http://www.um.warszawa.pl/"
+  }
+ }
+}

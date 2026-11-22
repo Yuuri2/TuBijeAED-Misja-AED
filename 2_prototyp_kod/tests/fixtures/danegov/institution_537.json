@@ -1,0 +1,20 @@
+{
+ "data": {
+  "id": "537",
+  "type": "institution",
+  "attributes": {
+   "title": "Urząd Miasta Marki",
+   "slug": "urzad-miasta-marki",
+   "regon": "000526009",
+   "institution_type": "local",
+   "email": "urzad.miasta@marki.pl",
+   "tel": "0048227811003",
+   "city": "Marki",
+   "street": "Józefa Piłsudskiego",
+   "street_type": "Al.",
+   "street_number": "95",
+   "postal_code": "05-270",
+   "website": "https://www.marki.pl/"
+  }
+ }
+}

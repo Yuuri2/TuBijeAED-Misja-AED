@@ -1,0 +1,19 @@
+[
+ {
+  "geometry": {"coordinates": [[21.0148748892902, 52.2086170695684]], "type": "Point"},
+  "properties": {
+   "defibrillator_id": "622",
+   "device_access_description": "Poniedziałek: godz. 8:00-18:00; Wtorek-Piątek: godz. 8:00-16:00",
+   "device_availability": "Ograniczona",
+   "device_location": "Wewnątrz budynku",
+   "device_manufacturer": "Medtronic",
+   "device_public_access": "Publiczny",
+   "location_building": "25/27",
+   "location_city": "Warszawa",
+   "location_description": "Przy wejściu na półpiętrze.",
+   "location_object_name": "Urząd Dzielnicy Mokotów m.st. Warszawy",
+   "location_postcode": "02-517",
+   "location_street": "Rakowiecka"
+  }
+ }
+]

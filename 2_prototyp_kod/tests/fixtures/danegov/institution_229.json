@@ -1,0 +1,20 @@
+{
+ "data": {
+  "id": "229",
+  "type": "institution",
+  "attributes": {
+   "title": "Urząd Miasta Krosna",
+   "slug": "urzad-miasta-krosna",
+   "regon": "000526989",
+   "institution_type": "local",
+   "email": "um@um.krosno.pl",
+   "tel": "0048134743001",
+   "city": "Krosno",
+   "street": "Lwowska",
+   "street_type": "ul.",
+   "street_number": "28A",
+   "postal_code": "38-400",
+   "website": "https://krosno.pl/"
+  }
+ }
+}

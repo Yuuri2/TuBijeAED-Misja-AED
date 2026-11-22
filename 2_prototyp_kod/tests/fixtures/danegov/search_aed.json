@@ -1,0 +1,280 @@
+{
+ "meta": {
+  "count": 17
+ },
+ "data": [
+  {
+   "id": "2512040",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacja defibryzatorów (<mark>AED</mark>)</mark>",
+    "notes": "Aktywne urządzenia <mark>AED</mark> na terenie Warszawy.</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "39512",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "4581",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (<mark>AED</mark></mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory <mark>AED</mark> to urządzenia medyczne</mark>…<p> elektryczny do serca, co może przywrócić jego normalny r"
+   }
+  },
+  {
+   "id": "2625221",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wykaz defibrylatorów <mark>AED</mark> wraz z ich lokalizacją w Legionowie.</mark>",
+    "notes": "<p>Zasób zawiera dane lokalizacyjne urządzeń <mark>AED</mark> znajdujących się na terenie Legionowa.</p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "40593",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "62092",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (<mark>AED</mark></mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory <mark>AED</mark> to urządzenia medyczne</mark>…<p> elektryczny do serca, co może przywrócić jego normalny r"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "4581",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "62093",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (<mark>AED</mark></mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory <mark>AED</mark> to urządzenia medyczne</mark>…<p> elektryczny do serca, co może przywrócić jego normalny r"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "4581",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "62094",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (<mark>AED</mark></mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory <mark>AED</mark> to urządzenia medyczne</mark>…<p> elektryczny do serca, co może przywrócić jego normalny r"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "4581",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "62095",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (<mark>AED</mark></mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory <mark>AED</mark> to urządzenia medyczne</mark>…<p> elektryczny do serca, co może przywrócić jego normalny r"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "4581",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "39512",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "Lokalizacja defibrylatorów (<mark>AED</mark>)</mark>",
+    "notes": "Aktywne urządzenia <mark>AED</mark> na terenie Warszawy.</mark>"
+   }
+  },
+  {
+   "id": "62424",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje <mark>AED</mark> – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Dane na temat lokalizacji <strong>defibrylatorów <mark>AED</mark> w Przemyślu</strong> są dostępne w portalu</p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "4581",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45853",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wyniki badań",
+    "notes": "<p><strong>Wyniki badań w ramach projektu: Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45858",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wyniki badań",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45857",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wyniki badań",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45854",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "wyniki badań",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45855",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wyniki badań",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45859",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Dane testowe",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "45856",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wyniki badań",
+    "notes": "<p><strong>Wyniki prac badawczych projektu pt. \"Prace badawczo-rozwojowe w celu stworzenia systemu <mark>AED</mark> - Automatyczny Eksplorator Danych\"</strong></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "3072",
+      "type": "dataset"
+     }
+    }
+   }
+  },
+  {
+   "id": "31843",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Baza pojazdów ZTM w Gdańsku",
+    "notes": ", a także możliwość emisji innych informacji fonicznych w przestrzeni pasażerskiej;\n\t\t-\t<mark>aed</mark>: \"<mark>AED</mark>\"  - informacja</mark>…: \"boolean\", \n\t\t-\tusb: \"boolean\", \n\t\t-\tvoiceAnnouncements: \"boolean\", \n\t\t-\t<mark>aed</mark>: \"boolean</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "id": "1803",
+      "type": "dataset"
+     }
+    }
+   }
+  }
+ ]
+}

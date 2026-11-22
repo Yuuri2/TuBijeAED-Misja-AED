@@ -1,0 +1,213 @@
+{
+ "meta": {
+  "count": 14
+ },
+ "data": [
+  {
+   "id": "54632",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "<mark>Defibrylatory</mark> zlokalizowane w Mieście Krosno</mark>",
+    "notes": "<a><p><a href=\"https://admin.dane.gov.pl/datasets/dataset/3624/change/\"><mark>Defibrylatory</mark> zlokalizowane w Mieście Krosno</a></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "3624"
+     }
+    }
+   }
+  },
+  {
+   "id": "68353",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "<mark>Defibrylatory</mark> zlokalizowane na terenie Miasta Marki</mark>",
+    "notes": "<p><span><span><span><p style=\"margin-left:0cm; margin-right:0cm;\"><span style=\"background-color:#f9f9f9;\"><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\"><mark>Defibrylatory</mark> i ich lokalizacja w Mieście Marki</span></span></span></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4955"
+     }
+    }
+   }
+  },
+  {
+   "id": "68355",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "<mark>Defibrylatory</mark> zlokalizowane na terenie Miasta Marki</mark>",
+    "notes": "<p><span><span><span><p style=\"margin-left:0cm; margin-right:0cm;\"><span style=\"background-color:#f9f9f9;\"><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\"><mark>Defibrylatory</mark> i ich lokalizacja w Mieście Marki</span></span></span></p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4955"
+     }
+    }
+   }
+  },
+  {
+   "id": "62424",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Dane na temat lokalizacji <strong><mark>defibrylatorów</mark> AED w Przemyślu</strong> są dostępne w portalu</p>… <mark>defibrylatorów</mark> w mieście. Dzięki tym danym można zaplanować lokalizację nowych <mark>defibrylatorów</mark>, zwiększając</mark>… mieszkańcom i turystom szybkie zlokalizowa"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4581"
+     }
+    }
+   }
+  },
+  {
+   "id": "62092",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych <mark>defibrylatorów</mark> zewnętrznych (AED</mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. <mark>Defibrylatory</mark> AED to urządzenia medyczne</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4581"
+     }
+    }
+   }
+  },
+  {
+   "id": "62093",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych <mark>defibrylatorów</mark> zewnętrznych (AED</mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. <mark>Defibrylatory</mark> AED to urządzenia medyczne</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4581"
+     }
+    }
+   }
+  },
+  {
+   "id": "62094",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych <mark>defibrylatorów</mark> zewnętrznych (AED</mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. <mark>Defibrylatory</mark> AED to urządzenia medyczne</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4581"
+     }
+    }
+   }
+  },
+  {
+   "id": "62095",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych <mark>defibrylatorów</mark> zewnętrznych (AED</mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. <mark>Defibrylatory</mark> AED to urządzenia medyczne</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "4581"
+     }
+    }
+   }
+  },
+  {
+   "id": "3624",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "<mark>Defibrylatory</mark> zlokalizowane w Mieście Krosno</mark>",
+    "notes": "<p><mark>Defibrylatory</mark> zlokalizowane w Mieście Krosno</p>"
+   }
+  },
+  {
+   "id": "4955",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "<mark>Defibrylatory</mark> zlokalizowane na terenie Miasta Marki</mark>",
+    "notes": "<span><span><p><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\"><mark>Defibrylatory</mark> i ich lokalizacja w Mieście Marki</span></span></p>"
+   }
+  },
+  {
+   "id": "39512",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "Lokalizacja <mark>defibrylatorów</mark> (AED)</mark>",
+    "notes": "Aktywne urządzenia AED na terenie Warszawy."
+   }
+  },
+  {
+   "id": "4581",
+   "type": "common",
+   "attributes": {
+    "model": "dataset",
+    "title": "Lokalizacje AED – Automatycznych <mark>Defibrylatorów</mark> Zewnętrznych w Przemyślu</mark>",
+    "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych <mark>defibrylatorów</mark> zewnętrznych (AED</mark></p>…) dostępnych w przestrzeni publicznej miasta Przemyśla. <mark>Defibrylatory</mark> AED to urządzenia medyczne</mark>"
+   }
+  },
+  {
+   "id": "2625221",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Wykaz <mark>defibrylatorów</mark> AED wraz z ich lokalizacją w Legionowie.</mark>",
+    "notes": "<p>Zasób zawiera dane lokalizacyjne urządzeń AED znajdujących się na terenie Legionowa.</p>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "40593"
+     }
+    }
+   }
+  },
+  {
+   "id": "31843",
+   "type": "common",
+   "attributes": {
+    "model": "resource",
+    "title": "Baza pojazdów ZTM w Gdańsku",
+    "notes": " o wyposażeniu pojazdu w <mark>defibrylator</mark>;\n\t\t-\tbikeHolders: \"mocowanie rowerów\"  - pole określające</mark>"
+   },
+   "relationships": {
+    "dataset": {
+     "data": {
+      "type": "dataset",
+      "id": "1803"
+     }
+    }
+   }
+  }
+ ]
+}

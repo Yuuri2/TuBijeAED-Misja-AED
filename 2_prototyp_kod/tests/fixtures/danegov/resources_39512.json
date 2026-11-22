@@ -1,0 +1,23 @@
+{
+ "meta": {
+  "count": 1
+ },
+ "data": [
+  {
+   "id": "2512040",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacja defibryzatorów (AED)",
+    "description": "Aktywne urządzenia AED na terenie Warszawy.",
+    "format": "json",
+    "media_type": "file",
+    "link": "https://dane.um.warszawa.pl/pl/catalogue/7bc32ffc-c2ac-4d32-83c9-b6f7a0b38de8",
+    "file_url": "https://dane.um.warszawa.pl/pl/catalogue/7bc32ffc-c2ac-4d32-83c9-b6f7a0b38de8",
+    "download_url": "https://api.dane.gov.pl/resources/2512040,lokalizacja-defibryzatorow-aed/file",
+    "modified": "2025-10-10T05:58:53Z",
+    "data_date": "2025-10-10",
+    "created": "2025-10-10T05:58:53Z"
+   }
+  }
+ ]
+}

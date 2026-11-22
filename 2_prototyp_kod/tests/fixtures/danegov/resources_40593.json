@@ -1,0 +1,39 @@
+{
+ "meta": {
+  "count": 2
+ },
+ "data": [
+  {
+   "id": "2631129",
+   "type": "resource",
+   "attributes": {
+    "title": "Wykaz aptek w Legionowie",
+    "description": "<p>Zasób zawiera dane teleadresowe oraz godziny pracy aptek w Legionowie.</p>",
+    "format": "csv",
+    "media_type": "file",
+    "link": "https://api.dane.gov.pl/media/resources/20260915/apteki.csv",
+    "file_url": "https://api.dane.gov.pl/media/resources/20260915/apteki.csv",
+    "download_url": "https://api.dane.gov.pl/resources/2631129,wykaz-aptek-w-legionowie/file",
+    "modified": "2026-09-15T11:38:42Z",
+    "data_date": "2026-09-15",
+    "created": "2026-09-15T11:08:00Z"
+   }
+  },
+  {
+   "id": "2625221",
+   "type": "resource",
+   "attributes": {
+    "title": "Wykaz defibrylatorów AED wraz z ich lokalizacją w Legionowie.",
+    "description": "<p>Zasób zawiera dane lokalizacyjne urządzeń AED znajdujących się na terenie Legionowa.</p>",
+    "format": "csv",
+    "media_type": "file",
+    "link": "https://api.dane.gov.pl/media/resources/20260914/aed.csv",
+    "file_url": "https://api.dane.gov.pl/media/resources/20260914/aed.csv",
+    "download_url": "https://api.dane.gov.pl/resources/2625221,wykaz-defibrylatorow-aed-wraz-z-ich-lokalizacja-w-legionowie/file",
+    "modified": "2026-09-14T13:23:23Z",
+    "data_date": "2026-09-14",
+    "created": "2026-09-14T13:12:41Z"
+   }
+  }
+ ]
+}

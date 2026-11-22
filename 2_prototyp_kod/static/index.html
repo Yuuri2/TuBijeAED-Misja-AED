@@ -53,17 +53,21 @@
     <main class="max-w-7xl mx-auto p-6 space-y-8">
         <div id="statusBox" role="status" aria-live="polite" class="hidden p-4 rounded-lg border font-medium"></div>
 
-        <section aria-label="Podsumowanie zbioru danych" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <section aria-label="Podsumowanie zbioru danych" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                 <p class="text-sm text-slate-600 font-medium">Wszystkie punkty AED w bazie</p>
                 <p id="statTotal" class="text-3xl font-extrabold text-blue-950 mt-1">0</p>
             </div>
             <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200">
-                <p class="text-sm text-emerald-800 font-medium">Zweryfikowane przez dysponentów (Instytucje/Firmy)</p>
+                <p class="text-sm text-emerald-800 font-medium">Zweryfikowane – zbiory opublikowane w dane.gov.pl</p>
                 <p id="statVerified" class="text-3xl font-extrabold text-emerald-700 mt-1">0</p>
             </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-sky-200">
+                <p class="text-sm text-sky-800 font-medium">Zgłoszone przez dysponentów (jeszcze nieopublikowane)</p>
+                <p id="statReported" class="text-3xl font-extrabold text-sky-700 mt-1">0</p>
+            </div>
             <div class="bg-white p-5 rounded-xl shadow-sm border border-amber-200">
-                <p class="text-sm text-amber-800 font-medium">Źródła rozproszone (OSM – wymaga potwierdzenia)</p>
+                <p class="text-sm text-amber-800 font-medium">Do weryfikacji (źródła społecznościowe – OSM)</p>
                 <p id="statUnverified" class="text-3xl font-extrabold text-amber-600 mt-1">0</p>
             </div>
         </section>
@@ -84,7 +88,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label for="nip_regon" class="block text-sm font-semibold text-slate-800">NIP lub REGON*</label>
-                            <input type="text" id="nip_regon" name="nip_regon" required value="6443453672"
+                            <input type="text" id="nip_regon" name="identyfikator_dysponenta" required value="6443453672"
                                    class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
                         </div>
                         <div>
@@ -105,7 +109,7 @@
                                class="mt-1 w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-900 hover:file:bg-blue-100">
                     </div>
                     <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition">
-                        Waliduj i opublikuj zbiór dysponenta
+                        Waliduj i zgłoś zbiór dysponenta
                     </button>
                 </form>
             </section>
@@ -141,8 +145,9 @@
             <div class="flex flex-wrap justify-between items-center gap-2">
                 <h2 id="heading-map" class="text-xl font-bold text-blue-950">3. Zintegrowany Rejestr AED (Mapa i Tabela)</h2>
                 <div class="flex gap-4 text-xs font-semibold">
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> Zweryfikowany przez dysponenta</span>
-                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Niezweryfikowany (OSM)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> Zweryfikowany (dane.gov.pl)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-600 inline-block"></span> Zgłoszony przez dysponenta</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Do weryfikacji (OSM)</span>
                 </div>
             </div>
 
@@ -172,13 +177,46 @@
         }).addTo(map);
         let markersLayer = L.layerGroup().addTo(map);
 
+        // Escapowanie WSZYSTKICH danych wstawianych do innerHTML / popupów (dane z OSM, plików dysponentów i API)
+        function esc(v) {
+            return String(v ?? '').replace(/[&<>"']/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch]));
+        }
+
+        const STATUSY = {
+            ZWERYFIKOWANY_DANE_GOV_PL: {color: '#059669', popup: '✅ Zweryfikowany – zbiór w dane.gov.pl', badge: 'bg-emerald-100 text-emerald-900', label: '✅ Zweryfikowany (dane.gov.pl)'},
+            ZGLOSZONY_PRZEZ_DYSPONENTA: {color: '#0284c7', popup: '📝 Zgłoszony przez dysponenta (nieopublikowany)', badge: 'bg-sky-100 text-sky-900', label: '📝 Zgłoszony przez dysponenta'},
+            DO_WERYFIKACJI: {color: '#d97706', popup: '⚠️ Do weryfikacji (źródło społecznościowe)', badge: 'bg-amber-100 text-amber-900', label: '⚠️ Do weryfikacji (OSM)'}
+        };
+        const statusInfo = st => STATUSY[st] || {color: '#64748b', popup: 'Status nieznany', badge: 'bg-slate-100 text-slate-800', label: st || 'brak statusu'};
+
+        function adres(item) {
+            const ulicaNr = [item.ulica, item.nr_budynku].filter(Boolean).join(' ');
+            return [ulicaNr, [item.kod_pocztowy, item.miejscowosc].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+        }
+
         function showStatus(msg, isError = false, warnings = []) {
             const box = document.getElementById('statusBox');
             box.className = `p-4 rounded-lg border font-medium ${isError ? 'bg-red-50 border-red-300 text-red-900' : 'bg-emerald-50 border-emerald-300 text-emerald-950'}`;
-            let html = `<p>${msg}</p>`;
+            let html = `<p>${esc(msg)}</p>`;
             if (warnings && warnings.length > 0) {
-                html += `<ul class="mt-2 list-disc list-inside text-xs text-amber-900">${warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
+                html += `<ul class="mt-2 list-disc list-inside text-xs text-amber-900">${warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>`;
             }
+            box.innerHTML = html;
+            box.classList.remove('hidden');
+        }
+
+        // Raport walidacji (docs/API.md): błędy i ostrzeżenia per wiersz arkusza
+        function showReport(data) {
+            const box = document.getElementById('statusBox');
+            const bledy = data.bledy || [], ostrz = data.ostrzezenia || [];
+            const ok = bledy.length === 0;
+            box.className = `p-4 rounded-lg border font-medium ${ok ? 'bg-emerald-50 border-emerald-300 text-emerald-950' : 'bg-red-50 border-red-300 text-red-900'}`;
+            const poz = e => `<li>${e.wiersz ? 'Wiersz ' + esc(e.wiersz) + (e.pole ? ', pole „' + esc(e.pole) + '”' : '') + ': ' : ''}${esc(e.komunikat)}</li>`;
+            let html = `<p>Poprawne wiersze: <strong>${esc(data.poprawne_wiersze)}</strong>, wiersze z błędami: <strong>${esc(data.bledne_wiersze)}</strong>` +
+                (data.zapisano !== undefined ? `, zapisano w bazie: <strong>${esc(data.zapisano)}</strong>` : '') + '.</p>';
+            if (bledy.length) html += `<p class="mt-2 text-sm font-bold">Błędy do poprawienia:</p><ul class="list-disc list-inside text-xs max-h-60 overflow-y-auto">${bledy.map(poz).join('')}</ul>`;
+            if (ostrz.length) html += `<p class="mt-2 text-sm font-bold text-amber-900">Ostrzeżenia:</p><ul class="list-disc list-inside text-xs text-amber-900 max-h-40 overflow-y-auto">${ostrz.map(poz).join('')}</ul>`;
+            if (data.ucieto) html += '<p class="mt-2 text-xs">Lista została skrócona – popraw widoczne błędy i sprawdź plik ponownie.</p>';
             box.innerHTML = html;
             box.classList.remove('hidden');
         }
@@ -187,45 +225,45 @@
             const res = await fetch('/api/v1/aed');
             const data = await res.json();
             const items = data.items;
+            const ile = st => items.filter(i => i.status_weryfikacji === st).length;
 
             document.getElementById('statTotal').innerText = items.length;
-            document.getElementById('statVerified').innerText = items.filter(i => i.status_weryfikacji === 'ZWERYFIKOWANY_DYSPONENT').length;
-            document.getElementById('statUnverified').innerText = items.filter(i => i.status_weryfikacji !== 'ZWERYFIKOWANY_DYSPONENT').length;
+            document.getElementById('statVerified').innerText = ile('ZWERYFIKOWANY_DANE_GOV_PL');
+            document.getElementById('statReported').innerText = ile('ZGLOSZONY_PRZEZ_DYSPONENTA');
+            document.getElementById('statUnverified').innerText = ile('DO_WERYFIKACJI');
 
             markersLayer.clearLayers();
             const tbody = document.getElementById('aedTableBody');
             tbody.innerHTML = '';
 
             items.forEach(item => {
-                const isVerified = item.status_weryfikacji === 'ZWERYFIKOWANY_DYSPONENT';
-                const color = isVerified ? '#059669' : '#d97706';
+                const info = statusInfo(item.status_weryfikacji);
 
                 const marker = L.circleMarker([item.szerokosc_geo, item.dlugosc_geo], {
-                    radius: 8, fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9
+                    radius: 8, fillColor: info.color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9
                 }).addTo(markersLayer);
 
                 marker.bindPopup(`
-                    <strong>${item.nazwa_dysponenta}</strong><br>
-                    <em>${isVerified ? '✅ Zweryfikowany dysponent' : '⚠️ Niezweryfikowane (OSM)'}</em><br>
-                    📍 ${item.miejscowosc}, ${item.adres}<br>
-                    🏢 ${item.lokalizacja_szczegolowa}<br>
-                    🔑 Zamknięte: <strong>${item.czy_zamkniete}</strong> (${item.dostepnosc_typ})
+                    <strong>${esc(item.nazwa_dysponenta || 'Brak oficjalnego dysponenta')}</strong><br>
+                    <em>${esc(info.popup)}</em><br>
+                    📍 ${esc(adres(item))}<br>
+                    🏢 ${esc(item.lokalizacja_szczegolowa || 'brak opisu miejsca')}<br>
+                    🔑 Zamknięte: <strong>${esc(item.czy_zamkniete)}</strong> (${esc(item.dostepnosc_typ)})<br>
+                    <span style="font-size:11px">Źródło: ${esc(item.zrodlo_nazwa)}</span>
                 `);
 
-                const badge = isVerified
-                    ? `<span class="inline-block bg-emerald-100 text-emerald-900 text-xs font-bold px-2 py-1 rounded">✅ Zweryfikowany</span>`
-                    : `<span class="inline-block bg-amber-100 text-amber-900 text-xs font-bold px-2 py-1 rounded">⚠️ OSM (Brak dysponenta)</span>`;
+                const badge = `<span class="inline-block ${info.badge} text-xs font-bold px-2 py-1 rounded">${esc(info.label)}</span>`;
 
                 const lockBadge = item.czy_zamkniete === 'NIE'
-                    ? `<span class="text-emerald-700 font-semibold">Otwarte (${item.dostepnosc_typ})</span>`
-                    : `<span class="text-red-700 font-semibold">${item.czy_zamkniete} (${item.instrukcja_dostepu})</span>`;
+                    ? `<span class="text-emerald-700 font-semibold">Otwarte (${esc(item.dostepnosc_typ)})</span>`
+                    : `<span class="text-red-700 font-semibold">${esc(item.czy_zamkniete)} (${esc(item.instrukcja_dostepu || 'brak instrukcji')})</span>`;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-3">${badge}</td>
-                        <td class="p-3 font-medium">${item.nazwa_dysponenta}<br><span class="text-xs text-slate-500">ID: ${item.identyfikator_dysponenta}</span></td>
-                        <td class="p-3">${item.miejscowosc}<br><span class="text-xs text-slate-600">${item.adres}</span></td>
-                        <td class="p-3 text-slate-700">${item.lokalizacja_szczegolowa}</td>
+                        <td class="p-3 font-medium">${esc(item.nazwa_dysponenta || 'Brak oficjalnego dysponenta')}<br><span class="text-xs text-slate-500">ID: ${esc(item.identyfikator_dysponenta || '—')}</span></td>
+                        <td class="p-3">${esc(item.miejscowosc)}<br><span class="text-xs text-slate-600">${esc(adres(item))}</span></td>
+                        <td class="p-3 text-slate-700">${esc(item.lokalizacja_szczegolowa)}</td>
                         <td class="p-3 text-xs">${lockBadge}</td>
                     </tr>
                 `;
@@ -244,9 +282,9 @@
                 const res = await fetch('/api/v1/harvest-osm', { method: 'POST', body: formData });
                 const data = await res.json();
                 if (!res.ok) {
-                    showStatus(data.error || 'Błąd pobierania z OSM', true);
+                    showStatus(data.error || data.detail || 'Błąd pobierania z OSM', true);
                 } else {
-                    showStatus(`${data.message} (Pobrano: ${data.fetched}, Dodano nowych: ${data.added}, Pominięto duplikatów: ${data.duplicates_skipped})`);
+                    showStatus(`${data.message || 'Zakończono pobieranie z OpenStreetMap.'} (Pobrano: ${data.fetched ?? '?'}, Dodano nowych: ${data.added ?? '?'}, Duplikaty: ${data.duplicates_skipped ?? data.duplikaty ?? 0})`);
                     await loadData();
                 }
             } catch (e) {
@@ -260,13 +298,18 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const res = await fetch('/api/v1/upload-institution', { method: 'POST', body: formData });
-            const data = await res.json();
-            if (!res.ok) {
-                showStatus(`${data.error} ${data.missing_columns ? 'Brakujące kolumny: ' + data.missing_columns.join(', ') : ''}`, true);
-            } else {
-                showStatus(data.message, false, data.warnings);
-                await loadData();
+            try {
+                const res = await fetch('/api/v1/dysponent/zgloszenie', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (!res.ok) {
+                    const bf = (data.bledy_formularza || []).map(b => b.komunikat);
+                    showStatus(data.error || data.detail || 'Nie udało się przetworzyć zgłoszenia.', true, bf);
+                } else {
+                    showReport(data);
+                    await loadData();
+                }
+            } catch (err) {
+                showStatus('Błąd sieci podczas łączenia z API.', true);
             }
         });
 

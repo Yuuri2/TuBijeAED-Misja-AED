@@ -1,0 +1,51 @@
+{
+ "data": {
+  "id": "39512",
+  "type": "dataset",
+  "attributes": {
+   "title": "Lokalizacja defibrylatorów (AED)",
+   "slug": "lokalizacja-defibryzatorow-aed",
+   "notes": "Aktywne urządzenia AED na terenie Warszawy.",
+   "license_name": "CC BY 4.0",
+   "license_chosen": 2,
+   "modified": "2026-06-01T08:00:08Z",
+   "created": "2025-10-10T05:57:31Z",
+   "update_frequency": null,
+   "keywords": [
+    "aed",
+    "defibrylator"
+   ],
+   "categories": [
+    {
+     "title": "Regiony i miasta",
+     "id": "149",
+     "code": "REGI"
+    }
+   ],
+   "regions": [
+    {
+     "is_additional": false,
+     "name": "Polska",
+     "region_id": "85633723",
+     "hierarchy_label": "Polska"
+    }
+   ],
+   "source": {
+    "title": "Otwarte dane Warszawy",
+    "url": "https://dane.um.warszawa.pl/",
+    "last_import_timestamp": "2026-11-21T04:25:47Z",
+    "type": "ckan",
+    "update_frequency": "codziennie"
+   },
+   "url": null
+  },
+  "relationships": {
+   "institution": {
+    "data": {
+     "id": "7621",
+     "type": "institution"
+    }
+   }
+  }
+ }
+}

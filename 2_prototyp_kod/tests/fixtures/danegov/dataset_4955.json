@@ -1,0 +1,51 @@
+{
+ "data": {
+  "id": "4955",
+  "type": "dataset",
+  "attributes": {
+   "title": "Defibrylatory zlokalizowane na terenie Miasta Marki",
+   "slug": "defibrylatory-zlokalizowane-na-terenie-miasta-markI",
+   "notes": "<p><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\">Defibrylatory i ich lokalizacja w Mieście Marki</span></span></p>",
+   "license_name": "CC BY 4.0",
+   "license_chosen": null,
+   "modified": "2025-07-10T12:13:16Z",
+   "created": "2025-07-10T12:13:16Z",
+   "update_frequency": "Jednorazowe udostępnienie",
+   "keywords": [
+    "zdrowie",
+    "ochrona zdrowia",
+    "pierwsza pomoc przedmedyczna"
+   ],
+   "categories": [
+    {
+     "title": "Ludność i społeczeństwo",
+     "id": "146",
+     "code": "SOCI"
+    },
+    {
+     "title": "Zdrowie",
+     "id": "147",
+     "code": "HEAL"
+    }
+   ],
+   "regions": [
+    {
+     "is_additional": false,
+     "name": "Polska",
+     "region_id": "85633723",
+     "hierarchy_label": "Polska"
+    }
+   ],
+   "source": null,
+   "url": ""
+  },
+  "relationships": {
+   "institution": {
+    "data": {
+     "id": "537",
+     "type": "institution"
+    }
+   }
+  }
+ }
+}
