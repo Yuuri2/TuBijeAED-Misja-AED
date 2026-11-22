@@ -3,7 +3,9 @@
 Uruchomienie (z katalogu repo) – JEDNO polecenie przegenerowuje wszystko:
     .venv/bin/python 3_branding/generuj_ksiege.py
 Kolejno: final/generuj_final.py (static/brand), generuj_logotypy.py (pliki do oddania i zastosowania),
-na końcu 3_branding/Ksiega_Znaku_TuBijeAED.pdf oraz podglądy stron w 3_branding/podglad_ksiegi/.
+na końcu 3_branding/Ksiega_Znaku_TuBijeAED.pdf.
+Opcja --podglad: dodatkowo podglądy PNG (3_branding/podglad_ksiegi/strona-NN.png, final/podglad/*.png) – domyślnie
+nie są tworzone (nie należą do oddawanych plików).
 
 Teksty (hasło, podpis pod logo, odznaka, opis koncepcji, adres QR): 3_branding/teksty_marki.py.
 Zależności (.venv): reportlab, svglib (SVG → wektory reportlab), cairosvg, fonttools, pillow, segno.
@@ -40,7 +42,7 @@ import generuj_logotypy as L  # noqa: E402
 
 OUT = ROOT / "Ksiega_Znaku_TuBijeAED.pdf"
 PODGLAD = ROOT / "podglad_ksiegi"
-FONTS = ROOT / "koncepcje" / "fonts"
+FONTS = G.FONTS   # 3_branding/fonts (Poppins, OFL)
 SERIF = Path("/usr/share/fonts/truetype/noto/NotoSerif-Regular.ttf")   # tylko przykład „zmiany kroju”
 
 GREEN, GREEN_DARK, NAVY, GRAY, LGREEN = G.GREEN, G.GREEN_DARK, G.NAVY, G.GRAY, G.LGREEN
@@ -726,7 +728,7 @@ def s_zakazy(c):
         svg_center(c, LOGO, x, yt, w_, h_, lw_, h_ - 30)
 
     def font_layout(x, yt, w_, h_):
-        fnt = G.K.Font(SERIF) if SERIF.exists() else G.F["reg"]
+        fnt = G.Font(SERIF) if SERIF.exists() else G.F["reg"]
         size = 70
         tw = fnt.width(TXT.NAZWA, size)
         inner = (f'<path fill="{NAVY}" d="{fnt.path(TXT.NAZWA, 0, 90, size)}"/>'
@@ -910,6 +912,8 @@ def s_pliki(c):
             ("logotyp_tubijeaed_sygnet.*", "SVG, PDF, PNG 2000 px, JPG", "awatar, ikona, małe formaty"),
             ("Ksiega_Znaku_TuBijeAED.pdf", "PDF wektorowy, czcionki osadzone", "ten dokument"),
             ("zastosowania/naklejka_kapsula_aed.pdf", "PDF wektorowy 100 × 140 mm", "druk naklejki"),
+            ("zastosowania/naklejka_kapsula_aed_bez_qr.*", "SVG, PDF, PNG", "naklejka bez kodu QR (prezentacje)"),
+            ("zastosowania/naklejka_wspolpraca_mc.*", "SVG, PDF, PNG – PROJEKT", "program Partner; wymaga zgody MC"),
             ("zastosowania/kafel_social_1080, baner_www_1200x300", "SVG i PNG", "kampania w sieci"),
             ("2_prototyp_kod/static/brand/", "SVG, PNG, CSS, WOFF", "serwis: logo-kompakt, favicon, odznaki, tokeny")]
     cols = [("Plik", 290), ("Format", 250), ("Zastosowanie", 0)]
@@ -972,11 +976,14 @@ def main():
     build()
     if BRAKI:
         raise SystemExit(f"BŁĄD: znaki spoza Poppins: {''.join(sorted(BRAKI))}")
-    try:
-        podglady()
-    except FileNotFoundError:
-        print("(brak pdftoppm – pomijam podglądy)")
-    print(f"Księga: {OUT} ({TOTAL} stron); podglądy: {PODGLAD}")
+    msg = f"Księga: {OUT} ({TOTAL} stron)"
+    if G.PODGLADY:
+        try:
+            podglady()
+            msg += f"; podglądy: {PODGLAD}"
+        except FileNotFoundError:
+            print("(brak pdftoppm – pomijam podglądy)")
+    print(msg)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# Instrukcja dla jury – #TuBijeAED
+# Instrukcja dla jury – #TuBijeAED (zespół cMBtb)
 
 Każdy krok wskazuje **co otworzyć**, **jak to odczytać** i **które wymaganie z treści zadania** potwierdza. Prototyp działa lokalnie (bez internetu – poza podkładem mapy).
 
@@ -36,3 +36,4 @@ Każdy krok wskazuje **co otworzyć**, **jak to odczytać** i **które wymaganie
 | 19 | `docs/RAPORT_TESTOW.md` | Wyniki testów i audytu WCAG 2.1 |
 | 20 | `docs/OSWIADCZENIE_AI.md` | Zakres wykorzystania AI (Regulamin §2 ust. 8) |
 | 21 | `docs/OGRANICZENIA.md` | Lista ograniczeń |
+| 22 | `docs/PROGRAM_PARTNER.md` + `docs/kalkulator_oplacalnosci_AED.xlsx` | Program zachęt dla dostawców (przegląd i eksploatacja AED, dofinansowanie nowych AED, naklejka/odznaka) i rachunek opłacalności dla Ministerstwa Cyfryzacji – „zachęcenie dysponentów do dzielenia się danymi” |

@@ -67,7 +67,15 @@ Brak haseł. Nagłówek `X-Demo-Konto: <instytucja_id>` albo `X-Demo-Konto: admi
 | POST | `/wykazy/AED/przebuduj` | tylko `admin` → `wykazy_info` |
 | GET | `/wykazy/AED/historia` | tylko `admin` → lista uruchomień |
 
-Raport walidacji = format z `docs/API.md` (`poprawne_wiersze, bledne_wiersze, bledy[{wiersz, pole, kod, komunikat}], ostrzezenia[...]`).
+Raport walidacji:
+```json
+{
+  "poprawne_wiersze": 12, "bledne_wiersze": 1,
+  "bledy":   [{"wiersz": 5, "pole": "kod_pocztowy", "kod": "pattern", "komunikat": "Kod pocztowy musi mieć format 00-000."}],
+  "ostrzezenia": [{"wiersz": 3, "pole": "teryt_gmina", "kod": "zalecane", "komunikat": "Brak kodu TERYT – zalecane uzupełnienie."}]
+}
+```
+`wiersz` = numer wiersza w arkuszu (nagłówek = 1). Kody: `required`, `enum`, `pattern`, `range`, `type`, `warunek`, `suma_kontrolna`, `zalecane`, `duplikat`.
 
 ## REST – publiczne (API), prefiks `/api/1.4` (kształt JSON:API jak api.dane.gov.pl: `{data, links, meta}`)
 | Metoda | Ścieżka | Opis |

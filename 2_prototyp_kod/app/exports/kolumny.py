@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from .. import schema
 
-# Kolumny systemowe dołączane po polach `fields` (kolejność wg docs/API.md).
+# Kolumny systemowe dołączane po polach `fields` (kolejność wg docs/PROTOTYP.md).
 KOLUMNY_ZRODLA = ["zrodlo_typ", "zrodlo_nazwa", "zrodlo_url", "licencja", "status_weryfikacji"]
 OTWARTE_LICENCJE = ("CC0 1.0", "CC BY 4.0")
 

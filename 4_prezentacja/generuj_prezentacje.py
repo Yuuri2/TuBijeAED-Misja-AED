@@ -1,18 +1,23 @@
 """Prezentacja #TuBijeAED (PDF + PPTX) – jedno źródło slajdów, dwa renderery.
 
 Uruchomienie (z katalogu repo):
-    .venv/bin/python 4_prezentacja/generuj_prezentacje.py
-Wejście:  4_prezentacja/zrzuty/*.png (+ kadry.json, terminal.json) – patrz README.md,
-          3_branding/teksty_marki.py (hasło i teksty marki), 3_branding/* (logo, zastosowania),
-          fonty Poppins z 3_branding/koncepcje/fonts/.
+    .venv/bin/python 4_prezentacja/generuj_prezentacje.py [--podglad]
+Wejście:  4_prezentacja/zrzuty/kadry/*.png (wykadrowane fragmenty zrzutów), zrzuty/20–22_*.png (terminal),
+          zrzuty/terminal.json; 3_branding/teksty_marki.py (hasło i teksty marki), 3_branding/* (logo,
+          zastosowania, odznaki rysowane w locie z final/generuj_final.py), fonty Poppins z 3_branding/fonts/.
+          Jeśli istnieją pełne zrzuty (zrzuty/pelne/*.png z zrzuty_generuj.py), kadry są z nich wycinane na nowo
+          wg zrzuty/kadry.json; bez nich generator używa zapisanych kadrów.
 Wynik:    4_prezentacja/TuBijeAED_prezentacja.pdf (wektorowy tekst, osadzone fonty),
-          4_prezentacja/TuBijeAED_prezentacja.pptx (edytowalny tekst + obrazy),
-          4_prezentacja/zrzuty/kadry/*.png (wykadrowane fragmenty zrzutów).
+          4_prezentacja/TuBijeAED_prezentacja.pptx (edytowalny tekst + obrazy).
+          Obrazy są osadzane jako JPEG (q=85, 4:4:4) w rozdzielczości 2 px na punkt slajdu (1920 px na szerokość).
+          --podglad: dodatkowo podglądy slajdów 4_prezentacja/podglad/slajd-NN.png (40 dpi).
 """
 import json
 import os
 import re
+import shutil
 import sys
+import tempfile
 from xml.sax.saxutils import escape
 
 from PIL import Image
@@ -20,15 +25,22 @@ from PIL import Image
 TU = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(TU)
 sys.path.insert(0, os.path.join(REPO, "3_branding"))
+sys.path.insert(0, os.path.join(REPO, "3_branding", "final"))
 import teksty_marki as TM  # noqa: E402  (hasło i teksty marki – jedno źródło)
+import generuj_final as G  # noqa: E402  (odznaki i fonty Poppins → krzywe)
 
-# ====================================================================== DO UZUPEŁNIENIA PRZEZ ZESPÓŁ
-ZESPOL = "[nazwa zespołu]"
+# ====================================================================== nazwa zespołu
+ZESPOL = "cMBtb"
 # ======================================================================
 
 ZRZUTY = os.path.join(TU, "zrzuty")
+PELNE = os.path.join(ZRZUTY, "pelne")        # pełne zrzuty z zrzuty_generuj.py (opcjonalne)
 KADRY_DIR = os.path.join(ZRZUTY, "kadry")
-FONTY = os.path.join(REPO, "3_branding", "koncepcje", "fonts")
+FONTY = str(G.FONTS)                         # 3_branding/fonts
+TMP = tempfile.mkdtemp(prefix="prez_")       # obrazy przygotowane do osadzenia (usuwane na końcu)
+JPEG_Q = 85
+NB = "\u00a0"                                # twarda spacja (bez łamania „1 430”, „≤ 12”)
+PX_NA_PT = 2.0                               # 960 pt × 2 = 1920 px na szerokość slajdu
 BRAND = os.path.join(REPO, "3_branding")
 STATIC_BRAND = os.path.join(REPO, "2_prototyp_kod", "static", "brand")
 PDF_OUT = os.path.join(TU, "TuBijeAED_prezentacja.pdf")
@@ -82,27 +94,58 @@ class Strzalka:
         self.x, self.y, self.w, self.h, self.kolor = x, y, w, h, kolor
 
 
-class Obraz:
-    """Obraz dopasowany do pola (proporcje zachowane), wyrównanie: góra-środek; opcjonalna ramka."""
+def osadz(plik, w_pt, tlo=BIALY):
+    """Kopia obrazu do osadzenia: tło zamiast przezroczystości, szerokość ≤ 2 px/pt, JPEG q85 (4:4:4)."""
+    im = Image.open(plik)
+    if im.mode in ("RGBA", "LA", "P"):
+        im = im.convert("RGBA")
+        base = Image.new("RGBA", im.size, tlo)
+        base.alpha_composite(im)
+        im = base
+    im = im.convert("RGB")
+    cel = max(1, round(w_pt * PX_NA_PT))
+    if im.width > cel:
+        im = im.resize((cel, round(im.height * cel / im.width)), Image.LANCZOS)
+    nazwa = os.path.splitext(os.path.basename(plik))[0]
+    out = os.path.join(TMP, f"{nazwa}_{cel}.jpg")
+    im.save(out, "JPEG", quality=JPEG_Q, subsampling=0, optimize=True, progressive=False)
+    return out
 
-    def __init__(self, x, y, w, h, plik, ramka=True, wyr="C", alt=""):
-        self.plik, self.ramka, self.alt = plik, ramka, alt
+
+class Obraz:
+    """Obraz dopasowany do pola (proporcje zachowane), wyrównanie: góra-środek; opcjonalna ramka.
+    Do PDF/PPTX trafia skompresowana kopia (osadz)."""
+
+    def __init__(self, x, y, w, h, plik, ramka=True, wyr="C", alt="", tlo=BIALY):
+        self.ramka, self.alt = ramka, alt
         iw, ih = Image.open(plik).size
         s = min(w / iw, h / ih)
         self.w, self.h = iw * s, ih * s
         self.x = x + ((w - self.w) / 2 if wyr == "C" else (w - self.w if wyr == "R" else 0))
         self.y = y
+        self.plik = osadz(plik, self.w, tlo)
 
 
 class Svg:
-    """Grafika wektorowa (PDF: svglib), w PPTX zastępowana PNG."""
+    """Grafika wektorowa (PDF: svglib), w PPTX zastępowana PNG.
+    svg: ścieżka do pliku albo treść SVG (wtedy PNG renderuje cairosvg)."""
 
-    def __init__(self, x, y, w, h, svg, png):
-        self.svg, self.png = svg, png
+    def __init__(self, x, y, w, h, svg, png=None, alt="", wyr="L"):
+        if svg.lstrip().startswith("<"):
+            import cairosvg
+            n = len(os.listdir(TMP))
+            path = os.path.join(TMP, f"svg{n}.svg")
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(svg)
+            svg = path
+            png = os.path.join(TMP, f"svg{n}.png")
+            cairosvg.svg2png(url=path, write_to=png, output_width=round(w * PX_NA_PT * 1.5))
+        self.svg, self.png, self.alt = svg, png, alt
         iw, ih = Image.open(png).size
         s = min(w / iw, h / ih)
         self.w, self.h = iw * s, ih * s
-        self.x, self.y = x, y
+        self.x = x + ((w - self.w) / 2 if wyr == "C" else (w - self.w if wyr == "R" else 0))
+        self.y = y
 
 
 class Slajd:
@@ -125,15 +168,21 @@ DPR = 1
 
 
 def wytnij(nazwa, zrodlo, box, skala=None):
-    """Wycina fragment zrzutu (x0, y0, x1, y1 w px CSS) → zrzuty/kadry/<nazwa>.png."""
+    """Kadr <nazwa>: wycina fragment pełnego zrzutu (x0, y0, x1, y1 w px CSS) → zrzuty/kadry/<nazwa>.png,
+    a gdy pełnego zrzutu nie ma (zwykły przypadek) – używa zapisanego kadru."""
+    out = os.path.join(KADRY_DIR, nazwa + ".png")
+    src = os.path.join(PELNE, zrodlo)
+    if not os.path.exists(src):
+        if not os.path.exists(out):
+            raise SystemExit(f"Brak kadru {out} i pełnego zrzutu {src} – uruchom zrzuty_generuj.py (README.md).")
+        return out
     os.makedirs(KADRY_DIR, exist_ok=True)
-    im = Image.open(os.path.join(ZRZUTY, zrodlo)).convert("RGB")
+    im = Image.open(src).convert("RGB")
     x0, y0, x1, y1 = [int(v * DPR) for v in box]
     x1, y1 = min(x1, im.width), min(y1, im.height)
     k = im.crop((x0, y0, x1, y1))
     if skala:
         k = k.resize((int(k.width * skala), int(k.height * skala)), Image.LANCZOS)
-    out = os.path.join(KADRY_DIR, nazwa + ".png")
     k.save(out, optimize=True)
     return out
 
@@ -151,9 +200,7 @@ def przygotuj_kadry():
     k["bledy"] = wytnij("bledy", "03_dostawca_bledy.png", (64, zw[1] - 4, 1204, zw[1] + 878))
     zw = r("04_dostawca_poprawny", "#zasob-wynik", [74, 2677, 1120, 408])
     k["poprawny"] = wytnij("poprawny", "04_dostawca_poprawny.png", (64, zw[1] - 4, 1204, zw[1] + zw[3] + 6))
-    hs = r("04b_wykaz_po", "#h-stan", [74, 339, 1120, 44])
     ds = r("04b_wykaz_po", "#sekcja-dostawcy", [74, 593, 1120, 576])
-    k["wykaz_po_stan"] = wytnij("wykaz_po_stan", "04b_wykaz_po.png", (64, hs[1] - 6, 1204, hs[1] + 170))
     k["wykaz_po_dostawcy"] = wytnij("wykaz_po_dostawcy", "04b_wykaz_po.png", (100, ds[1] + 205, 1170, ds[1] + ds[3] - 30))
     hx = r("05_harvester_xml", "#sekcja-harvester", [74, 2685, 1120, 510])
     k["xml"] = wytnij("xml", "05_harvester_xml.png", (64, hx[1] + 348, 1204, hx[1] + hx[3] + 4))
@@ -172,15 +219,14 @@ def przygotuj_kadry():
     k["mapa_mapa"] = wytnij("mapa_mapa", "07_mapa_desktop.png", (64, mp[1] - 50, 1204, mp[1] + mp[3] + 4))
     k["mob_gora"] = wytnij("mob_gora", "08_mapa_mobile.png", (0, 0, 390, 780))
     k["partner"] = wytnij("partner", "11_partner_aktywny.png", (64, 160, 1204, 470))
-    k["partner_wygasly"] = wytnij("partner_wygasly", "11b_partner_wygasly.png", (64, 160, 1204, 470))
     k["api_json"] = wytnij("api_json", "09_api_json.png", (0, 50, 720, 620))
     dk = r("10_api_docs", "api14", [28, 1177, 1212, 650])
     k["api_docs"] = wytnij("api_docs", "10_api_docs.png", (dk[0] - 6, dk[1] - 4, dk[0] + dk[2] + 6, dk[1] + dk[3] + 4))
-    od = os.path.join(BRAND, "final", "podglad", "odznaki.png")
-    im = Image.open(od).convert("RGB")
-    for n, b in (("odznaka_aktywna", (6, 6, 414, 134)), ("odznaka_wygasla", (6, 346, 414, 474))):
-        im.crop(b).save(os.path.join(KADRY_DIR, n + ".png"))
-        k[n] = os.path.join(KADRY_DIR, n + ".png")
+    # odznaki rysowane w locie (wektor, data jako krzywe) – bez plików pośrednich
+    k["odznaka_aktywna"] = G.badge("light", "pelna", date="22.11.2027")
+    k["odznaka_wygasla"] = G.badge("expired", "pelna", date="22.11.2026")
+    with open(os.path.join(BRAND, "zastosowania", "naklejka_wspolpraca_mc.svg"), encoding="utf-8") as f:
+        k["naklejka_mc"] = f.read()
     for n in ("20_xmllint", "21_pytest", "22_axe"):
         k[n] = os.path.join(ZRZUTY, n + ".png")
     return k
@@ -189,7 +235,10 @@ def przygotuj_kadry():
 # ---------------------------------------------------------------------- budowa slajdów
 def naglowek(s, nr, n, tytul, ciemny=False):
     kol = BIALY if ciemny else GRANAT
-    s.add(Tekst(M, 26, W - 2 * M - 60, 44, tytul, r=28, waga="B", kolor=kol, interlinia=1.15))
+    r = 28
+    while r > 22 and G.F["bold"].width(tytul, r) > W - 2 * M - 64:   # długi tytuł: mniejszy stopień, 1 wiersz
+        r -= 0.5
+    s.add(Tekst(M, 26 + (28 - r) * 0.6, W - 2 * M - 60, 44, tytul, r=r, waga="B", kolor=kol, interlinia=1.15))
     s.add(Prost(M, 74, 56, 5, wypelnienie=AKCENT if ciemny else ZIELEN, promien=2))
     sv = "logotyp_tubijeaed_sygnet"
     if not ciemny:
@@ -228,7 +277,7 @@ def zbuduj(k, term):
     s.add(Prost(M + 20, 312, 70, 6, wypelnienie=AKCENT, promien=2))
     s.add(Tekst(M + 20, 334, 860, 44, f"„{TM.HASLO}”", r=30, waga="S", kolor=AKCENT))
     s.add(Tekst(M + 20, 384, 700, 60, TM.HASLO_PODTYTUL, r=18, kolor=SZARY_NA_C))
-    s.add(Tekst(M + 20, 462, 600, 28, ZESPOL, r=20, waga="S", kolor=BIALY, nazwa="zespol"))
+    s.add(Tekst(M + 20, 462, 600, 28, f"Zespół {ZESPOL}", r=20, waga="S", kolor=BIALY, nazwa="zespol"))
     s.add(Tekst(M + 20, 492, 700, 24, "HackNation 2026 · Misja AED – Dane na ratunek (Ministerstwo Cyfryzacji)",
                 r=14, kolor=SZARY_NA_C))
     S.append(s)
@@ -416,22 +465,98 @@ def zbuduj(k, term):
     s.add(Tekst(M + 20, 106, 380, 72, f"„{TM.HASLO}”", r=26, waga="B", kolor=AKCENT, interlinia=1.2))
     s.add(Tekst(M + 20, 184, 380, 80, TM.WEZWANIE + ": odznaka do stopki strony i naklejka na kapsułę AED.",
                 r=18, kolor=BIALY, interlinia=1.25))
-    s.add(Obraz(M, 282, 200, 62, k["odznaka_aktywna"], ramka=False, alt="Odznaka Partnera – aktywna"))
-    s.add(Obraz(M + 220, 282, 200, 62, k["odznaka_wygasla"], ramka=False, alt="Odznaka Partnera – wygasła"))
+    s.add(Svg(M, 282, 200, 62, k["odznaka_aktywna"], alt="Odznaka Partnera – aktywna", wyr="C"))
+    s.add(Svg(M + 220, 282, 200, 62, k["odznaka_wygasla"], alt="Odznaka Partnera – wygasła", wyr="C"))
     s.add(Tekst(M, 348, 200, 20, "aktywna (≤ 12 mies.)", r=14, kolor=SZARY, wyr="C"))
     s.add(Tekst(M + 220, 348, 200, 20, "wygasła – dane nieaktualne", r=14, kolor=SZARY, wyr="C"))
     s.add(Tekst(M, 380, 420, 120,
                 ["**Dlaczego zachęca:** odznaka wygasa, gdy dane się starzeją – dostawca ma powód, by je "
                  "aktualizować, a nie wgrać raz."], r=18, interlinia=1.25))
-    s.add(Obraz(484, 92, 150, 210, os.path.join(BRAND, "zastosowania", "naklejka_kapsula_aed.png"), ramka=False,
-                alt="Naklejka na kapsułę AED z kodem QR"))
+    nak = os.path.join(BRAND, "zastosowania", "naklejka_kapsula_aed_bez_qr")
+    s.add(Svg(484, 92, 150, 210, nak + ".svg", nak + ".png", alt="Naklejka na kapsułę AED", wyr="C"))
     s.add(Obraz(650, 92, 210, 210, os.path.join(BRAND, "zastosowania", "kafel_social_1080.png"), ramka=False,
                 wyr="L", alt="Kafel do mediów społecznościowych"))
     s.add(Obraz(484, 314, 436, 120, k["partner"], alt="Strona weryfikacji Partnera – status aktywny"))
-    podpis(s, 484, 440, 436, 60, "", tytul="Naklejka z QR · kafel social · weryfikacja")
+    podpis(s, 484, 440, 436, 60, "", tytul="Naklejka · kafel social · weryfikacja")
     S.append(s)
 
-    # 12 ----------------------------------------------------------------- formaty / API
+    # 12 ----------------------------------------------------------------- program Partner
+    s = Slajd(f"Program Partner {TM.NAZWA} – co zyskuje uczestnik")
+    s.add(Tekst(M, 90, W - 2 * M, 30, ["Państwo płaci za **aktualne, zweryfikowane dane** – nie za sprzęt."],
+                r=20, kolor=ZIELEN_C))
+    cw, ch, cy = 300, 232, 126
+    for i, (t, war, pkt) in enumerate((
+            ("Partner: ma AED", "warunek: aktualny zasób AED w dane.gov.pl",
+             ["bezpłatny przegląd co rok", "pokrycie eksploatacji (elektrody, bateria)",
+              "odznaka, naklejka, pinezka"]),
+            ("Nowy AED: firma bez AED", "warunek: dane nowego AED w dane.gov.pl do 30 dni od montażu",
+             ["dofinansowanie zakupu (propozycja: 50%)", "potem jak Partner: przegląd i eksploatacja"]))):
+        x = M + i * (cw + 16)
+        s.add(Prost(x, cy, cw, ch, wypelnienie=BIALY, obrys=RAMKA, promien=10))
+        s.add(Prost(x, cy, cw, 5, wypelnienie=ZIELEN, promien=2))
+        s.add(Tekst(x + 14, cy + 14, cw - 28, 28, t, r=20, waga="B"))
+        s.add(Tekst(x + 14, cy + 44, cw - 28, 66, war, r=16, kolor=SZARY, interlinia=1.2))
+        s.add(Tekst(x + 14, cy + 104, cw - 28, ch - 110, pkt, r=18, punktory=True, interlinia=1.15, odstep=0.2))
+    sx = M + 2 * (cw + 16)
+    s.add(Svg(sx, cy, W - M - sx, 190, k["naklejka_mc"], alt="Projekt naklejki: Współpracujemy z Ministerstwem "
+              "Cyfryzacji w programie #TuBijeAED", wyr="C"))
+    s.add(Tekst(sx, cy + 192, W - M - sx, 44, "projekt naklejki i odznaki – **wymaga zgody MC**", r=14,
+                kolor=OSTRZ, wyr="C", interlinia=1.2))
+    s.add(Prost(M, 370, W - 2 * M, 130, wypelnienie=GRANAT, promien=12))
+    s.add(Tekst(M + 18, 382, 410, 30, "Korzyści trwają, dopóki dane są aktualne", r=19, waga="B", kolor=AKCENT))
+    s.add(Tekst(M + 18, 414, 410, 80, f"12{NB}mies. bez aktualizacji: odznaka „wygasła”, pokrycie eksploatacji "
+                "wstrzymane.", r=18, kolor=BIALY, interlinia=1.2))
+    s.add(Prost(M + 446, 384, 1.5, 102, wypelnienie=SZARY, promien=0))
+    s.add(Tekst(M + 466, 382, W - 2 * M - 484, 112,
+                [f"**KPI dla MC:** dostawcy w wykazie, rekordy ≤{NB}12{NB}mies., nowe AED, pobrania API",
+                 "**Dane dalej:** mObywatel („Najbliższy AED”), dyspozytorzy 112"],
+                r=18, kolor=BIALY, punktory=True, interlinia=1.15, odstep=0.2))
+    S.append(s)
+
+    # 13 ----------------------------------------------------------------- opłacalność
+    s = Slajd("Czy to się opłaca? Rachunek dla Ministerstwa Cyfryzacji")
+    kafle = [(f"1,36{NB}mln{NB}zł", f"koszt rocznie (1{NB}300{NB}AED)", MIETA, GRANAT, ZIELEN_C),
+             (f"65{NB}użyć", "użycia AED rocznie (5%)", MIETA, GRANAT, ZIELEN_C),
+             (f"26{NB}osób", "dodatkowe przeżycia rocznie", MIETA, GRANAT, ZIELEN_C),
+             (f"53,3{NB}mln{NB}zł", "wartość społeczna rocznie", MIETA, GRANAT, ZIELEN_C),
+             (f"~39{NB}:{NB}1", "korzyści do kosztów", GRANAT, BIALY, AKCENT)]
+    kw, kg = 168, 10
+    for i, (v, o, tlo, kol, kv) in enumerate(kafle):
+        x = M + i * (kw + kg)
+        s.add(Prost(x, 90, kw, 100, wypelnienie=tlo, promien=10))
+        s.add(Tekst(x + 8, 100, kw - 16, 36, v, r=26, waga="X", kolor=kv, wyr="C"))
+        s.add(Tekst(x + 8, 140, kw - 16, 46, o, r=16, kolor=kol, wyr="C", interlinia=1.15))
+    s.add(Prost(M, 198, W - 2 * M, 44, wypelnienie=TLO_OSTRZ, promien=8))
+    s.add(Tekst(M + 16, 207, W - 2 * M - 32, 30,
+                ["Program **zwraca się po uratowaniu 1 osoby rocznie** (1,36 / 2,05 mln zł = 0,66)."], r=18))
+    s.add(Tekst(M, 254, 440, 26, "Analiza wrażliwości", r=18, waga="B"))
+    tab = [("Scenariusz", "Użycie", "Przeżyw.", "Wynik"),
+           ("bazowy", "5%", "50%", "39 : 1"),
+           ("ostrożny", "1%", "50%", "7,8 : 1"),
+           ("bardzo ostrożny", "1%", "30%", "3,9 : 1")]
+    kol_x = [0, 180, 260, 350]
+    y = 282
+    for i, row in enumerate(tab):
+        nag = i == 0
+        s.add(Prost(M, y, 440, 34, wypelnienie=GRANAT if nag else (MIETA if i % 2 else BIALY), obrys=RAMKA,
+                    promien=0))
+        for j, v in enumerate(row):
+            s.add(Tekst(M + 10 + kol_x[j], y + 6, (kol_x[j + 1] if j < 3 else 430) - kol_x[j] - 10, 24, v, r=18,
+                        waga="S" if nag or j == 3 else "R", kolor=BIALY if nag else GRANAT))
+        y += 34
+    s.add(Tekst(M + 470, 254, W - 2 * M - 470, 234,
+                [f"Na **1{NB}000 osób z NZK** z AED w kilka minut: **~500 przeżywa zamiast ~100**",
+                 f"Leczenie 1 pacjenta w ciężkim stanie (założenie 1{NB}mln{NB}zł) = roczna eksploatacja "
+                 f"**~1{NB}430{NB}AED**",
+                 f"**1{NB}050{NB}zł/rok** za aktualny, zweryfikowany rekord AED"],
+                r=18, punktory=True, interlinia=1.2, odstep=0.35))
+    s.add(Tekst(M, 424, 440, 64, "Bazowo: 1 000 Partnerów + 300 nowych AED, 700 zł/rok eksploatacji, wartość "
+                "życia 2,05 mln zł (KRBRD).", r=14, kolor=SZARY, interlinia=1.2))
+    s.add(Tekst(M, H - 46, W - 2 * M, 18, "Założenia i źródła: docs/PROGRAM_PARTNER.md, "
+                "docs/kalkulator_oplacalnosci_AED.xlsx – kwoty do weryfikacji.", r=12, kolor=SZARY))
+    S.append(s)
+
+    # 14 ----------------------------------------------------------------- formaty / API
     s = Slajd("Dowody: formaty maszynowe i API")
     s.add(Obraz(M, 92, 400, 326, k["api_json"], alt="Odpowiedź JSON /api/1.4/aed-aggregated"))
     s.add(Obraz(M + 420, 92, 460, 250, k["api_docs"], alt="Dokumentacja OpenAPI – API 1.4"))
@@ -442,7 +567,7 @@ def zbuduj(k, term):
            "Lewo: JSON /api/1.4/aed-aggregated. Prawo: OpenAPI /docs – endpointy API 1.4.")
     S.append(s)
 
-    # 13 ----------------------------------------------------------------- jakość
+    # 15 ----------------------------------------------------------------- jakość
     s = Slajd("Dowody: XSD, testy, WCAG 2.1 AA, bezpieczeństwo")
     s.add(Obraz(M, 92, 430, 92, k["20_xmllint"], ramka=False, alt="xmllint: plik XML przechodzi walidację XSD"))
     s.add(Obraz(M, 196, 430, 104, k["21_pytest"], ramka=False, alt=f"pytest: {testy} testów zaliczonych"))
@@ -460,7 +585,7 @@ def zbuduj(k, term):
            tytul="Co widać")
     S.append(s)
 
-    # 14 ----------------------------------------------------------------- ograniczenia
+    # 16 ----------------------------------------------------------------- ograniczenia
     s = Slajd("Ograniczenia")
     lewa = ["**Okrojony portal lokalnie:** SQLite zamiast Postgres/Elasticsearch/Celery, logowanie demo bez haseł",
             "**XSD 1.14 to propozycja** zespołu (1 nowy element), nie oficjalny schemat",
@@ -477,21 +602,25 @@ def zbuduj(k, term):
     s.add(Tekst(M, 486, W - 2 * M, 22, "Pełna lista: docs/OGRANICZENIA.md", r=14, kolor=SZARY))
     S.append(s)
 
-    # 15 ----------------------------------------------------------------- jak sprawdzić
-    s = Slajd("Jak sprawdzić", tlo=GRANAT)
-    s.add(Prost(M, 100, 420, 190, wypelnienie="#071a33", promien=12))
-    s.add(Tekst(M + 20, 116, 380, 30, "Uruchomienie (ok. 2 min)", r=20, waga="B", kolor=AKCENT))
-    s.add(Tekst(M + 20, 152, 380, 130,
+    # 17 ----------------------------------------------------------------- jak sprawdzić + oświadczenie AI
+    s = Slajd("Jak sprawdzić · oświadczenie o AI", tlo=GRANAT)
+    s.add(Prost(M, 96, 420, 240, wypelnienie="#071a33", promien=12))
+    s.add(Tekst(M + 20, 110, 380, 30, "Uruchomienie (ok. 2 min)", r=20, waga="B", kolor=AKCENT))
+    s.add(Tekst(M + 20, 146, 380, 180,
                 ["./uruchom.sh  (Windows: uruchom.bat)", "otwórz http://localhost:8080/jury.html",
-                 "Python ≥ 3.11, dane demo offline"], r=18, kolor=BIALY, interlinia=1.3, odstep=0.3))
-    s.add(Tekst(M + 460, 100, 420, 200,
-                ["**JURY.md** – 12 kroków: co kliknąć, co sprawdzić, które wymaganie",
-                 "**docs/OPIS_PROJEKTU.md**, ZGODNOSC_Z_DANE_GOV_PL.md, RAPORT_TESTOW.md",
-                 "**docs/OSWIADCZENIE_AI.md** – zakres użycia AI (Regulamin §2 ust. 8)"],
-                r=18, kolor=BIALY, punktory=True, interlinia=1.25, odstep=0.35))
-    s.add(Tekst(M, 330, W - 2 * M, 50, f"„{TM.HASLO}”", r=32, waga="B", kolor=AKCENT, wyr="C"))
-    s.add(Tekst(M, 384, W - 2 * M, 30, TM.PROGRAM, r=18, kolor=SZARY_NA_C, wyr="C"))
-    s.add(Tekst(M, 440, W - 2 * M, 30, ZESPOL, r=20, waga="S", kolor=BIALY, wyr="C", nazwa="zespol"))
+                 "JURY.md – 12 kroków: co kliknąć, co sprawdzić", "Python ≥ 3.11, dane demo offline"],
+                r=18, kolor=BIALY, punktory=True, interlinia=1.2, odstep=0.3))
+    s.add(Prost(M + 440, 96, W - 2 * M - 440, 240, wypelnienie="#071a33", promien=12))
+    s.add(Tekst(M + 460, 110, 400, 30, "Oświadczenie o użyciu AI", r=20, waga="B", kolor=AKCENT))
+    s.add(Tekst(M + 460, 142, 400, 166,
+                [f"Zespół {ZESPOL} korzystał z **Claude Code (Anthropic)** jako wsparcia przy analizie, kodzie, "
+                 "grafikach, dokumentacji i wyliczeniach.",
+                 "Decyzje, kierunek, nazwa i znak, program zachęt oraz weryfikacja – **zespół**."],
+                r=18, kolor=BIALY, interlinia=1.2, odstep=0.3))
+    s.add(Tekst(M + 460, 310, 400, 20, "Pełna treść: docs/OSWIADCZENIE_AI.md", r=14, kolor=SZARY_NA_C))
+    s.add(Tekst(M, 354, W - 2 * M, 50, f"„{TM.HASLO}”", r=32, waga="B", kolor=AKCENT, wyr="C"))
+    s.add(Tekst(M, 404, W - 2 * M, 30, TM.PROGRAM, r=18, kolor=SZARY_NA_C, wyr="C"))
+    s.add(Tekst(M, 450, W - 2 * M, 30, f"Zespół {ZESPOL}", r=20, waga="S", kolor=BIALY, wyr="C", nazwa="zespol"))
     S.append(s)
 
     n = len(S)
@@ -729,9 +858,11 @@ def main():
     renderuj_pptx(S)
     # podglądy slajdów (40 dpi) do szybkiego przeglądu
     import glob
-    import shutil
     import subprocess
-    if shutil.which("pdftoppm"):
+    shutil.rmtree(TMP, ignore_errors=True)
+    for nazwa in (PDF_OUT, PPTX_OUT):
+        print(f"  {os.path.basename(nazwa)}: {os.path.getsize(nazwa) / 1e6:.2f} MB")
+    if "--podglad" in sys.argv and shutil.which("pdftoppm"):
         pod = os.path.join(TU, "podglad")
         os.makedirs(pod, exist_ok=True)
         for f in glob.glob(os.path.join(pod, "slajd-*.png")):

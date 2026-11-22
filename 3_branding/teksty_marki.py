@@ -32,6 +32,13 @@ NAKLEJKA_NAGLOWEK = "PARTNER · ZWERYFIKOWANE W DANE.GOV.PL"
 NAKLEJKA_PAS = "Ten defibrylator jest na mapie"
 NAKLEJKA_QR_OPIS = ["Zeskanuj:", "sprawdź godziny", "dostępności,", "zgłoś usterkę", "lub zmianę danych."]
 NAKLEJKA_ID = "ID AED: PL-0000-0000"
+# Wariant naklejki BEZ kodu QR (prezentacja, druk przed ustaleniem adresu) – tekst zamiast kodu.
+NAKLEJKA_BEZ_QR_OPIS = ["Dane tego AED są", "w dane.gov.pl.", "Godziny dostępności", "i zgłoszenie usterki:",
+                        "mapa #TuBijeAED."]
+# Naklejka programu Partner z nazwą Ministerstwa – PROJEKT: bez logo i godła MC, użycie wymaga zgody MC.
+NAKLEJKA_MC = "Współpracujemy z Ministerstwem Cyfryzacji w programie #TuBijeAED"
+NAKLEJKA_MC_PODPIS = "Dane naszego AED są aktualne i zweryfikowane w dane.gov.pl"
+NAKLEJKA_MC_UWAGA = "PROJEKT – wymaga zgody Ministerstwa Cyfryzacji"
 # Cel kodu QR – do ustalenia na koniec projektu (domena .example jest zastępcza, RFC 2606).
 QR_URL = "https://tubijeaed.example/aed/PL-0000-0000"
 

@@ -6,9 +6,8 @@ Zapisuje:
     odznaka-{jasna,ciemna}-{pelna,mala}.svg, odznaka-wygasla-{pelna,mala}.svg
     marker-wykaz.svg, marker-partner.svg, marker-osm.svg
     fonts/Poppins-*.woff (podzbiór łaciński + polski) + OFL.txt
-  3_branding/final/
-    warianty_iso/*.svg               – warianty odróżniające znak od ISO 7010 E010 (do decyzji)
-    podglad/*.png                    – podglądy PNG (cairosvg)
+  3_branding/final/podglad/*.png   – podglądy PNG (cairosvg), TYLKO z opcją --podglad
+                                     (w tym plansza wariantów C / C1 / C2 względem ISO 7010 E010, rysowana w locie)
 
 Tekst w znaku i odznakach jest zamieniony na krzywe (fontTools). Wyjątek: data ważności
 odznaki (`<text id="wazny-do">`) jest żywym tekstem, bo podmienia ją Backend
@@ -19,7 +18,7 @@ Pliki do oddania (logotyp_tubijeaed_*), zastosowania i Księgę znaku tworzą 3_
 i 3_branding/generuj_ksiege.py – ten drugi uruchamia też ten skrypt.
 
 Uruchomienie (z katalogu repo):
-  .venv/bin/python 3_branding/final/generuj_final.py      # tylko static/brand
+  .venv/bin/python 3_branding/final/generuj_final.py [--podglad]   # tylko static/brand (+ podglądy)
   .venv/bin/python 3_branding/generuj_ksiege.py           # wszystko
 """
 from __future__ import annotations
@@ -38,15 +37,14 @@ ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent.parent
 BRAND = REPO / "2_prototyp_kod" / "static" / "brand"
 PODGLAD = ROOT / "podglad"
-WARIANTY = ROOT / "warianty_iso"
-FONTS = ROOT.parent / "koncepcje" / "fonts"
-
-sys.path.insert(0, str(ROOT.parent / "koncepcje"))
 sys.path.insert(0, str(ROOT.parent))
-import generuj_koncepcje as K  # noqa: E402  (klasa Font + kerning z Sprintu 1)
+import fonty_svg as K  # noqa: E402  (klasa Font + kerning: tekst Poppins → krzywe)
 import teksty_marki as TXT  # noqa: E402  (JEDNO miejsce tekstów: nazwa, podpis, hasło, odznaka)
 
 F = K.F
+Font = K.Font
+FONTS = K.FONTS
+PODGLADY = "--podglad" in sys.argv   # podglądy PNG tylko na żądanie
 
 # ---------------------------------------------------------------- paleta (= tokens.css)
 GREEN = "#00843D"        # --kolor-glowny
@@ -432,8 +430,6 @@ def zoom(im: Image.Image, f: int) -> Image.Image:
 
 def main():
     BRAND.mkdir(parents=True, exist_ok=True)
-    PODGLAD.mkdir(parents=True, exist_ok=True)
-    WARIANTY.mkdir(parents=True, exist_ok=True)
 
     files: dict[str, str] = {}
     for theme, suf in (("light", ""), ("dark", "-negatyw")):
@@ -457,7 +453,7 @@ def main():
     touch.convert("RGB").save(BRAND / "apple-touch-icon.png", optimize=True)
     ext = build_fonts()
 
-    # warianty ISO
+    # warianty ISO (tylko do planszy porównawczej w podglądach; księga rysuje je sama)
     var = {
         "C1_puls_sygnet.svg": doc(100, 100, wariant_c1("light"), "#TuBijeAED – wariant C1"),
         "C1_puls_sygnet_negatyw.svg": doc(100, 100, wariant_c1("dark"), "#TuBijeAED – wariant C1", bg=NAVY),
@@ -467,11 +463,12 @@ def main():
     for key, fn in (("C1_puls", wariant_c1), ("C2_fale", wariant_c2)):
         inner, w, h = logo_variant(fn, "light")
         var[f"{key}_logo.svg"] = doc(w, h, inner, "#TuBijeAED")
-    for name, s in var.items():
-        (WARIANTY / name).write_text(s, encoding="utf-8")
-
-    build_previews(files, var)
-    print(f"static/brand: {len(files)} SVG + favicon PNG + fonty .{ext}; warianty_iso: {len(var)}; podglądy w {PODGLAD}")
+    msg = f"static/brand: {len(files)} SVG + favicon PNG + fonty .{ext}"
+    if PODGLADY:
+        PODGLAD.mkdir(parents=True, exist_ok=True)
+        build_previews(files, var)
+        msg += f"; podglądy w {PODGLAD}"
+    print(msg)
 
 
 def build_previews(files, var):

@@ -5,8 +5,8 @@ logo-kompakt, sygnet, favicon, odznaki, także wygasła). Hasło i podpis logo z
 Poprzedni sygnet C zostaje w generatorze jako `sygnet_c_poprzedni()` (tylko do porównania).
 Aktualizacja: błyskawica jest teraz **wycięta** z serca (fill-rule evenodd), więc zawsze ma kolor tła; naklejka na
 kapsułę w wariancie C2 jest w `3_branding/zastosowania/`, a teksty (hasło, podpis) w `3_branding/teksty_marki.py`.
-Podgląd porównawczy: `podglad/warianty-iso.png`. Pliki wariantów: `warianty_iso/`. Generator: `generuj_final.py`
-(funkcje `wariant_c1`, `sygnet` = C2).
+Porównanie wariantów rysuje Księga znaku (strona ISO 7010) oraz – na żądanie – plansza `podglad/warianty-iso.png`
+(`generuj_final.py --podglad`). Pliki wariantów nie są zapisywane; generator: funkcje `wariant_c1`, `sygnet` = C2.
 
 ## Problem
 
@@ -22,7 +22,7 @@ kwadratu), brakiem krzyża i pierścieniami. Ryzyka:
 3. Komunikacyjnie znak mówi „tu jest defibrylator”. Kampania jest jednak skierowana do **dostawców danych**, a jej
    tematem są **dane i odpowiedzialność**, nie samo urządzenie.
 
-## Wariant C1 – „Puls w sercu” (`warianty_iso/C1_puls_*.svg`)
+## Wariant C1 – „Puls w sercu” (`wariant_c1()`)
 
 Błyskawicę zastępuje **linia EKG (puls)** przecinająca serce. Pierścienie i zielone koło zostają.
 - **Odróżnia od E010:** usuwa jego najbardziej charakterystyczny element (błyskawicę), więc znak nie jest już
@@ -33,7 +33,7 @@ Błyskawicę zastępuje **linia EKG (puls)** przecinająca serce. Pierścienie i
   jest częsty w ochronie zdrowia.
 - Czytelność: 24 px dobra, 16 px puls zamienia się w kreskę (jak błyskawica w obecnym C).
 
-## Wariant C2 – „Fale nadawania” (`warianty_iso/C2_fale_*.svg`) – **WYBRANY (decyzja: C2)**
+## Wariant C2 – „Fale nadawania” (`sygnet()`) – **WYBRANY (decyzja: C2)**
 
 **Odwrócona polaryzacja:** zielone serce z białą błyskawicą, bez zielonego pola. Pełne pierścienie zastępują
 **2 otwarte łuki** w prawym górnym rogu (jak symbol sygnału lub nadawania).
@@ -45,7 +45,7 @@ Błyskawicę zastępuje **linia EKG (puls)** przecinająca serce. Pierścienie i
 - **Koszt:** traci „pulsującą kropkę” z map (pełne koncentryczne pierścienie), a w odznace 88×31 znak jest węższy.
   Jako znacznik mapy wymagałby osobnego tła (np. białej pinezki).
 - Czytelność: dobra w 24–48 px. W 16 px drugi łuk znika, dlatego favicon ma uproszczoną wersję: większe serce i
-  jeden gruby łuk (`podglad/sygnet-favicon-male.png`).
+  jeden gruby łuk (`podglad/sygnet-favicon-male.png`, z opcją `--podglad`).
 
 ## Rekomendacja UI/UX
 

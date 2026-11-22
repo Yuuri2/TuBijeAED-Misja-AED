@@ -4,8 +4,9 @@ Wymaga: Firefox, działający serwer prototypu na świeżej bazie, np. (z katalo
     DB_PATH=/tmp/prez.sqlite ../.venv/bin/uvicorn app.main:app --port 8090
 Uruchomienie (z katalogu repo):
     .venv/bin/python 4_prezentacja/zrzuty_generuj.py [--url http://localhost:8090] [--tylko nazwa1,nazwa2]
-Wynik: 4_prezentacja/zrzuty/*.png (pełne strony, gęstość DPR=2; kadrowanie robi generuj_prezentacje.py wg
-zrzuty/kadry.json – współrzędne w px CSS).
+Wynik: 4_prezentacja/zrzuty/pelne/*.png (pełne strony, gęstość DPR=2, ok. 30 MB – katalog tymczasowy, poza
+repozytorium) + zrzuty/kadry.json (współrzędne elementów w px CSS). Kadry (zrzuty/kadry/*.png) wycina z nich
+generuj_prezentacje.py; potem katalog pelne/ można usunąć – prezentacja generuje się z samych kadrów.
 Kolejność scenariuszy ma znaczenie (panel dostawcy zmienia dane) – pełny przebieg tylko na świeżej bazie.
 """
 import argparse
@@ -22,6 +23,7 @@ import time
 TU = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(TU)
 ZRZUTY = os.path.join(TU, "zrzuty")
+PELNE = os.path.join(ZRZUTY, "pelne")   # pełne zrzuty (duże, nie trafiają do repozytorium)
 PRZYKLADY = os.path.join(REPO, "2_prototyp_kod", "static", "przyklady")
 # pozycja „użytkownika” dla mapy: centrum Legionowa (dane demo)
 GEO = (52.4040, 20.9300)
@@ -112,7 +114,7 @@ class Fx:
 
     def shot(self, name):
         r = self.cmd("WebDriver:TakeScreenshot", {"full": True})
-        with open(os.path.join(ZRZUTY, name + ".png"), "wb") as f:
+        with open(os.path.join(PELNE, name + ".png"), "wb") as f:
             f.write(base64.b64decode(r["value"]))
         print("  zrzut", name)
 
@@ -242,7 +244,7 @@ def mapa_mobile(f, B):
     f.shot("08_mapa_mobile")
     # zostaw tylko „telefon” (iframe 390 px CSS)
     from PIL import Image
-    pth = os.path.join(ZRZUTY, "08_mapa_mobile.png")
+    pth = os.path.join(PELNE, "08_mapa_mobile.png")
     im = Image.open(pth)
     im.crop((0, 0, 390 * DPR, im.height)).save(pth)
 
@@ -279,7 +281,7 @@ def main():
     ap.add_argument("--url", default="http://localhost:8090")
     ap.add_argument("--tylko", default="")
     a = ap.parse_args()
-    os.makedirs(ZRZUTY, exist_ok=True)
+    os.makedirs(PELNE, exist_ok=True)
     plik_kadrow = os.path.join(ZRZUTY, "kadry.json")
     if os.path.exists(plik_kadrow):
         KADRY.update(json.load(open(plik_kadrow)))

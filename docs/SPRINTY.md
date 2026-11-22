@@ -57,7 +57,7 @@ Zasada: **scalanie odbywa się w portalu**. Nasza aplikacja niczego nie publikuj
 | Tester | Sonnet / medium | testy prototypu (pytest + ścieżka jurora), audyt WCAG 2.1, weryfikacja paczki dla jury |
 
 ## Sprint 0 – kontrakt ✅
-`aed_schema.json`, `docs/API.md`, szkielet aplikacji, oficjalny XSD 1.13.
+`aed_schema.json`, `docs/PROTOTYP.md`, szkielet aplikacji, oficjalny XSD 1.13.
 
 ## Sprint 1 – fundament ✅ (do weryfikacji/commita)
 Wzorzec danych + walidator, import i mapowanie 5 zbiorów gmin z dane.gov.pl, harvester XML 1.13 zgodny z XSD, koncepcje znaku.

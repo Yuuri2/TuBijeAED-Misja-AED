@@ -432,7 +432,7 @@ class Raport:
     ucieto: bool = False
 
     def jako_dict(self) -> dict:
-        """Raport w formacie z docs/API.md (+ pola dodatkowe: liczba_wierszy, arkusz, ucieto)."""
+        """Raport w formacie z docs/PROTOTYP.md (+ pola dodatkowe: liczba_wierszy, arkusz, ucieto)."""
         return {
             "poprawne_wiersze": self.poprawne_wiersze,
             "bledne_wiersze": self.bledne_wiersze,

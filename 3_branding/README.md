@@ -6,8 +6,8 @@ Znak i hasło akcji promocyjnej dla **dostawców danych o AED** (urzędy, firmy)
 ## Zmiana hasła lub podpisu pod logo (ok. 1 minuty)
 
 1. Zmień tekst w **`3_branding/teksty_marki.py`**:
-   `HASLO`, `HASLO_PODTYTUL`, `PODPIS_LOGO`, `WEZWANIE`, teksty odznaki i naklejki, `QR_URL` (cel kodu QR –
-   obecnie adres zastępczy `.example`), `OPIS_KONCEPCJI` (3–5 zdań do księgi).
+   `HASLO`, `HASLO_PODTYTUL`, `PODPIS_LOGO`, `WEZWANIE`, teksty odznaki i naklejek (`NAKLEJKA_*`, w tym
+   `NAKLEJKA_MC*`), `QR_URL` (cel kodu QR – obecnie adres zastępczy `.example`), `OPIS_KONCEPCJI` (3–5 zdań do księgi).
 2. Uruchom z katalogu repo:
 
    ```bash
@@ -15,7 +15,8 @@ Znak i hasło akcji promocyjnej dla **dostawców danych o AED** (urzędy, firmy)
    ```
 
 To jedno polecenie przegeneruje **wszystko**: `2_prototyp_kod/static/brand/`, pliki logotypu do oddania,
-zastosowania i Księgę znaku z podglądami. Dłuższy podpis pod logo zmniejsza się sam do szerokości nazwy, hasło
+zastosowania i Księgę znaku. Podglądy PNG (strony księgi w `podglad_ksiegi/`, plansze w `final/podglad/`) powstają
+tylko z opcją `--podglad` – nie należą do oddawanych plików. Dłuższy podpis pod logo zmniejsza się sam do szerokości nazwy, hasło
 zawija się z wyrównaniem wierszy. Skrypt przerywa pracę, jeśli w tekście jest znak, którego nie ma w Poppins.
 
 ## Pliki do oddania (wymagania zadania)
@@ -34,7 +35,9 @@ zamieniony na krzywe – pliki nie wymagają czcionki. PDF-y logotypu powstają 
 
 | Plik | Co to jest |
 |---|---|
-| `naklejka_kapsula_aed.{svg,pdf,png}` | naklejka 100 × 140 mm na kapsułę AED, wariant C2, prawdziwy kod QR (segno) |
+| `naklejka_kapsula_aed.{svg,pdf,png}` | naklejka 100 × 140 mm na kapsułę AED, wariant C2, prawdziwy kod QR (segno) – w księdze |
+| `naklejka_kapsula_aed_bez_qr.{svg,pdf,png}` | ta sama naklejka **bez kodu QR** (pinezka Partnera i tekst „dane w dane.gov.pl”) – w prezentacji |
+| `naklejka_wspolpraca_mc.{svg,pdf,png}` | **PROJEKT** naklejki 100 × 100 mm „Współpracujemy z Ministerstwem Cyfryzacji w programie #TuBijeAED” (bez logo i godła MC; użycie **wymaga zgody MC**) – program Partner, `docs/PROGRAM_PARTNER.md` |
 | `kafel_social_1080.{svg,png}` | kafel 1080 × 1080 px do mediów społecznościowych (hasło, odznaka, wezwanie) |
 | `baner_www_1200x300.{svg,png}` | baner www 1200 × 300 px |
 
@@ -42,12 +45,16 @@ zamieniony na krzywe – pliki nie wymagają czcionki. PDF-y logotypu powstają 
 
 | Plik | Rola |
 |---|---|
-| `teksty_marki.py` | **jedno miejsce tekstów** (nazwa, podpis, hasło, odznaka, naklejka, QR, opis koncepcji) |
-| `final/generuj_final.py` | rysunek znaku: sygnet C2, logo, kompakt, odznaki, favicon, znaczniki mapy → `2_prototyp_kod/static/brand/`, podglądy `final/podglad/`, warianty ISO `final/warianty_iso/` |
+| `teksty_marki.py` | **jedno miejsce tekstów** (nazwa, podpis, hasło, odznaka, naklejki, QR, opis koncepcji) |
+| `fonty_svg.py` | tekst Poppins → krzywe SVG (klasa `Font`, kerning GPOS) – używają go wszystkie generatory |
+| `fonts/` | czcionki Poppins (TTF) + licencja `OFL_Poppins.txt` – źródło dla znaku, księgi, `static/brand/fonts/` i prezentacji |
+| `final/generuj_final.py` | rysunek znaku: sygnet C2, logo, kompakt, odznaki, favicon, znaczniki mapy → `2_prototyp_kod/static/brand/`; z `--podglad` także plansze PNG w `final/podglad/` (m.in. warianty C / C1 / C2 względem ISO 7010 E010, rysowane w locie) |
 | `generuj_logotypy.py` | pliki do oddania `logotyp_tubijeaed_*` i `zastosowania/` (najpierw uruchamia `generuj_final.py`) |
-| `generuj_ksiege.py` | `Ksiega_Znaku_TuBijeAED.pdf` + podglądy stron `podglad_ksiegi/strona-NN.png` (50 dpi) – uruchamia wszystko powyżej |
-| `koncepcje/` | **historia projektu** (Sprint 1): koncepcje A/B/C, plansza porównawcza, czcionki Poppins (`koncepcje/fonts/`, OFL) – nie oddajemy, ale z `koncepcje/generuj_koncepcje.py` korzysta klasa `Font` |
+| `generuj_ksiege.py` | `Ksiega_Znaku_TuBijeAED.pdf` – uruchamia wszystko powyżej; z `--podglad` także `podglad_ksiegi/strona-NN.png` (50 dpi) |
 | `final/UWAGI_C.md`, `final/HASLA.md` | uzasadnienie wyboru C2 (odróżnienie od ISO 7010 E010) i propozycje haseł |
+
+Koncepcje A/B/C ze Sprintu 1 (archiwum `koncepcje/`) usunięto z repozytorium – są w historii git (commit `5354392`).
+Księga nadal pokazuje odrzucone warianty (C, C1) i porównanie z E010 – rysuje je w locie.
 
 Zależności (w `.venv`): reportlab, svglib, cairosvg, fonttools, pillow, segno; do podglądów `pdftoppm` (poppler).
 
@@ -61,5 +68,5 @@ pdftotext 3_branding/Ksiega_Znaku_TuBijeAED.pdf - | grep -c ą   # polskie znaki
 ## Licencje
 
 Czcionka Poppins: Copyright 2020 The Poppins Project Authors, SIL Open Font License 1.1
-(`koncepcje/fonts/OFL_Poppins.txt`, `2_prototyp_kod/static/brand/fonts/OFL.txt`). Znak #TuBijeAED jest projektem
+(`fonts/OFL_Poppins.txt`, `2_prototyp_kod/static/brand/fonts/OFL.txt`). Znak #TuBijeAED jest projektem
 konkursowym HackNation 2026; nie jest oficjalnym znakiem Ministerstwa Cyfryzacji ani portalu dane.gov.pl.

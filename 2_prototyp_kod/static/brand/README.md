@@ -84,7 +84,7 @@ więc pełną treść niesie `alt`. Jeśli miejsce pozwala, używaj odznaki peł
 | `marker-osm.svg` | **romb z przerywaną krawędzią** i znakiem **„?”** | biały + szary | punkt z **OpenStreetMap „do weryfikacji”** (ODbL, nie jest w wykazie) | `iconSize:[28,28], iconAnchor:[14,14], popupAnchor:[0,-14]` |
 
 Znaczniki nie zawierają sygnetu (to piktogram serca z błyskawicą w pinezce), więc wybór C2 ich nie zmienił.
-Czytelne w 28–36 px (podgląd: `3_branding/final/podglad/markery.png`). Każdy kształt ma obrys, który oddziela go od
+Czytelne w 28–36 px (podgląd: `3_branding/final/podglad/markery.png` – `.venv/bin/python 3_branding/final/generuj_final.py --podglad`). Każdy kształt ma obrys, który oddziela go od
 podkładu (zieleń na tle OSM `#F2EFE9` ma 4,19:1, granat 13,41:1, szary 6,56:1, czyli ≥ 3:1 wg WCAG 1.4.11).
 
 ```js

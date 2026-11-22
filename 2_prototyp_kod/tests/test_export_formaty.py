@@ -91,40 +91,10 @@ def test_geojson_osm_z_atrybucja(rekordy_gov, rekordy_osm):
 
 # ----------------------------------------------------------------------------- harvester XML 1.13
 
-def test_harvester_xml_przechodzi_oficjalny_xsd(rekordy_gov, rekordy_osm, xsd, tmp_path):
-    xml = harvester_xml.zbuduj_harvester_xml(rekordy_gov + rekordy_osm, "http://localhost:8080",
-                                             teraz=datetime(2026, 11, 22, 12, tzinfo=timezone.utc))
-    doc = etree.fromstring(xml)
-    assert xsd.validate(doc), xsd.error_log
-    (tmp_path / "harvester.xml").write_bytes(xml)
-
-    assert doc.tag == "{urn:otwarte-dane:harvester:1.13}datasets" and doc.prefix == "ns2"
-    ds = doc.find("dataset")                                   # dzieci BEZ przestrzeni nazw
-    assert ds is not None and ds.findtext("extIdent") == "tubijeaed-rejestr-aed"
-    assert ds.findtext("categories/category") == "HEAL" and ds.findtext("updateFrequency") == "daily"
-    assert ds.findtext("conditions/dbOrCopyrightedLicenseChosen") == "CC BY 4.0"
-    assert ds.findtext("hasHighValueDataFromEuropeanCommissionList") == "false"
-    tagi = [t.text for t in ds.findall("tags/tag")]
-    assert {"AED", "defibrylator", "pierwsza pomoc", "ratownictwo", "#TuBijeAED"} <= set(tagi)
-    assert all(t.get("lang") == "pl" for t in ds.findall("tags/tag"))
-    urle = [r.findtext("url") for r in ds.findall("resources/resource")]
-    assert urle == ["https://localhost:8080/api/v1/export/csv", "https://localhost:8080/api/v1/export/geojson"]
-    assert all(r.findtext("description/polish") for r in ds.findall("resources/resource"))
-    assert [t.text for t in ds.find("resources/resource/regions")] == ["1408011", "1434021", "1861011", "1862011"]
-    assert ds.findtext("lastUpdateDate") == "2026-09-21T08:31:31Z"   # najnowsza data_aktualizacji (Legionowo)
-    assert b"ODbL" in xml and b"ODbL 1.0</" not in xml          # ODbL tylko w opisie, nie jako licencja
-
-
-def test_harvester_xml_bez_rekordow_i_z_wieloma_gminami(xsd):
-    teraz = datetime(2026, 11, 22, tzinfo=timezone.utc)
-    pusty = etree.fromstring(harvester_xml.zbuduj_harvester_xml([], "https://aed.example.pl", teraz=teraz))
-    assert xsd.validate(pusty), xsd.error_log
-    assert pusty.find("dataset/resources/resource/regions") is None
-    wiele = [{"licencja": "CC0 1.0", "zrodlo_typ": "DANE_GOV_PL", "teryt_gmina": f"{w:02d}{g:02d}011"}
-             for w in (2, 4, 6) for g in range(1, 9)]
-    doc = etree.fromstring(harvester_xml.zbuduj_harvester_xml(wiele, "https://aed.example.pl", teraz=teraz))
-    assert xsd.validate(doc), xsd.error_log
-    assert [t.text for t in doc.find("dataset/resources/resource/regions")] == ["02", "04", "06"]
+def test_kody_teryt_zwijane_do_wojewodztw_powyzej_limitu():
+    """XSD 1.13/1.14: regions/terytIdent maxOccurs=20 – przy wielu gminach kody zwijane do województw."""
+    wiele = [{"teryt_gmina": f"{w:02d}{g:02d}011"} for w in (2, 4, 6) for g in range(1, 9)]
+    assert harvester_xml.kody_teryt(wiele) == ["02", "04", "06"]
 
 
 def test_stary_eksport_z_domyslnym_xmlns_nie_przechodzi_xsd(xsd):

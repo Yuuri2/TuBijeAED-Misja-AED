@@ -15,7 +15,10 @@ Zapisuje:
       JPG  – tło białe (podstawowy, sygnet) lub granatowe (negatyw)
       PDF  – wektorowy (cairosvg z SVG), negatyw na granatowym tle
   3_branding/zastosowania/
-      naklejka_kapsula_aed.{svg,pdf,png}  – naklejka 100×140 mm z prawdziwym kodem QR (segno)
+      naklejka_kapsula_aed.{svg,pdf,png}  – naklejka 100×140 mm z prawdziwym kodem QR (segno) – do księgi i druku
+      naklejka_kapsula_aed_bez_qr.{svg,pdf,png} – ta sama naklejka bez kodu QR (prezentacja)
+      naklejka_wspolpraca_mc.{svg,pdf,png} – PROJEKT naklejki „Współpracujemy z Ministerstwem Cyfryzacji…”
+                                           (bez logo i godła MC; wymaga zgody MC)
       kafel_social_1080.{svg,png}         – kafel do mediów społecznościowych dla dostawców danych
       baner_www_1200x300.{svg,png}        – baner www
 Tekst jest zamieniony na krzywe – pliki nie wymagają zainstalowanej czcionki.
@@ -23,6 +26,7 @@ Tekst jest zamieniony na krzywe – pliki nie wymagają zainstalowanej czcionki.
 from __future__ import annotations
 
 import io
+import re
 import sys
 from pathlib import Path
 
@@ -71,7 +75,9 @@ def z_polem(inner: str, w: float, h: float, x: float) -> tuple[str, float, float
 
 def wrap(font: str, text: str, size: float, maxw: float) -> list[str]:
     lines, cur = [], ""
-    for word in text.split():
+    for word in text.split(" "):          # tylko zwykłe spacje – NBSP (U+00A0) wiąże słowa
+        if not word:
+            continue
         cand = f"{cur} {word}".strip()
         if cur and F[font].width(cand, size) > maxw:
             lines.append(cur)
@@ -83,7 +89,7 @@ def wrap(font: str, text: str, size: float, maxw: float) -> list[str]:
     return lines
 
 
-def para(font, text, x, y, size, maxw, fill, lh=1.25, max_lines=None, min_size=8, balance=False):
+def para(font, text, x, y, size, maxw, fill, lh=1.25, max_lines=None, min_size=8, balance=False, anchor="start"):
     """Akapit zawijany do maxw; jeśli nie mieści się w max_lines, zmniejsza czcionkę. y = linia bazowa 1. wiersza.
     balance=True – wyrównuje długości wierszy (bez „sierotki” typu jedno słowo w ostatnim wierszu)."""
     while True:
@@ -96,7 +102,7 @@ def para(font, text, x, y, size, maxw, fill, lh=1.25, max_lines=None, min_size=8
         while w > 50 and len(wrap(font, text, size, w - 5)) == n:
             w -= 5
         lines = wrap(font, text, size, w)
-    out = "".join(T(font, ln, x, y + i * size * lh, size, fill)[0] for i, ln in enumerate(lines))
+    out = "".join(T(font, ln, x, y + i * size * lh, size, fill, anchor=anchor)[0] for i, ln in enumerate(lines))
     return out, size, len(lines)
 
 
@@ -161,8 +167,9 @@ def qr_path(url: str, x: float, y: float, size: float, fill: str) -> str:
 
 
 # ---------------------------------------------------------------- naklejka na kapsułę AED (mm)
-def naklejka() -> str:
-    """100×140 mm. Bez zielonego pola z białym sercem (odróżnienie od ISO 7010 E010): pas w kolorze mięty."""
+def naklejka(qr: bool = True) -> str:
+    """100×140 mm. Bez zielonego pola z białym sercem (odróżnienie od ISO 7010 E010): pas w kolorze mięty.
+    qr=False: zamiast kodu QR pinezka Partnera i tekst „dane w dane.gov.pl” (wariant do prezentacji)."""
     W, H = 100, 140
     o = [f'<rect x="0.2" y="0.2" width="{W - 0.4}" height="{H - 0.4}" rx="6" fill="#FFFFFF" stroke="{G.LINE}" '
          'stroke-width="0.4"/>']
@@ -175,13 +182,20 @@ def naklejka() -> str:
     ps = fit("bold", TXT.NAKLEJKA_PAS, 5.6, W - 12)
     o.append(T("bold", TXT.NAKLEJKA_PAS, W / 2, 44.2, ps, GREEN_DARK, anchor="middle")[0])
     qx, qy, qs = 5, 54, 42
-    o.append(qr_path(TXT.QR_URL, qx, qy, qs, NAVY))
+    if qr:
+        o.append(qr_path(TXT.QR_URL, qx, qy, qs, NAVY))
+        opis = TXT.NAKLEJKA_QR_OPIS
+    else:
+        mk = G.marker_partner().split("</title>", 1)[1].split("</desc>", 1)[-1].rsplit("</svg>", 1)[0]
+        o.append(f'<rect x="{qx}" y="{qy}" width="{qs}" height="{qs}" rx="4" fill="{MINT}"/>')
+        o.append(f'<g transform="translate({qx + 7} {qy + 3.5}) scale({28 / 32:.4f})">{mk}</g>')
+        opis = TXT.NAKLEJKA_BEZ_QR_OPIS
     tx = qx + qs + 3
     yy = qy + 9
-    for i, t in enumerate(TXT.NAKLEJKA_QR_OPIS):
-        f, s = ("bold", 4.2) if i == 0 else ("med", 3.6)
+    for i, t in enumerate(opis):
+        f, s = ("bold", 4.2) if i == 0 or (not qr and i == 1) else ("med", 3.6)
         o.append(T(f, t, tx, yy, min(s, fit(f, t, s, W - tx - 4)), NAVY)[0])
-        yy += 6.2 if i == 0 else s * 1.45
+        yy += 6.2 if (i == 0 and qr) or (not qr and i == 1) else s * 1.45
     o.append(T("semi", TXT.NAKLEJKA_ID, tx, qy + qs - 5, fit("semi", TXT.NAKLEJKA_ID, 3, W - tx - 4), GRAY)[0])
     o.append(f'<path d="M0 102 H{W} V134 a6 6 0 0 1 -6 6 H6 a6 6 0 0 1 -6 -6 Z" fill="{NAVY}"/>')
     o.append(T("semi", "Nagłe zatrzymanie krążenia?", W / 2, 113, 4.4, WHITE, anchor="middle")[0])
@@ -190,6 +204,34 @@ def naklejka() -> str:
     o.append(T("med", "Urządzenie poprowadzi Cię głosem krok po kroku.", W / 2, 131.6, 3.05, LGRAY,
                anchor="middle")[0])
     svg = doc(W, H, "".join(o), f"Naklejka {TXT.NAZWA} na kapsułę AED")
+    return svg.replace(f'width="{W}" height="{H}"', f'width="{W}mm" height="{H}mm"', 1)
+
+
+# ---------------------------------------------------------------- naklejka „Współpracujemy z MC” (PROJEKT, mm)
+def naklejka_mc() -> str:
+    """100×100 mm, na drzwi/witrynę obok AED. Bez logo i godła MC – tylko nazwa (wymaga zgody MC)."""
+    W = H = 100
+    o = [f'<rect x="0.2" y="0.2" width="{W - 0.4}" height="{H - 0.4}" rx="6" fill="#FFFFFF" stroke="{G.LINE}" '
+         'stroke-width="0.4"/>']
+    o.append(place(G.sygnet("light"), 7, 7, 22))
+    hs = fit("bold", TXT.NAZWA, 10, W - 33 - 7)
+    o.append(runs([("bold", TXT.NAZWA_CZ1, NAVY), ("bold", TXT.NAZWA_CZ2, GREEN)], 33, 20, hs)[0])
+    o.append(T("semi", TXT.ODZNAKA_ETYKIETA, 33, 25.6, 3.2, GREEN_DARK, track=0.5)[0])
+    o.append(f'<rect x="0" y="34" width="{W}" height="42" fill="{NAVY}"/>')
+    def nbsp(t):   # bez jednoliterowych słów na końcu wiersza („z”, „i”, „w”)
+        return re.sub(r"(?<=\s)([aiouwzAIOUWZ]) ", "\\1\u00a0", t)
+
+    ms, lh = 6.4, 1.22
+    n = para("bold", nbsp(TXT.NAKLEJKA_MC), W / 2, 0, ms, W - 14, WHITE, lh=lh, max_lines=4, balance=True)[2]
+    y0 = 55 - ((n - 1) * ms * lh - ms * 0.7) / 2      # wyśrodkowanie bloku w pasie 34–76 mm
+    o.append(para("bold", nbsp(TXT.NAKLEJKA_MC), W / 2, y0, ms, W - 14, WHITE, lh=lh, max_lines=4, balance=True,
+                  anchor="middle")[0])
+    o.append(para("med", nbsp(TXT.NAKLEJKA_MC_PODPIS), W / 2, 82.8, 3.6, W - 16, NAVY, lh=1.3, max_lines=2,
+                  balance=True, anchor="middle")[0])
+    o.append(f'<path d="M0 90 H{W} V94 a6 6 0 0 1 -6 6 H6 a6 6 0 0 1 -6 -6 Z" fill="#FFF6E0"/>')
+    us = fit("semi", TXT.NAKLEJKA_MC_UWAGA, 3.1, W - 12, 0.1)
+    o.append(T("semi", TXT.NAKLEJKA_MC_UWAGA, W / 2, 96.4, us, "#8A5A00", track=0.1, anchor="middle")[0])
+    svg = doc(W, H, "".join(o), f"Projekt naklejki: {TXT.NAKLEJKA_MC}", desc=TXT.NAKLEJKA_MC_UWAGA)
     return svg.replace(f'width="{W}" height="{H}"', f'width="{W}mm" height="{H}mm"', 1)
 
 
@@ -245,11 +287,13 @@ def baner() -> str:
 
 def zastosowania() -> dict[str, str]:
     ZAST.mkdir(exist_ok=True)
-    out = {"naklejka_kapsula_aed": naklejka(), "kafel_social_1080": kafel(), "baner_www_1200x300": baner()}
+    out = {"naklejka_kapsula_aed": naklejka(), "naklejka_kapsula_aed_bez_qr": naklejka(qr=False),
+           "naklejka_wspolpraca_mc": naklejka_mc(), "kafel_social_1080": kafel(), "baner_www_1200x300": baner()}
     for name, svg in out.items():
         (ZAST / f"{name}.svg").write_text(svg, encoding="utf-8")
-    cairosvg.svg2pdf(bytestring=out["naklejka_kapsula_aed"].encode(), write_to=str(ZAST / "naklejka_kapsula_aed.pdf"))
-    png(out["naklejka_kapsula_aed"], width=1200).save(ZAST / "naklejka_kapsula_aed.png", optimize=True)
+    for name in ("naklejka_kapsula_aed", "naklejka_kapsula_aed_bez_qr", "naklejka_wspolpraca_mc"):
+        cairosvg.svg2pdf(bytestring=out[name].encode(), write_to=str(ZAST / f"{name}.pdf"))
+        png(out[name], width=1200).save(ZAST / f"{name}.png", optimize=True)
     png(out["kafel_social_1080"], width=1080).convert("RGB").save(ZAST / "kafel_social_1080.png", optimize=True)
     png(out["baner_www_1200x300"], width=1200).convert("RGB").save(ZAST / "baner_www_1200x300.png", optimize=True)
     return out

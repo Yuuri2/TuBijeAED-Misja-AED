@@ -37,7 +37,6 @@ DEFAULT_MEDIA_DIR = PROJECT_DIR / "data" / "media"
 # Pliki demo (seed portalu): przycięte, prawdziwe zasoby gmin z dane.gov.pl w app/portal/dane_demo/ – działają bez sieci.
 DANEGOV_FIXTURES_DIR = PROJECT_DIR / "app" / "portal" / "dane_demo"   # nazwa historyczna; dane demo nie zależą od tests/
 BRAND_DIR = STATIC_DIR / "brand"
-KONCEPCJE_DIR = REPO_DIR / "3_branding" / "koncepcje"
 # Limit pliku XML harvestera (panel dostawcy).
 MAX_XML_BYTES = int(os.environ.get("MAX_XML_BYTES", 5 * 1024 * 1024))
 
