@@ -7,12 +7,13 @@ from app.portal import partnerzy, repo_portal, seed_portal, wykazy
 def test_seed_buduje_wykaz_z_co_najmniej_3_dostawcami_i_pokazuje_odrzucenie():
     s = seed_portal.zasiej()
     w = wykazy.aktualny_wykaz()
-    assert s["wykaz"]["status"] == "OK" and w["liczba_dostawcow"] >= 3
+    assert s["wykaz"]["status"] == "OK" and w["liczba_dostawcow"] >= 4
     uwz = {u["instytucja"] for u in w["uwzglednione"]}
     pom = {x["instytucja"] for x in w["pominiete"]}
-    assert "Urząd Miasta Legionowo" in uwz                                      # migracja gminy (scenariusz demo)
+    assert {"Urząd Miasta Legionowo", "Urząd Miejski w Przemyślu"} <= uwz       # migracja gmin (scenariusz demo)
+    assert {r["wojewodztwo"] for r in wykazy.rekordy_wykazu("AED")} >= {"mazowieckie", "podkarpackie"}
     assert any("fikcyjna" in n and "błędami" in n for n in pom)                # firma z błędami odrzucona
-    assert {"Urząd Miasta Krosna", "Urząd Miejski w Przemyślu", "Urząd Miasta Marki"} <= pom
+    assert {"Urząd Miasta Krosna", "Urząd Miasta Marki"} <= pom
     assert w["raport_jakosci"]["liczba_potencjalnych_duplikatow"] >= 1
 
     nazwy = {i["nazwa"]: i for i in repo_portal.lista_instytucji()}
@@ -25,6 +26,7 @@ def test_seed_buduje_wykaz_z_co_najmniej_3_dostawcami_i_pokazuje_odrzucenie():
     statusy = {n: partnerzy.status_partnera(i["id"])["status"] for n, i in nazwy.items()}
     assert statusy[seed_portal.PARTNER["nazwa"]] == "AKTYWNY"
     assert statusy[seed_portal.SPOLDZIELNIA["nazwa"]] == "WYGASŁY"
+    assert statusy["Urząd Miasta Legionowo"] == "BRAK"      # dane gminy: tylko 3 z 8 pól „ponad minimum” (<50%)
     assert statusy["Urząd m.st. Warszawy"] == "BRAK"
 
 
@@ -34,6 +36,9 @@ def test_seed_nie_ukrywa_brakow_gmin():
     assert all(r["czy_zamkniete"] is None and r["dostepnosc_typ"] is None for r in rekordy)
     legionowo, *_ = seed_portal.konwertuj_gmine("40593")
     assert all(r["instrukcja_dostepu"] == seed_portal.ZNACZNIK_DEMO for r in legionowo)
+    przemysl, *_ = seed_portal.konwertuj_gmine("4581")
+    assert all(r["instrukcja_dostepu"] == seed_portal.ZNACZNIK_DEMO for r in przemysl)
+    assert all(r["wojewodztwo"] == "podkarpackie" for r in przemysl)
 
 
 def test_seed_firmy_fikcyjne_z_poprawnymi_identyfikatorami():

@@ -3,7 +3,7 @@
 Co powstaje:
 * Ministerstwo Cyfryzacji (state) – właściciel zbioru „Wykaz defibrylatorów AED – wykaz zbiorczy”.
 * 4 urzędy gmin (local) z zasobami AED zmigrowanymi z PRAWDZIWYCH plików dane.gov.pl
-  (`tests/fixtures/danegov/`, przycięte) istniejącym kodem `app/sources/danegov.py` + `mapowania_danegov.py`
+  (`app/portal/dane_demo/`, przycięte) istniejącym kodem `app/sources/danegov.py` + `mapowania_danegov.py`
   -> CSV wg wzorca -> zasób z `wykaz_typ="AED"`.
 * Urząd m.st. Warszawy (local) – bez zasobu AED („jeszcze nie dołączył”).
 * Podmioty FIKCYJNE (nazwy jawnie przykładowe, NIP/REGON testowe z poprawną sumą kontrolną):
@@ -15,9 +15,9 @@ Uczciwość danych gmin (decyzja Backendu do akceptacji Managera):
 `status_urzadzenia`. Konwersja NIE zgaduje tych wartości. Ustawia wartość „nieznana” wyłącznie tam, gdzie słownik
 w aed_schema.json ją przewiduje (dziś tylko `status_urzadzenia = "nieznany"`; jeśli schemat dostanie wartość
 `BRAK_DANYCH` w innych słownikach – kod użyje jej automatycznie). Pozostałe braki zostają brakami, więc zasoby
-Krosna, Przemyśla i Marek są odrzucane z raportem per wiersz (dodatkowo mają prawdziwe usterki: brak numeru
+Krosna i Marek (oraz zasoby gmin bez scenariusza uzupełnienia) są odrzucane z raportem per wiersz (dodatkowo mają prawdziwe usterki: brak numeru
 budynku, w Markach współrzędne skopiowane z Krosna).
-Aby wykaz miał ≥ 3 dostawców i pokazywał migrację gminy, Legionowo odgrywa scenariusz „urząd uzupełnił braki
+Aby wykaz miał ≥ 4 dostawców i ≥ 2 województwa, Legionowo (mazowieckie) i Przemyśl (podkarpackie) odgrywają scenariusz „urząd uzupełnił braki
 w asystencie dostawcy”: brakujące pola dostępu dostają wartości ZACHOWAWCZE, jawnie oznaczone jako demo
 (tytuł i opis zasobu, `instrukcja_dostepu` = „DANE DEMO …”). To jedyne miejsce, gdzie seed dopisuje wartości.
 """
@@ -36,7 +36,7 @@ logger = logging.getLogger("tubijeaed.seed")
 
 NAZWA_MC = "Ministerstwo Cyfryzacji"
 
-# zbiór dane.gov.pl -> (plik z danymi, format, id instytucji w fixture'ach)
+# zbiór dane.gov.pl -> (plik z danymi, format, id instytucji w plikach demo)
 GMINY = {
     "3624": ("krosno_3624.csv", "csv", "229"),
     "4581": ("przemysl_62093.geojson", "geojson", "145"),
@@ -55,6 +55,18 @@ UZUPELNIENIA_DEMO: dict[str, dict] = {
         "czy_zamkniete": "TAK_OCHRONA",
         "instrukcja_dostepu": ZNACZNIK_DEMO,
     },
+    # Przemyśl (podkarpackie): ten sam scenariusz – gmina przekonwertowała stary zasób i uzupełniła braki.
+    "4581": {
+        "wewnatrz_budynku": "NIE",
+        "dostepnosc_typ": "24_7",
+        "godziny_dostepnosci": "24/7",
+        "czy_zamkniete": "NIE",
+        "instrukcja_dostepu": ZNACZNIK_DEMO,
+    },
+}
+# Dodatkowo ręcznie poprawiane usterki źródła (zbiór -> id_aed -> pola), też jawnie jako demo.
+POPRAWKI_DEMO: dict[str, dict[str, dict]] = {
+    "4581": {"753": {"nr_budynku": "19"}},   # numer budynku jest w opisie lokalizacji źródła
 }
 WARTOSCI_NIEZNANE = ("nieznany", "BRAK_DANYCH")
 
@@ -164,7 +176,7 @@ def _uzupelnij_nieznane(r: dict) -> None:
 
 
 def konwertuj_gmine(zbior_id: str) -> tuple[list[dict], dict, dict, dict]:
-    """Plik gminy z fixture'ów -> rekordy wzorca (istniejące app/sources/danegov.normalizuj).
+    """Plik gminy z plików demo -> rekordy wzorca (istniejące app/sources/danegov.normalizuj).
     Zwraca (rekordy, atrybuty zbioru, atrybuty instytucji, zasób dane.gov.pl)."""
     from ..sources import czytniki, danegov
     from ..sources.mapowania_danegov import MAPOWANIA
@@ -187,11 +199,14 @@ def konwertuj_gmine(zbior_id: str) -> tuple[list[dict], dict, dict, dict]:
         for k, v in UZUPELNIENIA_DEMO.get(zbior_id, {}).items():
             if r.get(k) is None:
                 r[k] = v
+        for k, v in POPRAWKI_DEMO.get(zbior_id, {}).get(str(r.get("id_aed")), {}).items():
+            if r.get(k) is None:
+                r[k] = v
         wynik.append(r)
     return wynik, zbior["attributes"], instytucja["attributes"], zasob or {}
 
 
-def _instytucja_z_fixture(inst_id: str) -> dict:
+def _instytucja_z_demo(inst_id: str) -> dict:
     a = json.loads((config.DANEGOV_FIXTURES_DIR / f"institution_{inst_id}.json").read_text(encoding="utf-8"))["data"]["attributes"]
     return repo_portal.utworz_instytucje(nazwa=a["title"], typ=a.get("institution_type") or "local", regon=a.get("regon"),
                                          nip=a.get("nip"), email=a.get("email"), www=a.get("website"))
@@ -209,7 +224,7 @@ def zasiej() -> dict:
     # ---- gminy: migracja prawdziwych zasobów dane.gov.pl do wzorca
     for zid in GMINY:
         rekordy, za, _, zasob = konwertuj_gmine(zid)
-        inst = _instytucja_z_fixture(GMINY[zid][2])
+        inst = _instytucja_z_demo(GMINY[zid][2])
         podsumowanie["instytucje"] += 1
         demo = zid in UZUPELNIENIA_DEMO
         zb = repo_portal.utworz_zbior(
@@ -230,7 +245,7 @@ def zasiej() -> dict:
             wykaz_typ="AED", data_danych=data_danych, ext_ident=f"dane.gov.pl:{zid}:aed", przebuduj=False)
         podsumowanie["zasoby"].append((inst["nazwa"], w["zasob"]["walidacja_status"]))
 
-    _instytucja_z_fixture(WARSZAWA_INSTYTUCJA)            # bez zasobu AED – „jeszcze nie dołączył”
+    _instytucja_z_demo(WARSZAWA_INSTYTUCJA)            # bez zasobu AED – „jeszcze nie dołączył”
     podsumowanie["instytucje"] += 1
 
     # ---- podmioty fikcyjne

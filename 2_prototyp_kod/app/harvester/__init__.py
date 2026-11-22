@@ -283,17 +283,20 @@ def _blad(bledy: list, *, zbior: str | None, zasob: str | None, kod: str, komuni
 def importuj_xml(tresc: bytes, instytucja_id: int, *, pobieracz: Pobieracz | None = None) -> dict:
     """Import pliku harvestera XML (1.13 lub 1.14) na konto instytucji.
 
-    -> {wersja, zbiory_utworzone, zasoby_utworzone, bledy: [{poziom, zbior, zasob, kod, komunikat}],
-        ostrzezenia: [str], zasoby: [{ext_ident, id, tytul, wykaz_typ, walidacja_status, wykaz}]}
-    `zbiory_utworzone`/`zasoby_utworzone` liczą zbiory/zasoby zapisane (utworzone lub zaktualizowane po ext_ident).
+    -> {wersja, zbiory_utworzone, zbiory_zaktualizowane, zasoby_utworzone, zasoby_zaktualizowane,
+        zbiory_zapisane, zasoby_zapisane, bledy: [{poziom, zbior, zasob, kod, komunikat}],
+        ostrzezenia: [str], zasoby: [{ext_ident, id, tytul, wykaz_typ, walidacja_status, wykaz, akcja}]}
+    `*_utworzone` – nowe rekordy, `*_zaktualizowane` – istniejące (ten sam ext_ident), `*_zapisane` – suma obu.
+    Rozpoznanie następuje przed zapisem, po ext_ident (zbiór: w obrębie instytucji, zasób: w obrębie zbioru).
     Błąd całego pliku (składnia, wersja, XSD) -> liczniki 0 i jeden błąd z `poziom="plik"`.
     """
     from ..portal import repo_portal
     from ..portal.wykazy import BladWykazu
 
     pobierz = pobieracz or pobierz_plik
-    wynik = {"wersja": None, "zbiory_utworzone": 0, "zasoby_utworzone": 0, "bledy": [], "ostrzezenia": [],
-             "zasoby": []}
+    wynik = {"wersja": None, "zbiory_utworzone": 0, "zbiory_zaktualizowane": 0, "zbiory_zapisane": 0,
+             "zasoby_utworzone": 0, "zasoby_zaktualizowane": 0, "zasoby_zapisane": 0,
+             "bledy": [], "ostrzezenia": [], "zasoby": []}
     bledy, ostrz = wynik["bledy"], wynik["ostrzezenia"]
     try:
         wersja, korzen = wczytaj_i_waliduj(tresc)
@@ -317,6 +320,7 @@ def importuj_xml(tresc: bytes, instytucja_id: int, *, pobieracz: Pobieracz | Non
         odrzucone_aed = {e for e, _ in aed}
 
     for zb in zbiory:
+        istnial = _zbior_istnieje(repo_portal, instytucja_id, zb.ext_ident)
         try:
             zbior = repo_portal.utworz_zbior(
                 instytucja_id, tytul=zb.tytul, opis=zb.opis, licencja=zb.licencja or "CC BY 4.0",
@@ -330,7 +334,8 @@ def importuj_xml(tresc: bytes, instytucja_id: int, *, pobieracz: Pobieracz | Non
         except Exception as e:  # noqa: BLE001 – błąd jednego zbioru nie przerywa importu
             _blad(bledy, zbior=zb.ext_ident, zasob=None, kod="zapis", komunikat=f"Nie zapisano zbioru: {e}")
             continue
-        wynik["zbiory_utworzone"] += 1
+        wynik["zbiory_zaktualizowane" if istnial else "zbiory_utworzone"] += 1
+        wynik["zbiory_zapisane"] += 1
 
         for zs in zb.zasoby:
             if zs.chronione:
@@ -341,6 +346,19 @@ def importuj_xml(tresc: bytes, instytucja_id: int, *, pobieracz: Pobieracz | Non
                 continue
             _importuj_zasob(zbior["id"], zb, zs, pobierz, repo_portal, BladWykazu, wynik)
     return wynik
+
+
+def _zbior_istnieje(repo_portal, instytucja_id: int, ext_ident: str | None) -> bool:
+    if not ext_ident:
+        return False
+    return any(z.get("ext_ident") == ext_ident
+               for z in repo_portal.lista_zbiorow(instytucja_id=instytucja_id, tylko_opublikowane=False))
+
+
+def _zasob_istnieje(repo_portal, zbior_id: int, ext_ident: str | None) -> bool:
+    if not ext_ident:
+        return False
+    return any(z.get("ext_ident") == ext_ident for z in repo_portal.lista_zasobow(zbior_id))
 
 
 def _importuj_zasob(zbior_id: int, zb: ZbiorXML, zs: ZasobXML, pobierz: Pobieracz, repo_portal, BladWykazu,
@@ -364,6 +382,7 @@ def _importuj_zasob(zbior_id: int, zb: ZbiorXML, zs: ZasobXML, pobierz: Pobierac
               komunikat=f"Zasób z aggregatedListType = {wykaz} musi wskazywać plik CSV lub XLSX "
                         f"(otrzymano: „{nazwa}”).")
         return
+    istnial = _zasob_istnieje(repo_portal, zbior_id, zs.ext_ident)
     try:
         odp = repo_portal.dodaj_lub_zaktualizuj_zasob(
             zbior_id, tytul=zs.tytul, opis=zs.opis, plik=plik, nazwa_pliku=nazwa, url=zs.url, wykaz_typ=wykaz,
@@ -377,7 +396,8 @@ def _importuj_zasob(zbior_id: int, zb: ZbiorXML, zs: ZasobXML, pobierz: Pobierac
     except Exception as e:  # noqa: BLE001
         _blad(bledy, zbior=zb.ext_ident, zasob=zs.ext_ident, kod="zapis", komunikat=f"Nie zapisano zasobu: {e}")
         return
-    wynik["zasoby_utworzone"] += 1
+    wynik["zasoby_zaktualizowane" if istnial else "zasoby_utworzone"] += 1
+    wynik["zasoby_zapisane"] += 1
     zasob = (odp or {}).get("zasob") or {}
     if wykaz and zasob.get("walidacja_status") == "BLEDY":
         wynik["ostrzezenia"].append(
@@ -386,4 +406,5 @@ def _importuj_zasob(zbior_id: int, zb: ZbiorXML, zs: ZasobXML, pobierz: Pobierac
     wynik["zasoby"].append({
         "ext_ident": zs.ext_ident, "id": zasob.get("id"), "tytul": zs.tytul, "wykaz_typ": wykaz,
         "walidacja_status": zasob.get("walidacja_status"), "wykaz": (odp or {}).get("wykaz"),
+        "akcja": "zaktualizowano" if istnial else "utworzono",
     })

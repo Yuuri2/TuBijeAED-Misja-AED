@@ -259,3 +259,13 @@ export function fokus(n) {
   if (!n.hasAttribute("tabindex")) n.setAttribute("tabindex", "-1");
   n.focus({ preventScroll: false });
 }
+
+/* ---------- Błędy pól formularzy ---------- */
+/** Jedyny sposób ustawiania/czyszczenia błędu pola: komunikat w <id>-blad (hidden gdy pusty) + aria-invalid. */
+export function bladPola(pole, komunikatBledu) {
+  const el_ = typeof pole === "string" ? document.getElementById(pole) : pole;
+  if (!el_) return;
+  const blad = document.getElementById(`${el_.id}-blad`);
+  if (blad) { blad.textContent = komunikatBledu || ""; blad.hidden = !komunikatBledu; }
+  if (komunikatBledu) el_.setAttribute("aria-invalid", "true"); else el_.removeAttribute("aria-invalid");
+}

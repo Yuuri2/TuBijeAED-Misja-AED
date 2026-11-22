@@ -221,7 +221,7 @@ textarea { min-height: 6rem; resize: vertical; }
 input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--kolor-alarm); }
 .pole-blad { color: var(--kolor-alarm); font-weight: 600; margin: 0; }
 .pole-blad::before { content: "Błąd: "; }
-.pole-blad:empty { display: none; }
+.pole-blad:empty, .pole-blad[hidden] { display: none !important; }
 fieldset { border: 1px solid var(--kolor-obramowanie); border-radius: var(--promien); padding: var(--odstep-4); margin: 0; min-width: 0; }
 legend { padding: 0 var(--odstep-2); }
 .opcja { display: flex; gap: var(--odstep-3); align-items: flex-start; }

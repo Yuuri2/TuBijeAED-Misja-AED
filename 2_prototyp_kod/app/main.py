@@ -10,6 +10,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -48,6 +49,35 @@ async def _http_blad(request, exc: StarletteHTTPException):
     elif isinstance(exc.detail, dict) and "error" in exc.detail:
         tresc = exc.detail
     return JSONResponse(status_code=exc.status_code, content=tresc, headers=getattr(exc, "headers", None))
+
+
+_TYPY_BLEDOW = {
+    "int_parsing": "musi być liczbą całkowitą", "int_type": "musi być liczbą całkowitą",
+    "int_from_float": "musi być liczbą całkowitą", "float_parsing": "musi być liczbą",
+    "float_type": "musi być liczbą", "missing": "jest wymagany", "greater_than_equal": "jest za mały",
+    "greater_than": "jest za mały", "less_than_equal": "jest za duży", "less_than": "jest za duży",
+    "bool_parsing": "musi być wartością logiczną (true/false)", "string_too_short": "jest za krótki",
+    "string_too_long": "jest za długi", "json_invalid": "zawiera niepoprawny JSON",
+    "enum": "ma niedozwoloną wartość", "literal_error": "ma niedozwoloną wartość",
+    "string_pattern_mismatch": "ma niepoprawny format", "value_error": "ma niepoprawną wartość",
+}
+
+
+@app.exception_handler(RequestValidationError)
+async def _blad_parametrow(request, exc: RequestValidationError):
+    """422 z polskim opisem (zamiast surowych komunikatów pydantic po angielsku)."""
+    szczegoly = []
+    for e in exc.errors():
+        lok = [str(x) for x in e.get("loc", ()) if x not in ("query", "path", "body", "header", "cookie", "form")]
+        nazwa = ".".join(lok) or "żądanie"
+        opis = _TYPY_BLEDOW.get(e.get("type", ""), "ma niepoprawną wartość")
+        if e.get("type") in ("greater_than_equal", "greater_than", "less_than_equal", "less_than"):
+            gr = (e.get("ctx") or {}).get("ge", (e.get("ctx") or {}).get("gt", (e.get("ctx") or {}).get("le", (e.get("ctx") or {}).get("lt"))))
+            if gr is not None:
+                opis += f" (granica: {gr})"
+        szczegoly.append({"parametr": nazwa, "komunikat": f"Parametr „{nazwa}” {opis}."})
+    glowny = szczegoly[0]["komunikat"] if szczegoly else "Nieprawidłowe parametry żądania."
+    return JSONResponse(status_code=422, content={"error": glowny, "szczegoly": szczegoly})
 
 
 portal_admin.obsluz_bledy(app)     # BladPortalu / BladWykazu -> {"error": ...} z kodem 4xx

@@ -35,6 +35,13 @@ class RepoFake:
                  czestotliwosc=czestotliwosc, slowa_kluczowe=slowa_kluczowe, status=status, zrodlo=zrodlo)
         return z
 
+    def lista_zbiorow(self, *, instytucja_id=None, tylko_opublikowane=True, **_):
+        return [{"id": z["id"], "ext_ident": e, "instytucja_id": z["instytucja_id"]}
+                for e, z in self.zbiory.items() if instytucja_id in (None, z["instytucja_id"])]
+
+    def lista_zasobow(self, zbior_id, **_):
+        return [{"id": z["id"], "ext_ident": e} for e, z in self.zasoby.items() if z["zbior_id"] == zbior_id]
+
     def dodaj_lub_zaktualizuj_zasob(self, zbior_id, *, tytul, opis="", plik=None, nazwa_pliku=None, url=None,
                                     wykaz_typ=None, status="opublikowany", data_danych=None, zasob_id=None,
                                     ext_ident=None):
@@ -58,6 +65,8 @@ class RepoFake:
 def repo(monkeypatch):
     r = RepoFake()
     monkeypatch.setattr(repo_portal, "utworz_zbior", r.utworz_zbior)
+    monkeypatch.setattr(repo_portal, "lista_zbiorow", r.lista_zbiorow)
+    monkeypatch.setattr(repo_portal, "lista_zasobow", r.lista_zasobow)
     monkeypatch.setattr(repo_portal, "dodaj_lub_zaktualizuj_zasob", r.dodaj_lub_zaktualizuj_zasob)
     return r
 
@@ -74,6 +83,17 @@ class Pobieracz:
 
 
 # ---------------------------------------------------------------------------------------------- jednostkowe
+
+def test_ponowny_import_rozroznia_utworzone_i_zaktualizowane(repo):
+    w1 = harvester.importuj_xml(PRZYKLAD_114, 7)
+    assert (w1["zbiory_utworzone"], w1["zbiory_zaktualizowane"]) == (1, 0)
+    assert (w1["zasoby_utworzone"], w1["zasoby_zaktualizowane"]) == (2, 0)
+    assert {z["akcja"] for z in w1["zasoby"]} == {"utworzono"}
+    w2 = harvester.importuj_xml(PRZYKLAD_114, 7)
+    assert (w2["zbiory_utworzone"], w2["zbiory_zaktualizowane"], w2["zbiory_zapisane"]) == (0, 1, 1)
+    assert (w2["zasoby_utworzone"], w2["zasoby_zaktualizowane"], w2["zasoby_zapisane"]) == (0, 2, 2)
+    assert {z["akcja"] for z in w2["zasoby"]} == {"zaktualizowano"}
+
 
 def test_import_114_tworzy_zbior_i_zasoby_z_flaga_aed(repo):
     w = harvester.importuj_xml(PRZYKLAD_114, 7)   # domyślny pobieracz: host demo -> plik lokalny (offline)
@@ -144,7 +164,7 @@ def test_bledy_per_zasob_nie_przerywaja_importu(repo):
                           ("aed-json", "https://x.example/dane.json", "format"),
                           ("aed-422", "https://x.example/zle_kolumny.csv", "wykaz_422")):
         r = RepoFake()
-        for nazwa in ("utworz_zbior", "dodaj_lub_zaktualizuj_zasob"):
+        for nazwa in ("utworz_zbior", "dodaj_lub_zaktualizuj_zasob", "lista_zbiorow", "lista_zasobow"):
             setattr(repo_portal, nazwa, getattr(r, nazwa))
         w = harvester.importuj_xml(_plik_z_zasobami((ext, url, "AED"), ("inne", "https://x.example/inne.csv", None)),
                                    1, pobieracz=pob)

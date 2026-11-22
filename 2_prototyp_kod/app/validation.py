@@ -193,6 +193,17 @@ def _komunikat(typ: str, p: dict, **kw) -> str:
     raise ValueError(typ)
 
 
+_LICZBOPODOBNE = re.compile(r"[+-]?\d[\d\s().,/-]*")
+
+
+def wyglada_na_formule(wartosc) -> bool:
+    """CSV/XLSX injection (OWASP): tekst zaczynający się od = + - @ tab lub CR bywa wykonany przez arkusz jako formuła.
+    Czysto liczbowe zapisy (np. kondygnacja „-1”, telefon „+48 22 123 45 67”) NIE są uznawane za formułę."""
+    if not isinstance(wartosc, str) or not wartosc or wartosc[0] not in "=+-@\t\r":
+        return False
+    return not _LICZBOPODOBNE.fullmatch(wartosc.strip())
+
+
 def waliduj_wiersz(wiersz: dict, numer: int = 2, *, pomin_wymagane: frozenset[str] | set[str] = frozenset(),
                    pomin_zalecane: frozenset[str] | set[str] = frozenset()) -> tuple[dict, list[dict], list[dict]]:
     """Waliduje jeden wiersz (dict nazwa_pola -> wartość surowa).
@@ -290,6 +301,12 @@ def waliduj_wiersz(wiersz: dict, numer: int = 2, *, pomin_wymagane: frozenset[st
         p = schema.pole("instrukcja_dostepu")
         ostrzez(p, "zalecane", "Instrukcja dostępu wygląda na zawierającą kod PIN. Nie publikuj kodu w otwartych danych – "
                                "wpisz np. „Kod podaje dyspozytor 112”.")
+    for p in pola:
+        w = rek.get(p["name"])
+        if p.get("type", "string") == "string" and wyglada_na_formule(w):
+            ostrzez(p, "pattern", f"Pole „{p.get('title', p['name'])}” zaczyna się od znaku „{w[0]}”, więc arkusz mógłby "
+                                  "potraktować je jak formułę. W pliku wykazu zbiorczego wartość zostanie zapisana jako "
+                                  "zwykły tekst (z apostrofem w CSV) – rozważ usunięcie tego znaku.")
     godz = rek.get("godziny_dostepnosci")
     if godz and re.search(r"\b(Pn|Wt|Śr|Sr|Cz|Pt|So|Nd|Pon|Wto|Czw|Sob|Niedz)\b", godz):
         ostrzez(schema.pole("godziny_dostepnosci"), "pattern",

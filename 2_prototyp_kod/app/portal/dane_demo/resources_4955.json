@@ -1,0 +1,39 @@
+{
+ "meta": {
+  "count": 2
+ },
+ "data": [
+  {
+   "id": "68353",
+   "type": "resource",
+   "attributes": {
+    "title": "Defibrylatory zlokalizowane na terenie Miasta Marki",
+    "description": "<p style=\"margin-left:0cm; margin-right:0cm;\"><span style=\"background-color:#f9f9f9;\"><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\">Defibrylatory i ich lokalizacja w Mieście Marki</span></span></span></p>",
+    "format": "csv",
+    "media_type": "file",
+    "link": "https://api.dane.gov.pl/media/resources/20250710/Defibrylator_GminaMiastoMarki_1.csv",
+    "file_url": "https://api.dane.gov.pl/media/resources/20250710/Defibrylator_GminaMiastoMarki_1.csv",
+    "download_url": "https://api.dane.gov.pl/resources/68353,defibrylatory-zlokalizowane-na-terenie-miasta-marki/file",
+    "modified": "2025-07-10T12:13:16Z",
+    "data_date": "2025-07-10",
+    "created": "2025-07-10T12:13:16Z"
+   }
+  },
+  {
+   "id": "68355",
+   "type": "resource",
+   "attributes": {
+    "title": "Defibrylatory zlokalizowane na terenie Miasta Marki",
+    "description": "<p style=\"margin-left:0cm; margin-right:0cm;\"><span style=\"background-color:#f9f9f9;\"><span style=\"background-color:white;\"><span style=\"color:#5e5e5e;\">Defibrylatory i ich lokalizacja w Mieście Marki</span></span></span></p>",
+    "format": "xlsx",
+    "media_type": "file",
+    "link": "https://api.dane.gov.pl/media/resources/20250710/Defibrylator_GminaMiastoMarki_1.xlsx",
+    "file_url": "https://api.dane.gov.pl/media/resources/20250710/Defibrylator_GminaMiastoMarki_1.xlsx",
+    "download_url": "https://api.dane.gov.pl/resources/68355,defibrylatory-zlokalizowane-na-terenie-miasta-marki/file",
+    "modified": "2025-07-10T12:17:32Z",
+    "data_date": "2025-07-10",
+    "created": "2025-07-10T12:17:32Z"
+   }
+  }
+ ]
+}

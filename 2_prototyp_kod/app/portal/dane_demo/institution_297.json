@@ -1,0 +1,20 @@
+{
+ "data": {
+  "id": "297",
+  "type": "institution",
+  "attributes": {
+   "title": "Urząd Miasta Legionowo",
+   "slug": "urzad-miasta-legionowo",
+   "regon": "000524832",
+   "institution_type": "local",
+   "email": "kancelaria@um.legionowo.pl",
+   "tel": "0048227742031",
+   "city": "Legionowo",
+   "street": "marsz. J. Piłsudskiego",
+   "street_type": "ul.",
+   "street_number": "41",
+   "postal_code": "05-120",
+   "website": "https://legionowo.pl"
+  }
+ }
+}

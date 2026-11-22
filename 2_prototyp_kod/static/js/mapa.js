@@ -3,7 +3,7 @@
    marker = kształt + kolor + symbol; „Zadzwoń 112” zawsze widoczny; OSM tylko jako warstwa „do weryfikacji”. */
 import { pobierz, wyslij, API_MAPA, lista, plaski } from "./api.js";
 import {
-  $, el, wstaw, wyczysc, ladowanie, pokazBlad, komunikat, tekst, formatOdleglosc, plakietka, plakietkaDostepnosci,
+  bladPola, $, el, wstaw, wyczysc, ladowanie, pokazBlad, komunikat, tekst, formatOdleglosc, plakietka, plakietkaDostepnosci,
   adresRekordu, wspolrzedne, nazwaDostawcy, linkInstytucji, fokus, ZABEZPIECZENIE, DOSTEPNOSC_TYP, STATUS_URZADZENIA,
   tekstZeSlownika, formatLiczba,
 } from "./ui.js";
@@ -172,14 +172,11 @@ function szukajMiasta(e) {
   e.preventDefault();
   const wpis = $("#miasto").value.trim().toLocaleLowerCase("pl");
   const klucz = Object.keys(MIASTA).find((m) => m.toLocaleLowerCase("pl") === wpis);
-  const blad = $("#miasto-blad");
   if (!klucz) {
-    blad.textContent = `Nie znam miasta „${$("#miasto").value}” w danych demo. Wybierz z listy (${Object.keys(MIASTA).join(", ")}) albo wskaż miejsce na mapie.`;
-    $("#miasto").setAttribute("aria-invalid", "true");
+    bladPola("miasto", `Nie znam miasta „${$("#miasto").value}” w danych demo. Wybierz z listy (${Object.keys(MIASTA).join(", ")}) albo wskaż miejsce na mapie.`);
     return;
   }
-  blad.textContent = "";
-  $("#miasto").removeAttribute("aria-invalid");
+  bladPola("miasto", "");
   ustawPozycje(MIASTA[klucz][0], MIASTA[klucz][1], `środek miasta ${klucz}`);
 }
 
@@ -211,7 +208,9 @@ function dodajMarkery(warstwa, punkty) {
     const rod = rodzaj(r);
     const m = L.marker(c, {
       icon: IKONY[rod],
-      title: `${nazwaPunktu(r)} – ${OPIS_RODZAJU[rod]}`, alt: `${nazwaPunktu(r)} – ${OPIS_RODZAJU[rod]}`, keyboard: true, riseOnHover: true,
+      title: `${nazwaPunktu(r)} – ${OPIS_RODZAJU[rod]}`, alt: `${nazwaPunktu(r)} – ${OPIS_RODZAJU[rod]}`,
+      /* keyboard:false – 15+ markerów to 15+ tabstopów; pełną alternatywą jest lista tekstowa (przycisk „Pokaż na mapie”), do której prowadzi link „Pomiń mapę” (WCAG 2.1.1 spełnione listą, 2.4.3 – logiczna kolejność). */
+      keyboard: false, riseOnHover: true,
     });
     m.bindPopup(() => popup(r));
     m.addTo(warstwa);

@@ -20,3 +20,14 @@ def test_routery_sprintu_2_zamontowane(client):
 def test_stare_endpointy_v1_wycofane(client):
     assert client.get("/api/v1/aed").status_code == 404
     assert client.post("/api/v1/dysponent/walidacja").status_code in (404, 405)
+
+
+def test_blad_parametru_po_polsku():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app) as c:
+        r = c.get("/api/1.4/institutions/abc")
+    assert r.status_code == 422
+    j = r.json()
+    assert "liczbą całkowitą" in j["error"] and "Input should" not in str(j)
+    assert j["szczegoly"] and j["szczegoly"][0]["parametr"]

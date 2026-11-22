@@ -34,8 +34,8 @@ def get_db_path() -> Path:
 
 # ----------------------------------------------------------------------------- prototyp portalu (Sprint 2)
 DEFAULT_MEDIA_DIR = PROJECT_DIR / "data" / "media"
-# Pliki demo (seed portalu): przycięte, prawdziwe zasoby gmin z dane.gov.pl – działają bez sieci.
-DANEGOV_FIXTURES_DIR = PROJECT_DIR / "tests" / "fixtures" / "danegov"
+# Pliki demo (seed portalu): przycięte, prawdziwe zasoby gmin z dane.gov.pl w app/portal/dane_demo/ – działają bez sieci.
+DANEGOV_FIXTURES_DIR = PROJECT_DIR / "app" / "portal" / "dane_demo"   # nazwa historyczna; dane demo nie zależą od tests/
 BRAND_DIR = STATIC_DIR / "brand"
 KONCEPCJE_DIR = REPO_DIR / "3_branding" / "koncepcje"
 # Limit pliku XML harvestera (panel dostawcy).

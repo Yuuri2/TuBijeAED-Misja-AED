@@ -1,0 +1,53 @@
+{
+ "data": {
+  "id": "4581",
+  "type": "dataset",
+  "attributes": {
+   "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+   "slug": "lokalizacje-aed-automatycznych-defibrylatorow-zewn",
+   "notes": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (AED) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory AED to urządzenia medyczne, które są łatwe w obsłudze i przeznaczone do użytku przez osoby bez specjalistycznego przeszkolenia. Służą do ratowania życia w przypadku nagłego zatrzymania krążenia (NZK), dostarczając impuls elektryczny do serca, co może przywrócić jego normalny rytm.</p>\r\n\r\n<p>Dane o lokalizacjach AED są aktualizowane w czasie zbliżonym do rzeczywistego dzięki API, co pozwala użytkownikom na dostęp do najnowszych informacji o dostępności tych urządzeń w mieście. Informacje mogą być przydatne dla mieszkańców oraz służb ratunkowych w sytuacjach nagłych, gdzie szybka lokalizacja najbliższego AED może uratować życie.</p>\r\n\r\n<p>Ten zbiór danych może być również wartościowym zasobem dla aplikacji mobilnych oraz systemów informacyjnych, które chcą zwiększyć bezpieczeństwo mieszkańców i odwiedzających miasto.</p>",
+   "license_name": "CC0 1.0",
+   "license_chosen": null,
+   "modified": "2024-11-06T06:42:45Z",
+   "created": "2024-11-06T06:40:48Z",
+   "update_frequency": "Codziennie",
+   "keywords": [
+    "bezpieczeństwo",
+    "zdrowie",
+    "Defibrylator",
+    "zdrowie publiczne",
+    "AED"
+   ],
+   "categories": [
+    {
+     "code": "SOCI",
+     "title": "Ludność i społeczeństwo",
+     "id": "146"
+    },
+    {
+     "code": "HEAL",
+     "title": "Zdrowie",
+     "id": "147"
+    }
+   ],
+   "regions": [
+    {
+     "name": "Polska",
+     "region_id": "85633723",
+     "hierarchy_label": "Polska",
+     "is_additional": false
+    }
+   ],
+   "source": null,
+   "url": "https://przemysl.pl/45/mapa-interaktywna.html#/map?category=54"
+  },
+  "relationships": {
+   "institution": {
+    "data": {
+     "type": "institution",
+     "id": "145"
+    }
+   }
+  }
+ }
+}

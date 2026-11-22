@@ -1,7 +1,11 @@
-# static/brand – zasoby #TuBijeAED (koncepcja C „Puls – tu jestem”)
+# static/brand – zasoby #TuBijeAED (koncepcja C, sygnet C2 „Fale nadawania”)
+
+**Decyzja: C2.** Sygnet to zielone serce z wyciętą błyskawicą (prześwituje tło), bez zielonego pola, z dwoma otwartymi łukami sygnału
+(odróżnia znak od ISO 7010 E010, uzasadnienie w `3_branding/final/UWAGI_C.md`). Nazwy plików, tokeny, placeholder
+`DD.MM.RRRR` i kotwice znaczników się nie zmieniły.
 
 Właściciel: UI/UX. Pliki SVG generuje `3_branding/final/generuj_final.py` (nie edytuj ich ręcznie, tylko zmień generator
-i uruchom go ponownie: `.venv/bin/python 3_branding/final/generuj_final.py`). Każdy SVG ma `role="img"`, `aria-label`
+i uruchom go ponownie: `.venv/bin/python 3_branding/final/generuj_final.py`, a najlepiej całość: `.venv/bin/python 3_branding/generuj_ksiege.py`). Teksty (podpis pod logo, hasło, napisy odznaki) są w `3_branding/teksty_marki.py` – opis w `3_branding/README.md`. Każdy SVG ma `role="img"`, `aria-label`
 i `<title>`, nie zawiera skryptów ani zewnętrznych odwołań, a tekst jest zamieniony na krzywe. Wyjątkiem jest data
 ważności odznaki (opis niżej). Aplikacja serwuje `static/` pod `/`, więc adresy plików to `/brand/<plik>`.
 
@@ -10,10 +14,10 @@ ważności odznaki (opis niżej). Aplikacja serwuje `static/` pod `/`, więc adr
 | Plik | Rozmiar (viewBox) | Użycie |
 |---|---|---|
 | `logo.svg` | 681×160 | logo poziome z podpisem „DEFIBRYLATORY NA MAPIE · OTWARTE DANE”, jasne tło; wysokość w UI **≥ 64 px** (żeby podpis był czytelny) |
-| `logo-negatyw.svg` | 681×160 | to samo na granacie `--kolor-tlo-ciemne` (tło przezroczyste, pierścienie dobrane do granatu) |
+| `logo-negatyw.svg` | 681×160 | to samo na granacie `--kolor-tlo-ciemne` (tło przezroczyste; serce i fale w `#5FD38D`, błyskawica wycięta – ma kolor tła) |
 | `logo-kompakt.svg`, `logo-kompakt-negatyw.svg` | 783×160 | bez podpisu, do nagłówka 32–56 px i na telefony |
-| `sygnet.svg` | 100×100 | sam znak (awatar, kafle, ikona ≥ 24 px) |
-| `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png` | 100×100 / 32 / 180 | uproszczony sygnet (bez pierścieni, grubsza błyskawica), czytelny w 16/32 px |
+| `sygnet.svg` | 100×100 | sam znak C2 (awatar, kafle, ikona ≥ 24 px); przezroczyste tło, tylko na jasnym podłożu |
+| `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png` | 100×100 / 32 / 180 | uproszczony C2 (większe serce, grubsza błyskawica, jeden gruby łuk), czytelny w 16/32 px na jasnej i ciemnej karcie |
 | `odznaka-{jasna,ciemna}-pelna.svg` | 200×60 | odznaka Partnera z datą ważności |
 | `odznaka-{jasna,ciemna}-mala.svg` | 88×31 | mała odznaka (data tylko w `title`/`aria-label`) |
 | `odznaka-wygasla-{pelna,mala}.svg` | 200×60 / 88×31 | odznaka wygasła: szara, **przerywana ramka** i ikona zegara zamiast ptaszka (różni się nie tylko kolorem) |
@@ -79,6 +83,7 @@ więc pełną treść niesie `alt`. Jeśli miejsce pozwala, używaj odznaki peł
 | `marker-partner.svg` | **kwadratowy dymek** z sercem + kółko z **ptaszkiem ✓** w rogu | granat + zieleń sygnałowa | AED z wykazu, którego dostawca jest **Partnerem #TuBijeAED** (`properties.partner == true`) | `iconSize:[32,40], iconAnchor:[16,38], popupAnchor:[0,-34]` |
 | `marker-osm.svg` | **romb z przerywaną krawędzią** i znakiem **„?”** | biały + szary | punkt z **OpenStreetMap „do weryfikacji”** (ODbL, nie jest w wykazie) | `iconSize:[28,28], iconAnchor:[14,14], popupAnchor:[0,-14]` |
 
+Znaczniki nie zawierają sygnetu (to piktogram serca z błyskawicą w pinezce), więc wybór C2 ich nie zmienił.
 Czytelne w 28–36 px (podgląd: `3_branding/final/podglad/markery.png`). Każdy kształt ma obrys, który oddziela go od
 podkładu (zieleń na tle OSM `#F2EFE9` ma 4,19:1, granat 13,41:1, szary 6,56:1, czyli ≥ 3:1 wg WCAG 1.4.11).
 
@@ -127,7 +132,7 @@ Próg AA: tekst normalny ≥ 4,5:1, tekst duży (≥ 24 px albo ≥ 18,66 px bol
 | `--kolor-obramowanie-pola` | mięta | 3,27:1 | tak (UI) | |
 | `--kolor-obramowanie` #CBD5E0 | biel | 1,49:1 | **nie** | **tylko dekoracyjnie** (karty, separatory), nigdy jako jedyna krawędź pola formularza |
 | `--kolor-akcent-na-ciemnym` | biel | 1,88:1 | **nie** | zakaz na jasnym tle |
-| `--kolor-glowny` | granat | 3,20:1 | tylko grafika | sygnet na ciemnym (1.4.11), nie tekst |
+| `--kolor-glowny` | granat | 3,20:1 | tylko grafika | nie tekst; sygnet na granacie używa `#5FD38D` (8,20:1) |
 | `--kolor-alarm` | granat | 2,93:1 | **nie** | zakaz |
 | `--kolor-alarm` | `--kolor-glowny` | 1,09:1 | **nie** | zakaz (czerwień nigdy na zieleni) |
 

@@ -235,3 +235,34 @@ def test_pusty_wykaz_tworzony_jak_w_dga(p):
     info = wykazy.utworz_wykaz_zbiorczy("AED")
     assert info["status"] == "OK" and info["liczba_rekordow"] == 0
     assert wykazy.rekordy_wykazu() == []
+
+
+# ----------------------------------------------------------------------------- B-01: CSV/XLSX injection
+
+def test_wyglada_na_formule():
+    from app.validation import wyglada_na_formule
+    for v in ('=HYPERLINK("http://x","y")', "@SUM(1+1)", "+cmd|' /C calc'!A0", "-2+3+cmd", "\tx", "\rx"):
+        assert wyglada_na_formule(v), v
+    for v in ("-1", "+48 22 123 45 67", "-3,5", "Parter", "", None, 5):
+        assert not wyglada_na_formule(v), v
+
+
+def test_formuly_w_wykazie_zapisane_jako_tekst(p):
+    dodaj_aed(p["zbior"][p["a"]["id"]], [aed("A1", lokalizacja_szczegolowa='=HYPERLINK("http://evil","x")',
+                                           instrukcja_dostepu="@SUM(1+1)", kondygnacja="-1")])
+    w = wykazy.aktualny_wykaz()
+    assert w["status"] == "OK"
+    wb = load_workbook(w["pliki"]["xlsx"])
+    kom = [c for row in wb["Arkusz 1"].iter_rows() for c in row if isinstance(c.value, str)]
+    ruchome = [c for c in kom if c.value.startswith(("=", "@"))]
+    assert ruchome and all(c.data_type == "s" for c in ruchome)
+    assert any(c.value == "-1" for c in kom)
+    tekst = open(w["pliki"]["csv"], encoding="utf-8").read()
+    assert "'=HYPERLINK" in tekst and "'@SUM(1+1)" in tekst and ",-1," in tekst
+
+
+def test_walidacja_ostrzega_o_formule():
+    from app.validation import waliduj_wiersz
+    _, bledy, ostrz = waliduj_wiersz(aed("A1", instrukcja_dostepu="=1+1"))
+    assert not [b for b in bledy if b["pole"] == "instrukcja_dostepu"]
+    assert any(o["pole"] == "instrukcja_dostepu" and "formuł" in o["komunikat"] for o in ostrz)

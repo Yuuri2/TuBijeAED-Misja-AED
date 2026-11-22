@@ -37,33 +37,42 @@
 <div class="kontener">
 <nav class="okruszki" aria-label="Okruszki"><ol><li><a href="/index.html">Start</a></li><li aria-current="page"><span id="jury-okruszek">Ścieżka dla jury</span></li></ol></nav>
   <h1>Ścieżka dla jury</h1>
-  <p class="lead">Cały proces da się przejść klikając – bez instalacji i konfiguracji. Szacowany czas: 10–15 minut. To szkic ścieżki; wersja finalna powstanie w kolejnym sprincie.</p>
+  <p class="lead">Cały proces da się przejść klikając – bez instalacji i konfiguracji. Szacowany czas: 10–15 minut.</p>
+  <section aria-labelledby="h-uruchom">
+    <h2 id="h-uruchom">Jak uruchomić prototyp</h2>
+    <p class="waski">Prototyp działa lokalnie, na Twoim komputerze – nie wymaga internetu ani konta. W katalogu głównym repozytorium uruchom skrypt:</p>
+    <ul class="waski">
+      <li><strong>Linux / macOS:</strong> <code>./uruchom.sh</code></li>
+      <li><strong>Windows:</strong> <code>uruchom.bat</code> (dwuklik albo z wiersza poleceń)</li>
+    </ul>
+    <p class="waski">Skrypt przygotowuje środowisko, ładuje dane demo i startuje serwer. Potem otwórz w przeglądarce adres <a href="http://localhost:8080/jury.html"><code>http://localhost:8080/jury.html</code></a> – to ta strona. Dokumentacja API (OpenAPI): <a href="/docs"><code>http://localhost:8080/docs</code></a>. Zatrzymanie serwera: Ctrl+C w oknie skryptu.</p>
+  </section>
   <p class="komunikat komunikat--uwaga"><strong class="komunikat__tytul">⚠ Dane demo</strong>Wszystko poniżej dzieje się na przykładowych danych. Logowanie to wybór konta demo (bez haseł).</p>
 
   <ol class="kroki">
     <li><h2>Zobacz gotowy wykaz zbiorczy</h2>
-      <p>Otwórz <a href="/wykaz-aed.html">Wykaz AED</a>. Przeczytaj, skąd pochodzą dane, zobacz listę dostawców (każdy z linkiem do swojego zbioru), tabelę z filtrem, sekcję „Pominięte zasoby” i przyciski pobierania XLSX / CSV / GeoJSON. <em>Pokazuje: jedna standardowa lista z wielu zasobów, z wskazaniem dostawcy.</em></p></li>
+      <p>Otwórz <a href="/wykaz-aed.html">Wykaz AED</a>. Przeczytaj, skąd pochodzą dane, zobacz listę dostawców (każdy z linkiem do swojego zbioru), tabelę z filtrem, sekcję „Pominięte zasoby” i przyciski pobierania XLSX / CSV / GeoJSON. Do wykazu weszło 4 dostawców (15 rekordów): Urząd Miasta Legionowo i Urząd Miejski w Przemyślu (stare zasoby gmin przekonwertowane w asystencie i uzupełnione o braki – oznaczone „DANE DEMO”), Galeria Przykładowa i Przykładowa Spółdzielnia Mieszkaniowa. Pominięci z raportem braków: Urząd Miasta Krosna, Urząd Miasta Marki oraz Sklep Przykładowy „Demo” (zasób z błędami) – przy każdym jest powód. <em>Pokazuje: jedna standardowa lista z wielu zasobów, z wskazaniem dostawcy i przejrzystym powodem pominięcia.</em></p></li>
     <li><h2>Zajrzyj do zbioru dostawcy</h2>
       <p>Kliknij „Otwórz zbiór dostawcy” przy dowolnym dostawcy, albo wybierz z <a href="/zbiory.html">listy zbiorów</a>. Zobaczysz, że zasób jest oznaczony „Zasób wykazu AED”, ma status walidacji, a nad danymi stoi nazwa instytucji, która za nie odpowiada.</p></li>
     <li><h2>Zaloguj się jako dostawca, który jeszcze nie dołączył</h2>
       <p>Otwórz <a href="/admin/index.html">Panel dostawcy</a> i wybierz „Zaloguj jako…” <strong>Urząd m.st. Warszawy</strong> (nie ma jeszcze zasobu AED). Zwróć uwagę na komunikat „Za dane w tym zasobie odpowiada: …”.
-      <br><small>Uwaga: Urząd Miasta Krosna ma już zasób AED. Dodanie drugiego da czytelny błąd 409 z podpowiedzią „zaktualizuj istniejący zasób” – to też można pokazać.</small></p></li>
+      <br><small>Uwaga: Krosno, Przemyśl, Marki, Legionowo, Galeria, Spółdzielnia i Sklep mają już zasób AED (Warszawa jako jedyna – dostawca bez zasobu). Próba dodania drugiego da czytelny błąd 409 z podpowiedzią „zaktualizuj istniejący zasób” – to też można pokazać.</small></p></li>
     <li><h2>Utwórz zbiór</h2>
       <p>W sekcji „Dodaj zbiór” wpisz tytuł, np. „Defibrylatory AED – Warszawa”, i kliknij „Utwórz zbiór”.</p></li>
     <li><h2>Dodaj zasób z błędami</h2>
       <p>Pobierz <a href="/przyklady/aed_z_bledami.csv" download>plik z celowymi błędami</a>. W sekcji „Dodaj lub zaktualizuj zasób” wybierz zbiór, wpisz tytuł, wskaż pobrany plik i zaznacz <strong>„Zasób wchodzi do Wykazu zbiorczego AED”</strong>. Kliknij „Wyślij zasób”. Zobaczysz status „odrzucony z wykazu – popraw plik i wyślij ponownie” i tabelę błędów: wiersz, pole, komunikat. <em>Pokazuje: walidacja wg wzorca, czytelne błędy.</em></p></li>
     <li><h2>Popraw i wyślij poprawny zasób</h2>
-      <p>Pobierz <a href="/przyklady/aed_poprawny.csv" download>poprawny plik</a>. Przy zasobie z błędami kliknij „Zaktualizuj”, wskaż poprawny plik i zapisz (albo dodaj nowy zasób, jeśli poprzedni usuniesz). Zobaczysz „Zasób włączony do Wykazu zbiorczego AED” i informację o przebudowie wykazu.</p></li>
+      <p>Pobierz <a href="/przyklady/aed_poprawny.csv" download>poprawny plik</a>. Przy zasobie z błędami kliknij „Zaktualizuj”, wskaż poprawny plik i zapisz (albo dodaj nowy zasób, jeśli poprzedni usuniesz – „Usuń” wymaga potwierdzenia). Zobaczysz „Zasób włączony do Wykazu zbiorczego AED” i informację o przebudowie wykazu. Przy poprzednim, błędnym wysłaniu wykaz był tylko neutralnie „odświeżony” – bez Twojego zasobu.</p></li>
     <li><h2>Sprawdź, że wykaz się przebudował</h2>
       <p>Wróć do <a href="/wykaz-aed.html">Wykazu AED</a>: nowy dostawca jest na liście, a jego rekordy w tabeli (filtr „Dostawca danych”). Te same dane są w <a href="/api/1.4/aed-aggregated">API</a>.</p></li>
     <li><h2>Znajdź AED na mapie #TuBijeAED</h2>
       <p>Otwórz <a href="/mapa.html">Mapę</a>. Kliknij „Znajdź najbliższy AED” (albo rozwiń „Nie możesz użyć lokalizacji?” i wpisz <em>Warszawa</em>). Zobaczysz trzy najbliższe urządzenia: odległość, „dostępny teraz / zamknięty / nieznane”, jak dojść, kto odpowiada za dane i link „Prowadź”. Zawsze widoczny jest przycisk „Zadzwoń 112”. Poniżej mapy jest pełna lista tekstowa; włącz warstwę OSM „do weryfikacji”, aby zobaczyć różnicę.</p></li>
     <li><h2>Sprawdź status Partnera i odznakę</h2>
-      <p>Wejdź w <a href="/instytucja.html">Dostawcy i Partnerzy</a>, wybierz dostawcę ze statusem „Aktywny Partner”. Zobaczysz kryteria, podgląd odznaki i pole „Skopiuj kod do stopki”. Odznaka prowadzi do publicznej weryfikacji.</p></li>
+      <p>Wejdź w <a href="/instytucja.html">Dostawcy i Partnerzy</a>, wybierz <strong>Galerię Przykładową</strong> (Partner aktywny) – zobaczysz kryteria, podgląd odznaki i pole „Skopiuj kod do stopki”. Odznaka prowadzi do publicznej weryfikacji. Dla porównania otwórz <strong>Przykładową Spółdzielnię Mieszkaniową</strong>: jej odznaka wygasła (nieaktualne dane), a Sklep Przykładowy nie spełnia kryteriów, bo jego zasób ma błędy.</p></li>
     <li><h2>Wypróbuj asystenta dostawcy</h2>
       <p>W <a href="/asystent.html">Asystencie dostawcy</a>: pobierz wzorzec, sprawdź plik z błędami, przekonwertuj <a href="/przyklady/gmina_stary_uklad_krosno.csv" download>plik gminy w starym układzie</a> i pobierz pakiet ZIP.</p></li>
     <li><h2>Alternatywa: zaimportuj plik XML harvestera 1.14</h2>
-      <p>Zamiast ręcznego dodawania (kroki 4–6) dostawca może zaimportować plik XML. Zaloguj się jako <strong>Urząd m.st. Warszawy</strong> (jeśli dodałeś już zasób w krokach 5–6, najpierw usuń go przyciskiem „Usuń” w sekcji „Moje zbiory”), pobierz <a href="/przyklady/harvester_1_14_przyklad.xml" download>przykładowy plik XML</a> i użyj sekcji „Import XML”. Wynik (utworzone zbiory i zasoby, ewentualne błędy) jest pokazany pod formularzem. Import na koncie, które ma już zasób AED, kończy się czytelnym komunikatem o konflikcie – też można to pokazać.</p></li>
+      <p>Zamiast ręcznego dodawania (kroki 4–6) dostawca może zaimportować plik XML. Zaloguj się jako <strong>Urząd m.st. Warszawy</strong> (jeśli dodałeś już zasób w krokach 5–6, najpierw usuń go przyciskiem „Usuń” w sekcji „Moje zbiory”), pobierz <a href="/przyklady/harvester_1_14_przyklad.xml" download>przykładowy plik XML</a> i użyj sekcji „Import XML”. Wynik („utworzono X / zaktualizowano Y” dla zbiorów i zasobów, ewentualne błędy) jest pokazany pod formularzem. Ponowny import tego samego pliku (ten sam <code>extIdent</code>) jest aktualizacją istniejącego zasobu – licznik „utworzono” wynosi wtedy 0. Konflikt 409 pojawi się dopiero przy pliku z innym <code>extIdent</code> na koncie, które ma już zasób AED.</p></li>
     <li><h2>Zobacz stronę administratora wykazu</h2>
       <p>W panelu wybierz „Administrator portalu (MC)”. Kliknij „Przebuduj wykaz” i obejrzyj historię uruchomień: które zasoby weszły, a które pominięto i dlaczego.</p></li>
   </ol>

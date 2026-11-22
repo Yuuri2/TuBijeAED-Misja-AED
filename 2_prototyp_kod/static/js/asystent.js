@@ -2,22 +2,19 @@
    API: /api/asystent/* (nic nie zapisuje w portalu; dostawca publikuje na własnym koncie). */
 import { pobierz, wyslij, zapytanie, API_ASYSTENT } from "./api.js";
 import {
-  $, el, wstaw, ladowanie, pokazBlad, komunikat, tekst, formatLiczba, plakietka, raportWalidacji, zbudujTabele, fokus, zapiszBlob,
+  bladPola, $, el, wstaw, ladowanie, pokazBlad, komunikat, tekst, formatLiczba, plakietka, raportWalidacji, zbudujTabele, fokus, zapiszBlob,
 } from "./ui.js";
 
 function pole(id) { return document.getElementById(id); }
 
 function sprawdzPlik(inputId, blokId) {
   const plik = pole(inputId).files[0];
-  const blad = pole(`${inputId}-blad`);
   if (!plik) {
-    blad.textContent = "Wybierz plik do przetworzenia.";
-    pole(inputId).setAttribute("aria-invalid", "true");
+    bladPola(inputId, "Wybierz plik do przetworzenia.");
     pole(inputId).focus();
     return null;
   }
-  blad.textContent = "";
-  pole(inputId).removeAttribute("aria-invalid");
+  bladPola(inputId, "");
   return plik;
 }
 
@@ -121,14 +118,13 @@ async function pakiet(e) {
   e.preventDefault();
   const plik = sprawdzPlik("p-plik");
   const nazwa = $("#p-nazwa");
-  const bladNazwy = $("#p-nazwa-blad");
   let ok = !!plik;
-  if (!nazwa.value.trim()) { bladNazwy.textContent = "Podaj nazwę dostawcy (instytucji publikującej dane)."; nazwa.setAttribute("aria-invalid", "true"); if (plik) nazwa.focus(); ok = false; }
-  else { bladNazwy.textContent = ""; nazwa.removeAttribute("aria-invalid"); }
+  if (!nazwa.value.trim()) { bladPola(nazwa, "Podaj nazwę dostawcy (instytucji publikującej dane)."); if (plik) nazwa.focus(); ok = false; }
+  else bladPola(nazwa, "");
   const url = $("#p-url");
   if (url.value.trim() && !url.value.trim().startsWith("https://")) {
-    $("#p-url-blad").textContent = "Adres musi zaczynać się od https://."; url.setAttribute("aria-invalid", "true"); if (ok) url.focus(); ok = false;
-  } else { $("#p-url-blad").textContent = ""; url.removeAttribute("aria-invalid"); }
+    bladPola(url, "Adres musi zaczynać się od https://."); if (ok) url.focus(); ok = false;
+  } else bladPola(url, "");
   if (!ok) return;
   const wynik = $("#pakiet-wynik");
   ladowanie(wynik, "Przygotowywanie pakietu…");

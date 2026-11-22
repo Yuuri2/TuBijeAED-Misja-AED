@@ -34,15 +34,22 @@ def test_status_aktywny_wygasly_brak(p):
     assert partnerzy.status_partnera(p["c"]["id"])["status"] == "BRAK"       # bez zasobu
 
 
-def test_niska_kompletnosc_to_brak(p, monkeypatch):
-    # Uwaga: rekord POPRAWNY wg wzorca ma kompletność >= ~0,88 (wymagane pola TAK są zawsze wypełnione),
-    # więc przy progu 0,8 kryterium różnicuje dopiero po podniesieniu progu – tu test mechanizmu.
-    monkeypatch.setattr(partnerzy, "PROG_KOMPLETNOSCI", 0.95)
+def test_kompletnosc_ponad_minimum_to_brak(p):
+    # rekord poprawny, ale bez żadnych pól zalecanych/opcjonalnych -> 0% „ponad minimum” (poniżej progu 50%)
+    gole = dict(teryt_gmina=None, simc=None, data_przegladu=None, ulica=None, kondygnacja=None,
+                elektrody_pediatryczne=None, producent_model=None, zdjecie_url=None)
     c = p["c"]["id"]
-    dodaj_aed(p["zbior"][c], [aed("C1", teryt_gmina=None, simc=None, data_przegladu=None)])
+    dodaj_aed(p["zbior"][c], [aed("C1", **gole)])
     s = partnerzy.status_partnera(c)
-    assert s["status"] == "BRAK" and s["kompletnosc"] < 0.95
+    assert s["status"] == "BRAK" and s["kompletnosc"] < partnerzy.PROG_KOMPLETNOSCI
     assert [k["nazwa"] for k in s["kryteria"] if not k["spelnione"]] == ["kompletnosc_80"]
+    assert "ponad" in next(k["opis"] for k in s["kryteria"] if k["nazwa"] == "kompletnosc_80")
+
+
+def test_kompletnosc_ponad_minimum_wyliczenie():
+    assert partnerzy.kompletnosc_ponad_minimum({}) == 0.0
+    r = {"teryt_gmina": "1", "simc": "2", "data_przegladu": "2026-01-01", "ulica": "x"}
+    assert partnerzy.kompletnosc_ponad_minimum(r) == pytest.approx(4 / 8)
 
 
 def test_api_partnerzy_i_odznaka(client, p):

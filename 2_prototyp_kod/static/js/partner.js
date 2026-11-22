@@ -15,6 +15,7 @@ const idPartnera = (x) => (x.instytucja && typeof x.instytucja === "object" ? x.
 const nazwaPartnera = (x) => (x.instytucja && typeof x.instytucja === "object" ? x.instytucja.nazwa || x.instytucja.title : x.nazwa || x.title || x.instytucja) || `Instytucja ${idPartnera(x)}`;
 
 async function szczegoly(kont, id) {
+  if (!/^\d+$/.test(String(id))) { komunikat(kont, "blad", "Nieprawidłowy identyfikator", el("p", {}, "Adres zawiera niepoprawny identyfikator instytucji. Wróć do listy i wybierz instytucję ponownie.")); return; }
   let p;
   try { p = await pobierz(`${API_PARTNERZY}/${encodeURIComponent(id)}`); }
   catch (e) { pokazBlad(kont, e, e.status === 404 ? "Nie znaleziono takiej instytucji" : "Nie udało się zweryfikować statusu"); return; }

@@ -1,0 +1,123 @@
+{
+ "01_wykaz": {
+  "#sekcja-pominiete": [
+   74,
+   3218,
+   1120,
+   397
+  ],
+  "#sekcja-dostawcy": [
+   74,
+   593,
+   1120,
+   534
+  ]
+ },
+ "10_api_docs": {
+  "api14": [
+   28,
+   1168,
+   1212,
+   645
+  ]
+ },
+ "05_harvester_xml": {
+  "#sekcja-harvester": [
+   74,
+   2685,
+   1120,
+   509
+  ],
+  "#sekcja-zbiory": [
+   74,
+   480,
+   1120,
+   438
+  ]
+ },
+ "03_dostawca_bledy": {
+  "#zasob-wynik": [
+   74,
+   2763,
+   1120,
+   1264
+  ],
+  "#form-zasob": [
+   74,
+   1733,
+   1120,
+   1026
+  ],
+  "#sekcja-zbiory": [
+   74,
+   480,
+   1120,
+   524
+  ]
+ },
+ "04_dostawca_poprawny": {
+  "#zasob-wynik": [
+   74,
+   2677,
+   1120,
+   408
+  ],
+  "#sekcja-zbiory": [
+   74,
+   480,
+   1120,
+   438
+  ]
+ },
+ "04b_wykaz_po": {
+  "#sekcja-dostawcy": [
+   74,
+   593,
+   1120,
+   576
+  ],
+  "#h-stan": [
+   74,
+   339,
+   1120,
+   44
+  ]
+ },
+ "06_admin_historia": {
+  "#sekcja-admin": [
+   74,
+   480,
+   1120,
+   2249
+  ]
+ },
+ "07_mapa_desktop": {
+  "#najblizsze-wynik": [
+   74,
+   691,
+   1120,
+   1395
+  ],
+  "#mapa": [
+   74,
+   2185,
+   736,
+   468
+  ]
+ },
+ "12_asystent_konwersja": {
+  "#konwertuj-wynik": [
+   74,
+   1439,
+   1120,
+   5339
+  ],
+  "#form-konwertuj": [
+   74,
+   975,
+   1120,
+   460
+  ]
+ },
+ "_dpr": 2
+}

@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .. import schema, validation
+from ..exports.bezpieczne import bezpieczna_komorka
 from . import czytniki, danegov
 from .mapowania_danegov import MAPOWANIA
 from .wspolne import klucz_kolumny
@@ -62,7 +63,7 @@ def _wartosc(v) -> str:
         return ""
     if isinstance(v, float):
         return repr(v) if math.isfinite(v) else ""
-    return str(v)
+    return bezpieczna_komorka(str(v))
 
 
 def do_csv_wzorca(rekordy: list[dict]) -> str:

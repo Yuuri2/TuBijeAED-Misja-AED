@@ -5,6 +5,7 @@ import csv
 import io
 import math
 
+from .bezpieczne import bezpieczna_komorka
 from .kolumny import do_publikacji, kolumny_eksportu
 
 
@@ -15,7 +16,7 @@ def _wartosc(v) -> str:
         if not math.isfinite(v):
             return ""
         return repr(v)                     # pełna precyzja, kropka dziesiętna (niezależnie od locale)
-    return str(v)
+    return bezpieczna_komorka(str(v))
 
 
 def do_csv(rekordy: list[dict]) -> str:

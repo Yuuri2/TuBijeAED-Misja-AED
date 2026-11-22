@@ -1,0 +1,23 @@
+{
+ "meta": {
+  "count": 1
+ },
+ "data": [
+  {
+   "id": "54632",
+   "type": "resource",
+   "attributes": {
+    "title": "Defibrylatory zlokalizowane w Mieście Krosno",
+    "description": "<p><a href=\"https://admin.dane.gov.pl/datasets/dataset/3624/change/\">Defibrylatory zlokalizowane w Mieście Krosno</a></p>",
+    "format": "csv",
+    "media_type": "file",
+    "link": "https://api.dane.gov.pl/media/resources/20240219/Defibrylator_jAmxQcp.csv",
+    "file_url": "https://api.dane.gov.pl/media/resources/20240219/Defibrylator_jAmxQcp.csv",
+    "download_url": "https://api.dane.gov.pl/resources/54632,defibrylatory-zlokalizowane-w-miescie-krosno/file",
+    "modified": "2024-02-19T17:32:25Z",
+    "data_date": "2024-02-19",
+    "created": "2024-02-19T17:20:29Z"
+   }
+  }
+ ]
+}

@@ -19,7 +19,7 @@ const NAZWY_KRYTERIOW = {
   zasob_w_wykazie: "Zasób uwzględniony w aktualnym wykazie zbiorczym",
   bez_bledow_walidacji: "Brak błędów walidacji",
   aktualnosc_12_miesiecy: "Dane aktualne (do 12 miesięcy)",
-  kompletnosc_80: "Kompletność rekordów co najmniej 80%",
+  kompletnosc_80: "Dane ponad minimum – co najmniej 50% pól zalecanych i opcjonalnych wzorca",
 };
 
 export function kryteriaLista(kryteria) {

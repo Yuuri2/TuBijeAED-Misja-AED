@@ -57,7 +57,7 @@
     <h2 id="h-sprawdz">2. Sprawdź plik</h2>
     <p>Sprawdź plik CSV lub XLSX wzorcem – bez zapisywania. Zobaczysz błędy z numerem wiersza i polem. Do wypróbowania: <a href="/przyklady/aed_poprawny.csv" download>poprawny plik</a>, <a href="/przyklady/aed_z_bledami.csv" download>plik z błędami</a>.</p>
     <form id="form-sprawdz" class="karta formularz" novalidate>
-      <div class="pole"><label for="s-plik">Plik (CSV lub XLSX)</label><input type="file" id="s-plik" accept=".csv,.xlsx" aria-describedby="s-plik-blad"><p class="pole-blad" id="s-plik-blad"></p></div>
+      <div class="pole"><label for="s-plik">Plik (CSV lub XLSX)</label><input type="file" id="s-plik" accept=".csv,.xlsx" aria-describedby="s-plik-blad"><p class="pole-blad" id="s-plik-blad" hidden></p></div>
       <div><button type="submit" class="przycisk">Sprawdź plik</button></div>
     </form>
     <div id="sprawdz-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>
@@ -67,7 +67,7 @@
     <h2 id="h-konwertuj">3. Przekonwertuj plik gminy do wzorca</h2>
     <p>Jeśli Twoja instytucja już publikuje AED w starym układzie kolumn (np. gminy Krosno, Przemyśl, Marki, Legionowo, Warszawa), asystent przekształci plik do wzorca i wskaże pola do uzupełnienia. Do wypróbowania: <a href="/przyklady/gmina_stary_uklad_krosno.csv" download>plik gminy w starym układzie</a>.</p>
     <form id="form-konwertuj" class="karta formularz" novalidate>
-      <div class="pole"><label for="k-plik">Plik gminy (CSV, XLSX, JSON, GeoJSON)</label><input type="file" id="k-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="k-plik-blad"><p class="pole-blad" id="k-plik-blad"></p></div>
+      <div class="pole"><label for="k-plik">Plik gminy (CSV, XLSX, JSON, GeoJSON)</label><input type="file" id="k-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="k-plik-blad"><p class="pole-blad" id="k-plik-blad" hidden></p></div>
       <div class="pole"><label for="k-profil">Układ pliku (profil)</label>
         <select id="k-profil"><option value="auto">Rozpoznaj automatycznie</option><option value="krosno">Krosno</option><option value="przemysl">Przemyśl</option><option value="marki">Marki</option><option value="legionowo">Legionowo</option><option value="warszawa">Warszawa</option></select></div>
       <details><summary>Dane dysponenta do uzupełnienia w pliku (opcjonalnie)</summary>
@@ -88,9 +88,9 @@
     <h2 id="h-pakiet">4. Pobierz pakiet do publikacji</h2>
     <p>Pakiet ZIP zawiera plik <code>dane_aed.csv</code>, plik harvestera <code>harvester_1_14.xml</code> (z <code>aggregatedListType=AED</code>) i krótką instrukcję publikacji.</p>
     <form id="form-pakiet" class="karta formularz" novalidate>
-      <div class="pole"><label for="p-plik">Plik (CSV lub XLSX) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="p-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="p-plik-blad"><p class="pole-blad" id="p-plik-blad"></p></div>
-      <div class="pole"><label for="p-nazwa">Nazwa dostawcy (Twoja instytucja) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="text" id="p-nazwa" aria-describedby="p-nazwa-blad"><p class="pole-blad" id="p-nazwa-blad"></p></div>
-      <div class="pole"><label for="p-url">Adres, pod którym opublikujesz plik (opcjonalnie)</label><input type="url" id="p-url" placeholder="https://" aria-describedby="p-url-p p-url-blad"><p class="podpowiedz" id="p-url-p">Musi zaczynać się od https://.</p><p class="pole-blad" id="p-url-blad"></p></div>
+      <div class="pole"><label for="p-plik">Plik (CSV lub XLSX) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="p-plik" accept=".csv,.xlsx,.json,.geojson" aria-describedby="p-plik-blad"><p class="pole-blad" id="p-plik-blad" hidden></p></div>
+      <div class="pole"><label for="p-nazwa">Nazwa dostawcy (Twoja instytucja) <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="text" id="p-nazwa" aria-describedby="p-nazwa-blad"><p class="pole-blad" id="p-nazwa-blad" hidden></p></div>
+      <div class="pole"><label for="p-url">Adres, pod którym opublikujesz plik (opcjonalnie)</label><input type="url" id="p-url" placeholder="https://" aria-describedby="p-url-p p-url-blad"><p class="podpowiedz" id="p-url-p">Musi zaczynać się od https://.</p><p class="pole-blad" id="p-url-blad" hidden></p></div>
       <div class="pole-wiersz">
         <div class="pole"><label for="p-licencja">Licencja</label><select id="p-licencja"><option>CC BY 4.0</option><option>CC0 1.0</option></select></div>
         <div class="pole"><label for="p-profil">Układ pliku</label><select id="p-profil"><option value="">Plik jest już we wzorcu</option><option value="auto">Stary układ – rozpoznaj automatycznie</option><option value="krosno">Krosno</option><option value="przemysl">Przemyśl</option><option value="marki">Marki</option><option value="legionowo">Legionowo</option><option value="warszawa">Warszawa</option></select></div>

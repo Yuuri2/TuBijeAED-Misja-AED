@@ -75,7 +75,7 @@
       <p class="waski">Zbiór to „pojemnik” na zasoby (pliki). Najpierw utwórz zbiór, potem dodaj do niego zasób.</p>
       <form id="form-zbior" class="karta formularz" novalidate>
         <div class="pole"><label for="zb-tytul">Tytuł zbioru <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
-          <input type="text" id="zb-tytul" required aria-describedby="zb-tytul-blad"><p class="pole-blad" id="zb-tytul-blad"></p></div>
+          <input type="text" id="zb-tytul" required aria-describedby="zb-tytul-blad"><p class="pole-blad" id="zb-tytul-blad" hidden></p></div>
         <div class="pole"><label for="zb-opis">Opis</label><textarea id="zb-opis"></textarea></div>
         <div class="pole-wiersz">
           <div class="pole"><label for="zb-licencja">Licencja</label><select id="zb-licencja"><option>CC BY 4.0</option><option>CC0 1.0</option></select></div>
@@ -96,13 +96,13 @@
       </div>
       <form id="form-zasob" class="karta formularz" novalidate>
         <div class="pole"><label for="z-zbior">Zbiór <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
-          <select id="z-zbior" required aria-describedby="z-zbior-blad"><option value="">Najpierw utwórz zbiór</option></select><p class="pole-blad" id="z-zbior-blad"></p></div>
+          <select id="z-zbior" required aria-describedby="z-zbior-blad"><option value="">Najpierw utwórz zbiór</option></select><p class="pole-blad" id="z-zbior-blad" hidden></p></div>
         <div class="pole"><label for="z-tytul">Tytuł zasobu <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label>
-          <input type="text" id="z-tytul" required aria-describedby="z-tytul-blad"><p class="pole-blad" id="z-tytul-blad"></p></div>
+          <input type="text" id="z-tytul" required aria-describedby="z-tytul-blad"><p class="pole-blad" id="z-tytul-blad" hidden></p></div>
         <div class="pole"><label for="z-opis">Opis zasobu</label><textarea id="z-opis"></textarea></div>
         <fieldset>
           <legend>Źródło danych <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane: plik albo adres URL)</span></legend>
-          <div class="pole"><label for="z-plik">Plik (CSV lub XLSX)</label><input type="file" id="z-plik" accept=".csv,.xlsx" aria-describedby="z-plik-p z-plik-blad"><p class="podpowiedz" id="z-plik-p">Do wykazu AED plik musi mieć kolumny wzorca. Wypróbuj <a href="/przyklady/aed_poprawny.csv" download>poprawny plik przykładowy</a> albo <a href="/przyklady/aed_z_bledami.csv" download>plik z celowymi błędami</a>.</p><p class="pole-blad" id="z-plik-blad"></p></div>
+          <div class="pole"><label for="z-plik">Plik (CSV lub XLSX)</label><input type="file" id="z-plik" accept=".csv,.xlsx" aria-describedby="z-plik-p z-plik-blad"><p class="podpowiedz" id="z-plik-p">Do wykazu AED plik musi mieć kolumny wzorca. Wypróbuj <a href="/przyklady/aed_poprawny.csv" download>poprawny plik przykładowy</a> albo <a href="/przyklady/aed_z_bledami.csv" download>plik z celowymi błędami</a>.</p><p class="pole-blad" id="z-plik-blad" hidden></p></div>
           <div class="pole" style="margin-top:var(--odstep-3)"><label for="z-url">albo adres URL pliku</label><input type="url" id="z-url" placeholder="https://"></div>
         </fieldset>
         <div class="pole"><label for="z-status">Status publikacji</label><select id="z-status"><option value="opublikowany">opublikowany</option><option value="szkic">szkic (nie wchodzi do wykazu)</option></select></div>
@@ -119,7 +119,7 @@
       <h2 id="h-xml">Import XML (harvester 1.14)</h2>
       <p class="waski">Zamiast wypełniać formularz, możesz zaimportować plik XML harvestera (wersja 1.13 lub 1.14). W wersji 1.14 element <code>aggregatedListType</code> o wartości <code>AED</code> oznacza zasób wykazu AED. <a href="/przyklady/harvester_1_14_przyklad.xml" download>Pobierz przykładowy plik XML</a>.</p>
       <form id="form-xml" class="karta formularz" novalidate>
-        <div class="pole"><label for="x-plik">Plik XML <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="x-plik" accept=".xml,application/xml,text/xml" aria-describedby="x-plik-blad"><p class="pole-blad" id="x-plik-blad"></p></div>
+        <div class="pole"><label for="x-plik">Plik XML <span class="wymagane-gwiazdka" aria-hidden="true">*</span><span class="tylko-czytniki">(wymagane)</span></label><input type="file" id="x-plik" accept=".xml,application/xml,text/xml" aria-describedby="x-plik-blad"><p class="pole-blad" id="x-plik-blad" hidden></p></div>
         <div><button type="submit" class="przycisk">Importuj XML</button></div>
       </form>
       <div id="xml-wynik" aria-live="polite" style="margin-top:var(--odstep-4)"></div>

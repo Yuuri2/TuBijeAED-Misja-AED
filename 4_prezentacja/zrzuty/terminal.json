@@ -1,0 +1,9 @@
+{
+ "xmllint_ok": true,
+ "xmllint": [
+  "2_prototyp_kod/tests/fixtures/harvester/import_aed_1_14.xml validates"
+ ],
+ "pytest_passed": 277,
+ "pytest_podsumowanie": "277 passed in 10.05s",
+ "pytest_ok": true
+}

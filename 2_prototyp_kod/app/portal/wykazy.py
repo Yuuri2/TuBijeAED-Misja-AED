@@ -282,6 +282,7 @@ def klucz_sortowania_pl(s: str | None) -> tuple:
 
 
 def _base_url() -> str:
+    # B-07: adresy w pliku wykazu budowane z BASE_URL (env, domyślnie http://localhost:8080) – ustaw przy innym porcie.
     return os.environ.get("BASE_URL", config.BASE_URL).rstrip("/")
 
 
@@ -407,10 +408,14 @@ def _styl_xlsx(sciezka: Path, arkusz: str, kolumny: tuple[str, ...]) -> None:
     ws.freeze_panes = "A2"
     bez = Border(left=Side(style=None), right=Side(style=None), top=Side(style=None), bottom=Side(style=None))
     lewo = Alignment(horizontal="left")
+    from ..validation import wyglada_na_formule
     for wiersz in ws.iter_rows():
         for c in wiersz:
             c.border = bez
             c.alignment = lewo
+            if isinstance(c.value, str) and (c.data_type == "f" or wyglada_na_formule(c.value)):
+                c.data_type = "s"            # tekst, nie formuła (CSV injection); quotePrefix: Excel nie zinterpretuje
+                c.quotePrefix = True
     for c in ws[1]:
         c.font = Font(bold=True)
     szerokie = {"nazwa_dostawcy": 36, "url_zasobu_zrodlowego": 40, "nazwa_dysponenta": 36,
@@ -430,6 +435,12 @@ def _wartosc_json(v):
     return v
 
 
+def _bezpieczny_csv(v):
+    """OWASP CSV Injection: tekst wyglądający na formułę dostaje prefiks apostrofu."""
+    from ..validation import wyglada_na_formule
+    return "'" + v if wyglada_na_formule(v) else v
+
+
 def _zapisz_pliki(konf: KonfiguracjaWykazu, df: pd.DataFrame, rekordy: list[dict], katalog: Path,
                   znacznik: str) -> dict[str, Path]:
     """Krok 2a – wzór: create_main_dga_file (+ CSV i GeoJSON). Zwraca {format: ścieżka}."""
@@ -444,7 +455,7 @@ def _zapisz_pliki(konf: KonfiguracjaWykazu, df: pd.DataFrame, rekordy: list[dict
         w = csv.writer(f)
         w.writerow(konf.kolumny_wynikowe)
         for r in rekordy:
-            w.writerow(["" if r.get(k) is None else r.get(k) for k in konf.kolumny_wynikowe])
+            w.writerow(["" if r.get(k) is None else _bezpieczny_csv(r.get(k)) for k in konf.kolumny_wynikowe])
 
     cechy = []
     for r in rekordy:

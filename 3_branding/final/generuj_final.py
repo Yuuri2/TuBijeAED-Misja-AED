@@ -1,4 +1,4 @@
-"""Generator zasobów finalnych #TuBijeAED – koncepcja C „Puls – tu jestem” (Sprint 2).
+"""Generator zasobów finalnych #TuBijeAED – koncepcja C, sygnet w wariancie C2 „Fale nadawania” (decyzja: C2, Sprint 2).
 
 Zapisuje:
   2_prototyp_kod/static/brand/
@@ -14,12 +14,18 @@ Tekst w znaku i odznakach jest zamieniony na krzywe (fontTools). Wyjątek: data 
 odznaki (`<text id="wazny-do">`) jest żywym tekstem, bo podmienia ją Backend
 (placeholder `DD.MM.RRRR`, opis w static/brand/README.md).
 
+Teksty (nazwa, podpis pod logo, napisy odznaki) pochodzą z 3_branding/teksty_marki.py.
+Pliki do oddania (logotyp_tubijeaed_*), zastosowania i Księgę znaku tworzą 3_branding/generuj_logotypy.py
+i 3_branding/generuj_ksiege.py – ten drugi uruchamia też ten skrypt.
+
 Uruchomienie (z katalogu repo):
-  .venv/bin/python 3_branding/final/generuj_final.py
+  .venv/bin/python 3_branding/final/generuj_final.py      # tylko static/brand
+  .venv/bin/python 3_branding/generuj_ksiege.py           # wszystko
 """
 from __future__ import annotations
 
 import io
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -36,7 +42,9 @@ WARIANTY = ROOT / "warianty_iso"
 FONTS = ROOT.parent / "koncepcje" / "fonts"
 
 sys.path.insert(0, str(ROOT.parent / "koncepcje"))
+sys.path.insert(0, str(ROOT.parent))
 import generuj_koncepcje as K  # noqa: E402  (klasa Font + kerning z Sprintu 1)
+import teksty_marki as TXT  # noqa: E402  (JEDNO miejsce tekstów: nazwa, podpis, hasło, odznaka)
 
 F = K.F
 
@@ -58,7 +66,7 @@ X_RING1, X_RING2 = "#EDF0F3", "#C3CBD3"
 
 FONT_STACK = "Poppins, 'Segoe UI', Roboto, Arial, sans-serif"
 PLACEHOLDER = "DD.MM.RRRR"
-TITLE_BADGE = "Partner #TuBijeAED – zweryfikowane w dane.gov.pl"
+TITLE_BADGE = TXT.PROGRAM
 
 
 # ---------------------------------------------------------------- pomocnicze
@@ -106,8 +114,8 @@ HEART = ("M50 79 C47 74 21 58 21 38 C21 27 29 19 39 19 C44 19 48 22 50 26 "
 BOLT = "M53 22 L37 50 L48 50 L42 72 L63 41 L52 41 L58 22 Z"
 
 
-def sygnet(theme="light"):
-    """Koncepcja C bez zmian kształtu (wybór człowieka). theme: light | dark | expired."""
+def sygnet_c_poprzedni(theme="light"):
+    """Koncepcja C z Sprintu 1 (białe serce na zielonym kole) – zastąpiona przez C2, zostaje do porównania."""
     rings = {"light": ("#D3EDDD", "#8CCCA6", GREEN),
              "dark": ("#173D33", "#1F6B48", GREEN),
              "expired": (X_RING1, X_RING2, X_CORE)}[theme]
@@ -121,39 +129,101 @@ def sygnet(theme="light"):
             '</g>')
 
 
+def tpath(d: str, fn) -> str:
+    """Przekształca ścieżkę złożoną z bezwzględnych M/L/C/Z punkt po punkcie (fn: (x, y) -> (x, y))."""
+    out, nums = [], []
+    for tok in re.findall(r"[MLCZ]|-?\d+(?:\.\d+)?", d):
+        if tok.isalpha():
+            out.append(tok)
+        else:
+            nums.append(float(tok))
+            if len(nums) == 2:
+                x, y = fn(*nums)
+                out.append(f"{x:.3f} {y:.3f}")
+                nums = []
+    return " ".join(out)
+
+
+def _heart_xy(x, y):
+    return 44 + 0.9 * (x - 50), 56 + 0.9 * (y - 49)
+
+
+def _bolt_xy(x, y):
+    return _heart_xy(50 + 0.78 * (x - 50), 48 + 0.78 * (y - 47))
+
+
+# Serce z błyskawicą WYCIĘTĄ (fill-rule evenodd) – błyskawica ma zawsze kolor podłoża, na każdym tle.
+HEART_C2 = tpath(HEART, _heart_xy) + " " + tpath(BOLT, _bolt_xy)
+# Środek fal (wspólny dla obu łuków) i promienie – siatka konstrukcyjna w księdze znaku.
+FALE_SRODEK, FALE_R = (57.2, 42.8), (30, 42)
+
+
+def sygnet(theme="light", color=None):
+    """DECYZJA: C2 „Fale nadawania” – zielone serce z wyciętą błyskawicą, bez zielonego pola,
+    + 2 otwarte łuki sygnału w prawym górnym rogu (odróżnia znak od ISO 7010 E010).
+    theme: light (jasne tło) | dark (granat) | expired (szary, odznaka wygasła) | mono (color=…, oba łuki pełne)."""
+    if color or theme == "mono":
+        heart = arc = color or NAVY
+        op = ""
+    else:
+        heart = arc = {"light": GREEN, "dark": LGREEN, "expired": X_CORE}[theme]
+        op = ' opacity=".55"'
+    return (f'<path d="{HEART_C2}" fill="{heart}" fill-rule="evenodd"/>'
+            f'<path d="M66 14 A30 30 0 0 1 86 34" fill="none" stroke="{arc}" stroke-width="6" stroke-linecap="round"/>'
+            f'<path d="M70 3 A42 42 0 0 1 97 30" fill="none" stroke="{arc}" stroke-width="6" stroke-linecap="round"{op}/>')
+
+
 def favicon_inner():
-    """Uproszczony sygnet do 16/32 px: bez pierścieni (znikają), pełne koło, większe serce i grubsza błyskawica."""
+    """Uproszczony C2 do 16/32 px: większe serce, grubsza błyskawica, jeden gruby łuk (drugi znika w 16 px)."""
     bolt = "M55 18 L33 53 L46 53 L39 82 L68 41 L54 41 L62 18 Z"
-    return (f'<circle cx="50" cy="50" r="50" fill="{GREEN}"/>'
-            f'<g transform="translate(50 52) scale(1.08) translate(-50 -49)">'
-            f'<path d="{HEART}" fill="#FFFFFF"/>'
-            f'<path d="{bolt}" fill="{GREEN}" transform="translate(50 49) scale(0.74) translate(-50 -49)"/>'
-            '</g>')
+    return (f'<g transform="translate(40 60) scale(1.12) translate(-50 -49)">'
+            f'<path d="{HEART}" fill="{GREEN}"/>'
+            f'<path d="{bolt}" fill="#FFFFFF" transform="translate(50 49) scale(0.74) translate(-50 -49)"/></g>'
+            f'<path d="M64 8 A30 30 0 0 1 92 36" fill="none" stroke="{GREEN}" stroke-width="11" stroke-linecap="round"/>')
 
 
 # ---------------------------------------------------------------- logo poziome
-def logo(theme="light", sygnet_fn=None, kompakt=False, pad=0):
+def podpis_rozmiar(tw: float, size=19.5, track=2.2) -> tuple[float, float]:
+    """Rozmiar i światło podpisu: domyślnie 19,5/2,2; dłuższy podpis zmniejszamy do szerokości nazwy."""
+    sw = F["med"].width(TXT.PODPIS_LOGO, size, track)
+    if sw + 3 > tw:
+        k = (tw - 3) / sw
+        size, track = size * k, track * k
+    return size, track
+
+
+def logo(theme="light", sygnet_fn=None, kompakt=False, pad=0, color=None, podpis=True):
     """Logo poziome. Domyślnie BEZ wbudowanego pola ochronnego (ciasny viewBox – łatwiej skalować w UI);
-    pole ochronne = 1/4 wysokości sygnetu, opis w README. kompakt=True – bez podpisu (nagłówki < 64 px)."""
-    sygnet_fn = sygnet_fn or sygnet
-    navy = NAVY if theme == "light" else WHITE
-    green_t = GREEN if theme == "light" else LGREEN
-    sub_c = GRAY if theme == "light" else LGRAY_ON_DARK
+    pole ochronne = 1/4 wysokości sygnetu, opis w README. kompakt=True – bez podpisu (nagłówki < 64 px).
+    theme: light | dark; color="#000000" itp. – wersja monochromatyczna (jeden kolor, pełne łuki).
+    Teksty: teksty_marki.NAZWA_CZ1/NAZWA_CZ2/PODPIS_LOGO."""
+    if color:
+        navy = green_t = sub_c = color
+        syg = sygnet("mono", color)
+    else:
+        navy = NAVY if theme == "light" else WHITE
+        green_t = GREEN if theme == "light" else LGREEN
+        sub_c = GRAY if theme == "light" else LGRAY_ON_DARK
+        syg = (sygnet_fn or sygnet)(theme)
     s = 160
     h = s + 2 * pad
     x_t = pad + s + 28
+    name = [("med", TXT.NAZWA_CZ1, navy), ("xbold", TXT.NAZWA_CZ2, green_t)]
     if kompakt:
         size = 100
         base = pad + s / 2 + F["med"].f["OS/2"].sCapHeight * size / F["med"].upm / 2
-        txt, tw = runs([("med", "#TuBije", navy), ("xbold", "AED", green_t)], x_t, base, size, gap=size * 0.03)
+        txt, tw = runs(name, x_t, base, size, gap=size * 0.03)
         w = round(x_t + tw + pad + 2)
-        return place(sygnet_fn(theme), pad, pad, s) + txt, w, h
+        return place(syg, pad, pad, s) + txt, w, h
     size = 78
     base = pad + 98
-    txt, tw = runs([("med", "#TuBije", navy), ("xbold", "AED", green_t)], x_t, base, size, gap=size * 0.03)
-    sub, sw = T("med", "DEFIBRYLATORY NA MAPIE · OTWARTE DANE", x_t + 3, base + 40, 19.5, sub_c, track=2.2)
-    w = round(x_t + max(tw, sw + 3) + pad + 2)
-    return place(sygnet_fn(theme), pad, pad, s) + txt + sub, w, h
+    txt, tw = runs(name, x_t, base, size, gap=size * 0.03)
+    sub = ""
+    if podpis:
+        ssize, strack = podpis_rozmiar(tw)
+        sub, _ = T("med", TXT.PODPIS_LOGO, x_t + 3, base + 40, ssize, sub_c, track=strack)
+    w = round(x_t + tw + pad + 2)
+    return place(syg, pad, pad, s) + txt + sub, w, h
 
 
 # ---------------------------------------------------------------- odznaki
@@ -174,14 +244,20 @@ def clock_icon(x, y, d, bg, fg):
             f'fill="none" stroke="{fg}" stroke-width="{d * .13:.2f}" stroke-linecap="round" stroke-linejoin="round"/>')
 
 
-def live_text(text, x, y, size, fill, anchor="start", weight=500):
+def live_text_el(text, x, y, size, fill, anchor="start", weight=500):
     """Żywy tekst do podmiany przez Backend (id="wazny-do")."""
     return (f'<text id="wazny-do" x="{x}" y="{y}" font-family="{FONT_STACK}" font-size="{size}" '
             f'font-weight="{weight}" fill="{fill}" text-anchor="{anchor}">{text}</text>')
 
 
-def badge(theme="light", size="pelna"):
-    """theme: light | dark | expired."""
+def badge(theme="light", size="pelna", date=None):
+    """theme: light | dark | expired. date="22.11.2027" – data wstawiona od razu jako krzywe (podglądy, księga);
+    domyślnie żywy tekst z placeholderem DD.MM.RRRR do podmiany przez Backend."""
+    def live_text(text, x, y, size, fill, anchor="start", weight=500):
+        if date is None:
+            return live_text_el(text, x, y, size, fill, anchor, weight)
+        return T("med", text.replace(PLACEHOLDER, date), x, y, size, fill, anchor=anchor)[0]
+
     expired = theme == "expired"
     light = theme in ("light", "expired")
     bg = WHITE if light else NAVY
@@ -200,15 +276,19 @@ def badge(theme="light", size="pelna"):
         W, H = 88, 31
         inner = (f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="4" fill="{bg}" '
                  f'stroke="{border}"{dash}/>')
-        inner += place(syg, 3.5, 3.5, 24)
+        inner += place(syg, 2.5, 3, 24)  # C2: serce w lewym dolnym rogu, ptaszek obok czubka
         icon = clock_icon if expired else check_icon
-        inner += icon(19.5, 18.5, 10, X_SUB if expired else (GREEN if light else LGREEN), bg)
+        inner += icon(20, 19.5, 9.5, X_SUB if expired else (GREEN if light else LGREEN), bg)
         x0 = 31
         fs = 10.5
         while F["bold"].width("#TuBijeAED", fs) > W - x0 - 3:
             fs -= 0.1
-        inner += T("semi", "WYGASŁA" if expired else "PARTNER", x0, 12.2, 7.6, t_green, track=0.55)[0]
-        inner += runs([("bold", "#TuBije", t_main), ("bold", "AED", t_green)], x0, 24.5, fs)[0]
+        lab = TXT.ODZNAKA_WYGASLA if expired else TXT.ODZNAKA_ETYKIETA
+        ls = 7.6
+        while F["semi"].width(lab, ls, 0.55) > W - x0 - 3:
+            ls -= 0.1
+        inner += T("semi", lab, x0, 12.2, ls, t_green, track=0.55)[0]
+        inner += runs([("bold", TXT.NAZWA_CZ1, t_main), ("bold", TXT.NAZWA_CZ2, t_green)], x0, 24.5, fs)[0]
         return doc(W, H, inner, title)
 
     W, H = 200, 60
@@ -217,18 +297,18 @@ def badge(theme="light", size="pelna"):
     inner += place(syg, 7, 8, 44)
     x0 = 58
     avail = W - x0 - 7
-    inner += T("semi", "PARTNER", x0, 17.5, 9, t_green, track=1.1)[0]
+    inner += T("semi", TXT.ODZNAKA_ETYKIETA, x0, 17.5, 9, t_green, track=1.1)[0]
     fs = 18
     while F["bold"].width("#TuBijeAED", fs) > avail:
         fs -= 0.1
-    inner += runs([("bold", "#TuBije", t_main), ("bold", "AED", t_green)], x0, 36, fs)[0]
+    inner += runs([("bold", TXT.NAZWA_CZ1, t_main), ("bold", TXT.NAZWA_CZ2, t_green)], x0, 36, fs)[0]
     if expired:
         inner += clock_icon(x0, 42.2, 9, X_SUB, bg)
         inner += live_text(f"wygasła {PLACEHOLDER}", x0 + 12, 49.6, 8.6, t_sub)
     else:
         # data ważności w prawym górnym rogu, wyrównana do prawej (odporna na inną czcionkę zastępczą)
         inner += live_text(f"do {PLACEHOLDER}", W - 7, 17.5, 8, t_sub, anchor="end")
-        label = "zweryfikowane w dane.gov.pl"
+        label = TXT.ODZNAKA_WERYFIKACJA
         fs2 = 9
         while F["med"].width(label, fs2) + 12 > avail:
             fs2 -= 0.05
@@ -298,17 +378,8 @@ def wariant_c1(theme="light"):
 
 
 def wariant_c2(theme="light"):
-    """C2 „Odwrócona polaryzacja + otwarte fale”: zielone serce z białą błyskawicą bez zielonego pola,
-    fale jako otwarte łuki (sygnał nadawany w prawo-górę) – inna sylwetka i inne kolory niż E010."""
-    ring = GREEN if theme == "light" else LGREEN
-    heart_fill = GREEN if theme == "light" else LGREEN
-    bolt_fill = "#FFFFFF" if theme == "light" else NAVY
-    return (f'<g transform="translate(44 56) scale(0.9) translate(-50 -49)">'
-            f'<path d="{HEART}" fill="{heart_fill}"/>'
-            f'<path d="{BOLT}" fill="{bolt_fill}" transform="translate(50 48) scale(0.78) translate(-50 -47)"/></g>'
-            f'<path d="M66 14 A30 30 0 0 1 86 34" fill="none" stroke="{ring}" stroke-width="6" stroke-linecap="round"/>'
-            f'<path d="M70 3 A42 42 0 0 1 97 30" fill="none" stroke="{ring}" stroke-width="6" stroke-linecap="round" '
-            'opacity=".55"/>')
+    """C2 „Fale nadawania” – od Sprintu 2 to jest sygnet() (decyzja: C2)."""
+    return sygnet(theme)
 
 
 def logo_variant(sygnet_fn, theme="light"):
@@ -367,7 +438,7 @@ def main():
     files: dict[str, str] = {}
     for theme, suf in (("light", ""), ("dark", "-negatyw")):
         inner, w, h = logo(theme)
-        files[f"logo{suf}.svg"] = doc(w, h, inner, "#TuBijeAED – defibrylatory na mapie, otwarte dane")
+        files[f"logo{suf}.svg"] = doc(w, h, inner, f"{TXT.NAZWA} – {TXT.PODPIS_LOGO.lower()}")
         inner, w, h = logo(theme, kompakt=True)
         files[f"logo-kompakt{suf}.svg"] = doc(w, h, inner, "#TuBijeAED")
     files["sygnet.svg"] = doc(100, 100, sygnet("light"), "#TuBijeAED")
@@ -409,26 +480,32 @@ def build_previews(files, var):
     on_bg(png(files["logo.svg"], 760), WHITE, 20).save(PODGLAD / "logo.png")
     on_bg(png(files["logo-negatyw.svg"], 760), navy, 20).save(PODGLAD / "logo-negatyw.png")
     # logo w nagłówku (48 px wysokości) – czy podpis jest czytelny
-    hdr = Image.new("RGBA", (560, 150), WHITE)
-    hdr.alpha_composite(png(files["logo.svg"], height=56), (12, 12))
-    hdr.alpha_composite(png(files["logo-kompakt.svg"], height=40), (12, 90))
-    nb = Image.new("RGBA", (260, 64), NAVY)
-    nb.alpha_composite(png(files["logo-kompakt-negatyw.svg"], height=40), (12, 12))
-    hdr.alpha_composite(nb, (290, 78))
+    # nagłówek 48 px: logo z podpisem, kompakt jasny i negatyw
+    hdr = Image.new("RGBA", (620, 230), WHITE)
+    hdr.alpha_composite(png(files["logo.svg"], height=48), (12, 12))
+    hdr.alpha_composite(png(files["logo-kompakt.svg"], height=48), (12, 84))
+    nb = Image.new("RGBA", (620, 72), NAVY)
+    nb.alpha_composite(png(files["logo-kompakt-negatyw.svg"], height=48), (12, 12))
+    nb.alpha_composite(png(files["logo-negatyw.svg"], height=48), (300, 12))
+    hdr.alpha_composite(nb, (0, 152))
     hdr.save(PODGLAD / "logo-naglowek.png")
-    # sygnet + favicon w małych rozmiarach (powiększone ×4 metodą NEAREST, żeby było widać piksele)
-    row = Image.new("RGBA", (900, 260), WHITE)
+    # sygnet + favicon w małych rozmiarach: wiersz 1 sygnet 16/24/32/48 (×4, NEAREST),
+    # wiersz 2 favicon 16/32 (×4), wiersz 3 favicon 1:1 na jasnej i ciemnej karcie przeglądarki
+    row = Image.new("RGBA", (900, 330), WHITE)
     x = 10
     for s in (16, 24, 32, 48):
         row.alpha_composite(zoom(png(files["sygnet.svg"], s), 4), (x, 10))
         x += s * 4 + 20
     x = 10
     for s in (16, 32):
-        im = zoom(png(files["favicon.svg"], s), 4)
-        row.alpha_composite(im, (x, 140 if s == 16 else 120))
+        row.alpha_composite(zoom(png(files["favicon.svg"], s), 4), (x, 220 - s * 4 + 10))
         x += s * 4 + 20
-    row.alpha_composite(png(files["favicon.svg"], 16), (x + 20, 160))
-    row.alpha_composite(png(files["favicon.svg"], 32), (x + 60, 150))
+    for i, tab in enumerate(("#F1F3F4", "#202124")):
+        tx = x + 20 + i * 150
+        ImageDraw.Draw(row).rounded_rectangle([tx, 180, tx + 130, 230], 8, fill=tab)
+        row.alpha_composite(png(files["favicon.svg"], 16), (tx + 12, 197))
+        row.alpha_composite(png(files["favicon.svg"], 32), (tx + 50, 189))
+    row.alpha_composite(png(files["sygnet.svg"], 64), (x + 20, 250))
     row.save(PODGLAD / "sygnet-favicon-male.png")
     # odznaki: 2× i 1:1
     sheet = Image.new("RGBA", (980, 520), "#E9EEF0")
@@ -466,9 +543,10 @@ def build_previews(files, var):
     dr = ImageDraw.Draw(board)
     fnt = ImageFont.truetype(str(FONTS / "Poppins-SemiBold.ttf"), 26)
     fsm = ImageFont.truetype(str(FONTS / "Poppins-Regular.ttf"), 20)
-    cols = [("C (obecny)", files["sygnet.svg"], doc(100, 100, sygnet("dark"), "x", bg=NAVY), None),
+    cols = [("C (poprzedni)", doc(100, 100, sygnet_c_poprzedni("light"), "x"),
+             doc(100, 100, sygnet_c_poprzedni("dark"), "x", bg=NAVY), None),
             ("C1 „Puls w sercu”", var["C1_puls_sygnet.svg"], var["C1_puls_sygnet_negatyw.svg"], var["C1_puls_logo.svg"]),
-            ("C2 „Fale nadawania”", var["C2_fale_sygnet.svg"], var["C2_fale_sygnet_negatyw.svg"], var["C2_fale_logo.svg"])]
+            ("C2 „Fale nadawania” – WYBRANY", var["C2_fale_sygnet.svg"], var["C2_fale_sygnet_negatyw.svg"], var["C2_fale_logo.svg"])]
     for i, (lab, light, dark, lg) in enumerate(cols):
         x = 30 + i * 490
         dr.text((x, 20), lab, font=fnt, fill=NAVY)

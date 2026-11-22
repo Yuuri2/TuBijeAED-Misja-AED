@@ -1,8 +1,12 @@
 # Koncepcja C a znak ISO 7010 E010 – uwagi i warianty do decyzji
 
-Status: **do decyzji człowieka na koniec projektu.** W `static/brand/` nadal jest koncepcja C bez zmian kształtu.
+Status: **decyzja: C2** (wybór człowieka, Sprint 2). C2 jest wdrożony we wszystkich zasobach `static/brand/` (logo,
+logo-kompakt, sygnet, favicon, odznaki, także wygasła). Hasło i podpis logo zostają bez zmian do końca projektu.
+Poprzedni sygnet C zostaje w generatorze jako `sygnet_c_poprzedni()` (tylko do porównania).
+Aktualizacja: błyskawica jest teraz **wycięta** z serca (fill-rule evenodd), więc zawsze ma kolor tła; naklejka na
+kapsułę w wariancie C2 jest w `3_branding/zastosowania/`, a teksty (hasło, podpis) w `3_branding/teksty_marki.py`.
 Podgląd porównawczy: `podglad/warianty-iso.png`. Pliki wariantów: `warianty_iso/`. Generator: `generuj_final.py`
-(funkcje `wariant_c1`, `wariant_c2`).
+(funkcje `wariant_c1`, `sygnet` = C2).
 
 ## Problem
 
@@ -29,7 +33,7 @@ Błyskawicę zastępuje **linia EKG (puls)** przecinająca serce. Pierścienie i
   jest częsty w ochronie zdrowia.
 - Czytelność: 24 px dobra, 16 px puls zamienia się w kreskę (jak błyskawica w obecnym C).
 
-## Wariant C2 – „Fale nadawania” (`warianty_iso/C2_fale_*.svg`)
+## Wariant C2 – „Fale nadawania” (`warianty_iso/C2_fale_*.svg`) – **WYBRANY (decyzja: C2)**
 
 **Odwrócona polaryzacja:** zielone serce z białą błyskawicą, bez zielonego pola. Pełne pierścienie zastępują
 **2 otwarte łuki** w prawym górnym rogu (jak symbol sygnału lub nadawania).
@@ -40,7 +44,8 @@ Błyskawicę zastępuje **linia EKG (puls)** przecinająca serce. Pierścienie i
   więc skojarzenie z AED jest nadal mocne.
 - **Koszt:** traci „pulsującą kropkę” z map (pełne koncentryczne pierścienie), a w odznace 88×31 znak jest węższy.
   Jako znacznik mapy wymagałby osobnego tła (np. białej pinezki).
-- Czytelność: dobra w 24–48 px, w 16 px łuki są cienkie (favicon: samo serce).
+- Czytelność: dobra w 24–48 px. W 16 px drugi łuk znika, dlatego favicon ma uproszczoną wersję: większe serce i
+  jeden gruby łuk (`podglad/sygnet-favicon-male.png`).
 
 ## Rekomendacja UI/UX
 
@@ -50,6 +55,6 @@ Jeśli zespół chce zostać bliżej obecnego C (koło z pierścieniami), wybier
 zasadę z księgi znaku: **naklejka #TuBijeAED nigdy nie zastępuje znaku E010 i nie jest umieszczana w jego miejscu**
 (min. odstęp, opis „Partner – dane w dane.gov.pl”).
 
-Pytanie do człowieka: C (bez zmian) / C1 / C2? Po decyzji podmiana zajmie kilka minut, bo w `generuj_final.py`
-wystarczy podstawić inną funkcję sygnetu w `sygnet()` i `favicon_inner()`, a znaczniki mapy i odznaki przegenerują
-się same.
+Decyzja: **C2**. Wdrożenie: w `generuj_final.py` funkcja `sygnet()` rysuje C2 (motywy light/dark/expired),
+`favicon_inner()` to jej uproszczenie, a w małej odznace 88×31 sygnet jest przesunięty tak, żeby ptaszek nie
+nachodził na serce. Znaczniki mapy się nie zmieniły (nie zawierają sygnetu).

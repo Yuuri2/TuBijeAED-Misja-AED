@@ -72,6 +72,7 @@ function sekcjaOdznaki(id, partner) {
 }
 
 async function szczegoly(kont, id) {
+  if (!/^\d+$/.test(String(id))) { komunikat(kont, "blad", "Nieprawidłowy identyfikator", el("p", {}, "Adres zawiera niepoprawny identyfikator instytucji. Wróć do listy i wybierz instytucję ponownie.")); return; }
   let inst, partner = null, zbiory = [];
   try {
     const odp = await pobierz(`${API_14}/institutions/${encodeURIComponent(id)}`);

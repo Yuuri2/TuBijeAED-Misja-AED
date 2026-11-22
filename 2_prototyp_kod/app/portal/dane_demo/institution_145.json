@@ -1,0 +1,20 @@
+{
+ "data": {
+  "id": "145",
+  "type": "institution",
+  "attributes": {
+   "title": "Urząd Miejski w Przemyślu",
+   "slug": "urzad-miejski-w-przemyslu",
+   "regon": "650900341",
+   "institution_type": "local",
+   "email": "mail@um.przemysl.pl",
+   "tel": "0048166786820",
+   "city": "Przemyśl",
+   "street": "Rynek",
+   "street_type": "rynek",
+   "street_number": "1",
+   "postal_code": "37-700",
+   "website": "https://www.przemysl.pl/"
+  }
+ }
+}

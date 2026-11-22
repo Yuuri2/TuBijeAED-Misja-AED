@@ -2,7 +2,7 @@
    Kontrakt: docs/PROTOTYP.md (REST – panel). Dane w DOM tylko przez textContent (ui.js). */
 import { pobierz, wyslij, zapytanie, API_ADMIN, lista, plaski, konto, ustawKonto, wyloguj } from "./api.js";
 import {
-  $, $$, el, wstaw, wyczysc, ladowanie, pokazBlad, komunikat, tekst, formatData, formatLiczba, plakietka,
+  bladPola, $, $$, el, wstaw, wyczysc, ladowanie, pokazBlad, komunikat, tekst, formatData, formatLiczba, plakietka,
   plakietkaWalidacji, raportWalidacji, zbudujTabele, fokus, opcje, TYP_INSTYTUCJI, statystyka,
 } from "./ui.js";
 
@@ -163,11 +163,9 @@ function sprawdzPola(formularz, reguly) {
   let pierwszy = null;
   for (const [id, komunikatBledu, warunek] of reguly) {
     const pole = document.getElementById(id);
-    const bladEl = document.getElementById(`${id}-blad`);
     const ok = warunek ? warunek(pole) : pole.value.trim() !== "";
-    if (bladEl) bladEl.textContent = ok ? "" : komunikatBledu;
-    if (ok) { pole.removeAttribute("aria-invalid"); }
-    else { pole.setAttribute("aria-invalid", "true"); pierwszy = pierwszy || pole; }
+    bladPola(pole, ok ? "" : komunikatBledu);
+    if (!ok) pierwszy = pierwszy || pole;
   }
   if (pierwszy) pierwszy.focus();
   return !pierwszy;
@@ -259,10 +257,13 @@ function pokazWynikZasobu(odp, flagaAed) {
     blok = komunikat(document.createElement("div"), "ok", "Zasób włączony do Wykazu zbiorczego AED",
       el("p", {}, "Walidacja zakończona powodzeniem. Za dane w tym zasobie odpowiada: ", el("strong", {}, aktualne.nazwa), "."));
   }
+  const odrzucony = aed && wStat === "BLEDY";
   const info = wykaz.komunikat || wykaz.przebudowano !== undefined
-    ? el("p", {}, plakietka(wykaz.przebudowano ? "Wykaz zbiorczy przebudowany" : "Wykaz bez zmian", wykaz.przebudowano ? "ok" : "info"), " ",
-      wykaz.komunikat ? wykaz.komunikat : "",
-      wykaz.przebudowano ? el("span", {}, " ", el("a", { href: "/wykaz-aed.html" }, "Zobacz wykaz AED"), " · ", el("a", { href: "/mapa.html" }, "zobacz na mapie")) : null)
+    ? (odrzucony
+      ? el("p", {}, plakietka("Wykaz odświeżony", "info"), " Wykaz został odświeżony – Twój zasób nie został w nim uwzględniony.")
+      : el("p", {}, plakietka(wykaz.przebudowano ? "Wykaz zbiorczy przebudowany" : "Wykaz bez zmian", wykaz.przebudowano ? "ok" : "info"), " ",
+        wykaz.komunikat ? wykaz.komunikat : "",
+        wykaz.przebudowano ? el("span", {}, " ", el("a", { href: "/wykaz-aed.html" }, "Zobacz wykaz AED"), " · ", el("a", { href: "/mapa.html" }, "zobacz na mapie")) : null))
     : null;
   wstaw(wynik,
     el("h3", { id: "zasob-wynik-h", tabindex: "-1" }, "Wynik wysyłania zasobu"),
@@ -287,6 +288,13 @@ function pokazBladZasobu(wynik, err, ponow) {
 }
 
 /* ======================= Harvester XML ======================= */
+function opisImportu(odp) {
+  const n = (k) => formatLiczba(odp[k] ?? 0);
+  const nowe = "zbiory_zaktualizowane" in odp || "zasoby_zaktualizowane" in odp;
+  if (!nowe) return `Zbiory: ${n("zbiory_utworzone")}, zasoby: ${n("zasoby_utworzone")} (przetworzone).`;
+  return `Zbiory: utworzono ${n("zbiory_utworzone")} / zaktualizowano ${n("zbiory_zaktualizowane")}. Zasoby: utworzono ${n("zasoby_utworzone")} / zaktualizowano ${n("zasoby_zaktualizowane")}.`;
+}
+
 async function wyslijXml(e) {
   e.preventDefault();
   const wynik = $("#xml-wynik");
@@ -303,7 +311,7 @@ async function wyslijXml(e) {
     wynik.append(
       komunikat(document.createElement("div"), bledy.length ? "uwaga" : "ok",
         bledy.length ? "Import zakończony z uwagami" : "Import zakończony powodzeniem",
-        el("p", {}, `Utworzone zbiory: ${formatLiczba(odp.zbiory_utworzone ?? 0)}, utworzone zasoby: ${formatLiczba(odp.zasoby_utworzone ?? 0)}.`)));
+        el("p", {}, opisImportu(odp))));
     if (bledy.length) {
       wynik.append(el("h4", {}, `Błędy i pominięcia (${bledy.length})`),
         el("ul", {}, bledy.map((b) => el("li", {}, typeof b === "string" ? b : [b.zasob || b.extIdent, b.komunikat || b.error || JSON.stringify(b)].filter(Boolean).join(": ")))));

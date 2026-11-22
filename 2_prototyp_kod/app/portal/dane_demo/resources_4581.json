@@ -1,0 +1,87 @@
+{
+ "meta": {
+  "count": 5
+ },
+ "data": [
+  {
+   "id": "62092",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+    "description": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (AED) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory AED to urządzenia medyczne, które są łatwe w obsłudze i przeznaczone do użytku przez osoby bez specjalistycznego przeszkolenia. Służą do ratowania życia w przypadku nagłego zatrzymania krążenia (NZK), dostarczając impuls elektryczny do serca, co może przywrócić jego normalny rytm.</p>\r\n\r\n<p>Dane o lokalizacjach AED są aktualizowane w czasie zbliżonym do rzeczywistego dzięki API, co pozwala użytkownikom na dostęp do najnowszych informacji o dostępności tych urządzeń w mieście. Informacje mogą być przydatne dla mieszkańców oraz służb ratunkowych w sytuacjach nagłych, gdzie szybka lokalizacja najbliższego AED może uratować życie.</p>\r\n\r\n<p>Ten zbiór danych może być również wartościowym zasobem dla aplikacji mobilnych oraz systemów informacyjnych, które chcą zwiększyć bezpieczeństwo mieszkańców i odwiedzających miasto.</p>",
+    "format": "xml",
+    "media_type": "file",
+    "link": "https://przemysl.skycms.com.pl/open-data/20/1730818801_b50R6UVxPgoVdBbq/gml",
+    "file_url": "https://api.dane.gov.pl/media/resources/20241106/1730818801_b50R6UVxPgoVdBbq.gml",
+    "download_url": "https://api.dane.gov.pl/resources/62092,lokalizacje-aed-automatycznych-defibrylatorow-zewnetrznych-w-przemyslu/file",
+    "modified": "2024-11-06T06:42:29Z",
+    "data_date": "2024-11-06",
+    "created": "2024-11-06T06:42:29Z"
+   }
+  },
+  {
+   "id": "62093",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+    "description": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (AED) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory AED to urządzenia medyczne, które są łatwe w obsłudze i przeznaczone do użytku przez osoby bez specjalistycznego przeszkolenia. Służą do ratowania życia w przypadku nagłego zatrzymania krążenia (NZK), dostarczając impuls elektryczny do serca, co może przywrócić jego normalny rytm.</p>\r\n\r\n<p>Dane o lokalizacjach AED są aktualizowane w czasie zbliżonym do rzeczywistego dzięki API, co pozwala użytkownikom na dostęp do najnowszych informacji o dostępności tych urządzeń w mieście. Informacje mogą być przydatne dla mieszkańców oraz służb ratunkowych w sytuacjach nagłych, gdzie szybka lokalizacja najbliższego AED może uratować życie.</p>\r\n\r\n<p>Ten zbiór danych może być również wartościowym zasobem dla aplikacji mobilnych oraz systemów informacyjnych, które chcą zwiększyć bezpieczeństwo mieszkańców i odwiedzających miasto.</p>",
+    "format": "geojson",
+    "media_type": "file",
+    "link": "https://przemysl.skycms.com.pl/open-data/20/1730818801_b50R6UVxPgoVdBbq/geojson",
+    "file_url": "https://api.dane.gov.pl/media/resources/20241106/1730818801_b50R6UVxPgoVdBbq.geojson",
+    "download_url": "https://api.dane.gov.pl/resources/62093,lokalizacje-aed-automatycznych-defibrylatorow-zewnetrznych-w-przemyslu/file",
+    "modified": "2024-11-06T06:45:11Z",
+    "data_date": "2024-11-06",
+    "created": "2024-11-06T06:45:11Z"
+   }
+  },
+  {
+   "id": "62094",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+    "description": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (AED) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory AED to urządzenia medyczne, które są łatwe w obsłudze i przeznaczone do użytku przez osoby bez specjalistycznego przeszkolenia. Służą do ratowania życia w przypadku nagłego zatrzymania krążenia (NZK), dostarczając impuls elektryczny do serca, co może przywrócić jego normalny rytm.</p>\r\n\r\n<p>Dane o lokalizacjach AED są aktualizowane w czasie zbliżonym do rzeczywistego dzięki API, co pozwala użytkownikom na dostęp do najnowszych informacji o dostępności tych urządzeń w mieście. Informacje mogą być przydatne dla mieszkańców oraz służb ratunkowych w sytuacjach nagłych, gdzie szybka lokalizacja najbliższego AED może uratować życie.</p>\r\n\r\n<p>Ten zbiór danych może być również wartościowym zasobem dla aplikacji mobilnych oraz systemów informacyjnych, które chcą zwiększyć bezpieczeństwo mieszkańców i odwiedzających miasto.</p>",
+    "format": "json",
+    "media_type": "file",
+    "link": "https://przemysl.skycms.com.pl/open-data/20/1730818801_b50R6UVxPgoVdBbq/json",
+    "file_url": "https://api.dane.gov.pl/media/resources/20241106/1730818801_b50R6UVxPgoVdBbq.json",
+    "download_url": "https://api.dane.gov.pl/resources/62094,lokalizacje-aed-automatycznych-defibrylatorow-zewnetrznych-w-przemyslu/file",
+    "modified": "2024-11-06T06:47:30Z",
+    "data_date": "2024-11-06",
+    "created": "2024-11-06T06:47:30Z"
+   }
+  },
+  {
+   "id": "62095",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+    "description": "<p>Zbiór danych zawiera informacje o lokalizacjach automatycznych defibrylatorów zewnętrznych (AED) dostępnych w przestrzeni publicznej miasta Przemyśla. Defibrylatory AED to urządzenia medyczne, które są łatwe w obsłudze i przeznaczone do użytku przez osoby bez specjalistycznego przeszkolenia. Służą do ratowania życia w przypadku nagłego zatrzymania krążenia (NZK), dostarczając impuls elektryczny do serca, co może przywrócić jego normalny rytm.</p>\r\n\r\n<p>Dane o lokalizacjach AED są aktualizowane w czasie zbliżonym do rzeczywistego dzięki API, co pozwala użytkownikom na dostęp do najnowszych informacji o dostępności tych urządzeń w mieście. Informacje mogą być przydatne dla mieszkańców oraz służb ratunkowych w sytuacjach nagłych, gdzie szybka lokalizacja najbliższego AED może uratować życie.</p>\r\n\r\n<p>Ten zbiór danych może być również wartościowym zasobem dla aplikacji mobilnych oraz systemów informacyjnych, które chcą zwiększyć bezpieczeństwo mieszkańców i odwiedzających miasto.</p>",
+    "format": "csv",
+    "media_type": "file",
+    "link": "https://przemysl.skycms.com.pl/open-data/20/1730818801_b50R6UVxPgoVdBbq/csv",
+    "file_url": "https://api.dane.gov.pl/media/resources/20241106/1730818801_b50R6UVxPgoVdBbq.csv",
+    "download_url": "https://api.dane.gov.pl/resources/62095,lokalizacje-aed-automatycznych-defibrylatorow-zewnetrznych-w-przemyslu/file",
+    "modified": "2024-11-06T06:50:29Z",
+    "data_date": "2024-11-06",
+    "created": "2024-11-06T06:50:29Z"
+   }
+  },
+  {
+   "id": "62424",
+   "type": "resource",
+   "attributes": {
+    "title": "Lokalizacje AED – Automatycznych Defibrylatorów Zewnętrznych w Przemyślu",
+    "description": "<p>Dane na temat lokalizacji <strong>defibrylatorów AED w Przemyślu</strong> są dostępne w portalu Otwarte Dane w dwóch formach: widoku tabelarycznym oraz na interaktywnej mapie. <strong>W tym zasobie uzyskujesz dostęp do danych w formacie: *.GEOJson.</strong> Taki format pozwala użytkownikom zarówno na szybkie wyszukanie najbliższego urządzenia, jak i na analizę przestrzenną dostępności defibrylatorów w mieście. Dzięki tym danym można zaplanować lokalizację nowych defibrylatorów, zwiększając bezpieczeństwo mieszkańców oraz wsparcie w sytuacjach nagłych.</p>\r\n\r\n<p><strong>Przydatność danych:</strong></p>\r\n\r\n<ol>\r\n\t<li>\r\n\t<p><strong>Bezpieczeństwo i szybki dostęp</strong> – umożliwiają mieszkańcom i turystom szybkie zlokalizowanie najbliższego defibrylatora w sytuacji awaryjnej.</p>\r\n\t</li>\r\n\t<li>\r\n\t<p><strong>Planowanie i analizy</strong> – wspierają instytucje miejskie i organizacje pozarządowe w analizie rozmieszczenia defibrylatorów, identyfikacji miejsc o niskiej dostępności oraz w planowaniu strategii rozmieszczenia dodatkowych urządzeń.</p>\r\n\t</li>\r\n\t<li>\r\n\t<p><strong>Edukacja i promocja zdrowia</strong> – dane mogą służyć jako zasób do edukacji mieszkańców o lokalizacjach i sposobie użycia defibrylatorów, zwiększając świadomość na temat ich dostępności i funkcji.</p>\r\n\t</li>\r\n</ol>\r\n\r\n<p>Dostęp do danych w przystępnych formach zapewnia wygodę użytkowania zarówno osobom prywatnym, jak i profesjonalistom analizującym bezpieczeństwo publiczne w mieście.</p>",
+    "format": "xml",
+    "media_type": "file",
+    "link": "https://przemysl.skycms.com.pl/open-data/20/1730818801_b50R6UVxPgoVdBbq/gml",
+    "file_url": "https://api.dane.gov.pl/media/resources/20241120/1730818801_b50R6UVxPgoVdBbq.gml",
+    "download_url": "https://api.dane.gov.pl/resources/62424,lokalizacje-aed-automatycznych-defibrylatorow-zewnetrznych-w-przemyslu/file",
+    "modified": "2024-11-20T09:40:20Z",
+    "data_date": "2024-11-20",
+    "created": "2024-11-20T09:40:20Z"
+   }
+  }
+ ]
+}

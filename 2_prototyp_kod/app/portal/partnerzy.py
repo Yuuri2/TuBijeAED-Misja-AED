@@ -5,7 +5,9 @@ Nie ma odpowiednika w mcod – to akcja promocyjna dla dostawców danych, liczon
   1. opublikowany zasób wykazu AED uwzględniony w aktualnym wykazie zbiorczym,
   2. 0 błędów walidacji tego zasobu,
   3. zasób zaktualizowany nie dawniej niż 12 miesięcy temu (`data_danych`, a gdy brak – data modyfikacji),
-  4. średnia kompletność rekordów dostawcy w wykazie ≥ 0,8 (schema.kompletnosc).
+  4. „dane ponad minimum”: średni odsetek wypełnionych pól ZALECANYCH i OPCJONALNYCH wzorca (x-wymagane ∈
+     {ZALECANE, NIE}) w rekordach dostawcy w wykazie ≥ 0,5. Pola wymagane (TAK) są zawsze wypełnione w poprawnym
+     rekordzie, więc nie różnicują – liczy się to, co dostawca podał ponad obowiązkowe minimum.
 Status: AKTYWNY – wszystkie kryteria; WYGASŁY – spełnione 1, 2, 4, ale dane są starsze niż 12 miesięcy
 (odznaka wygasa, dopóki dostawca nie potwierdzi danych); BRAK – w pozostałych przypadkach.
 `wazny_do` = data aktualizacji zasobu + 12 miesięcy.
@@ -21,7 +23,18 @@ from . import baza, wykazy
 
 TYP_WYKAZU = "AED"
 MIESIECY_WAZNOSCI = 12
-PROG_KOMPLETNOSCI = 0.8
+PROG_KOMPLETNOSCI = 0.5          # próg „danych ponad minimum” (odsetek pól ZALECANYCH i opcjonalnych)
+POZIOMY_PONAD_MINIMUM = ("ZALECANE", "NIE")
+
+
+def kompletnosc_ponad_minimum(rekord: dict) -> float:
+    """Odsetek wypełnionych pól o x-wymagane ∈ {ZALECANE, NIE} (pola „ponad minimum”)."""
+    from .. import schema
+
+    pola = [p["name"] for p in schema.pola() if p.get("x-wymagane") in POZIOMY_PONAD_MINIMUM]
+    if not pola:
+        return 0.0
+    return sum(1 for n in pola if schema.pole_wypelnione(rekord.get(n))) / len(pola)
 
 
 def _dodaj_miesiace(d: date, n: int) -> date:
@@ -72,7 +85,7 @@ def status_partnera(instytucja_id: int, *, teraz: datetime | date | None = None)
 
     rekordy = wykazy.rekordy_wykazu(TYP_WYKAZU, instytucja_id=int(instytucja_id)) if w_wykazie else []
     konf = wykazy.konfiguracja(TYP_WYKAZU)
-    kompletnosc = round(sum(konf.kompletnosc(r) for r in rekordy) / len(rekordy), 3) if rekordy else None
+    kompletnosc = round(sum(kompletnosc_ponad_minimum(r) for r in rekordy) / len(rekordy), 3) if rekordy else None
     kompletny = kompletnosc is not None and kompletnosc >= PROG_KOMPLETNOSCI
 
     kryteria = [
@@ -86,7 +99,9 @@ def status_partnera(instytucja_id: int, *, teraz: datetime | date | None = None)
          "opis": f"Dane zaktualizowane w ciągu ostatnich {MIESIECY_WAZNOSCI} miesięcy"
                  + (f" (ostatnia aktualizacja: {data_akt.isoformat()})." if data_akt else ".")},
         {"nazwa": "kompletnosc_80", "spelnione": kompletny,
-         "opis": f"Średnia kompletność rekordów co najmniej {int(PROG_KOMPLETNOSCI * 100)}%"
+         "opis": "Dane ponad obowiązkowe minimum: średnio co najmniej "
+                 f"{int(PROG_KOMPLETNOSCI * 100)}% pól zalecanych i opcjonalnych wzorca (np. kondygnacja, ulica, "
+                 "producent i model, elektrody pediatryczne, data przeglądu, zdjęcie) jest wypełnionych"
                  + (f" (obecnie: {round(kompletnosc * 100)}%)." if kompletnosc is not None else ".")},
     ]
     if w_wykazie and bez_bledow and kompletny:
